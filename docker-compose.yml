@@ -1,0 +1,160 @@
+# Lunaz — Full stack for local development
+# Usage: docker compose up --build
+# Services: MongoDB, MinIO (S3), Backend, Web, Manage
+
+services:
+  # ─────────────────────────────────────────────────────────────────────────────
+  # MongoDB
+  # ─────────────────────────────────────────────────────────────────────────────
+  mongodb:
+    image: mongo:7
+    container_name: lunaz-mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      # Uncomment for auth in development:
+      # MONGO_INITDB_ROOT_USERNAME: admin
+      # MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:-adminpassword}
+      MONGO_INITDB_DATABASE: lunaz
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - lunaz-network
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # MinIO (S3-compatible storage for local development)
+  # ─────────────────────────────────────────────────────────────────────────────
+  minio:
+    image: minio/minio
+    container_name: lunaz-minio
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000"   # S3 API
+      - "9001:9001"   # Console UI
+    volumes:
+      - minio_data:/data
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - lunaz-network
+
+  # MinIO bucket initialization
+  minio-init:
+    image: minio/mc
+    container_name: lunaz-minio-init
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+        mc alias set myminio http://minio:9000 minioadmin minioadmin;
+        mc mb myminio/lunaz-products --ignore-existing;
+        mc anonymous set download myminio/lunaz-products;
+        echo 'MinIO bucket lunaz-products created and configured';
+      "
+    networks:
+      - lunaz-network
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Backend (Express.js API)
+  # ─────────────────────────────────────────────────────────────────────────────
+  backend:
+    build:
+      context: .
+      dockerfile: apps/backend/Dockerfile
+    container_name: lunaz-backend
+    ports:
+      - "4000:4000"
+    environment:
+      NODE_ENV: development
+      PORT: 4000
+      MONGODB_URI: mongodb://mongodb:27017/lunaz
+      JWT_SECRET: ${JWT_SECRET:-dev-secret-change-in-production-min-32-chars}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-7d}
+      # S3 / MinIO
+      S3_BUCKET: lunaz-products
+      S3_REGION: us-east-1
+      S3_ENDPOINT: http://minio:9000
+      AWS_ACCESS_KEY_ID: ${MINIO_ROOT_USER:-minioadmin}
+      AWS_SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD:-minioadmin}
+      # CORS origins
+      FRONTEND_WEB_URL: http://localhost:3000
+      FRONTEND_MANAGE_URL: http://localhost:3001
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:4000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    networks:
+      - lunaz-network
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Web (Customer-facing React app)
+  # ─────────────────────────────────────────────────────────────────────────────
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        VITE_API_URL: http://localhost:4000/api/v1
+    container_name: lunaz-web
+    ports:
+      - "3000:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - lunaz-network
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Manage (Admin dashboard React app)
+  # ─────────────────────────────────────────────────────────────────────────────
+  manage:
+    build:
+      context: .
+      dockerfile: apps/manage/Dockerfile
+      args:
+        VITE_API_URL: http://localhost:4000/api/v1
+    container_name: lunaz-manage
+    ports:
+      - "3001:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - lunaz-network
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Volumes
+# ─────────────────────────────────────────────────────────────────────────────
+volumes:
+  mongodb_data:
+    name: lunaz-mongodb-data
+  minio_data:
+    name: lunaz-minio-data
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Networks
+# ─────────────────────────────────────────────────────────────────────────────
+networks:
+  lunaz-network:
+    name: lunaz-network
+    driver: bridge

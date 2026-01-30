@@ -1,0 +1,23 @@
+{
+  "name": "lunaz",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Lunaz lifestyle and home décor e-commerce",
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "dev": "npm run dev --workspace=apps/backend",
+    "dev:web": "npm run dev --workspace=apps/web",
+    "dev:manage": "npm run dev --workspace=apps/manage",
+    "dev:backend": "npm run dev --workspace=apps/backend",
+    "lint": "npm run lint --workspaces --if-present",
+    "clean": "rm -rf apps/*/dist apps/*/build packages/*/dist node_modules",
+    "seed:admin": "npm run seed:admin --workspace=backend"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=20"
+  }
+}
