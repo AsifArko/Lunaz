@@ -28,6 +28,12 @@ export { Skeleton, SkeletonText, SkeletonCard, type SkeletonProps } from './Skel
 // Data display
 export { Price, getProductPrice, type PriceProps } from './Price/Price.js';
 export {
+  ProductCard,
+  ProductCardSkeleton,
+  type ProductCardProps,
+  type ProductCardProduct,
+} from './ProductCard/ProductCard.js';
+export {
   Table,
   TableHead,
   TableBody,

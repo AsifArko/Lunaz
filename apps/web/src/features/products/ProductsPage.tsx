@@ -1,13 +1,143 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Link, useSearchParams, useNavigate } from "react-router-dom";
 import type { Product, Category, PaginatedResponse } from "@lunaz/types";
-import { Container, Price } from "@lunaz/ui";
+import {
+  Container,
+  ProductCard,
+  ProductCardSkeleton,
+  type ProductCardProduct,
+} from "@lunaz/ui";
 import { api } from "../../api/client";
-import { ProductGridSkeleton } from "../../components/Skeleton";
 import { useCart } from "../../context/CartContext";
 import { useToast } from "../../context/ToastContext";
 
 type SortOption = "newest" | "price-low" | "price-high" | "name";
+
+interface GroupedCategory {
+  parent: Category;
+  children: Category[];
+}
+
+// Debounce hook for price inputs
+function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState<T>(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+}
+
+// Custom dropdown component for better styling
+function FilterDropdown({
+  label,
+  value,
+  children,
+  className = "",
+}: {
+  label: string;
+  value: string;
+  children: React.ReactNode;
+  className?: string;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  return (
+    <div ref={dropdownRef} className={`relative ${className}`}>
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center gap-2 px-3 py-2 text-sm bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition-colors"
+      >
+        <span className="text-slate-500">{label}:</span>
+        <span className="text-slate-900 font-medium">{value || "All"}</span>
+        <svg
+          className={`w-4 h-4 text-slate-400 transition-transform ${isOpen ? "rotate-180" : ""}`}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M19 9l-7 7-7-7"
+          />
+        </svg>
+      </button>
+
+      {isOpen && (
+        <div className="absolute top-full left-0 mt-1 w-56 bg-white border border-slate-200 rounded-lg shadow-lg z-20 py-1 max-h-72 overflow-y-auto">
+          {children}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function DropdownItem({
+  selected,
+  onClick,
+  children,
+  indent = false,
+}: {
+  selected: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+  indent?: boolean;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`w-full text-left px-3 py-2 text-sm transition-colors ${
+        indent ? "pl-7" : ""
+      } ${
+        selected
+          ? "bg-slate-100 text-slate-900 font-medium"
+          : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+      }`}
+    >
+      <div className="flex items-center gap-2">
+        {selected && (
+          <svg
+            className="w-4 h-4 text-slate-700"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M5 13l4 4L19 7"
+            />
+          </svg>
+        )}
+        <span className={selected ? "" : "ml-6"}>{children}</span>
+      </div>
+    </button>
+  );
+}
 
 export function ProductsPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -17,10 +147,17 @@ export function ProductsPage() {
 
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [groupedCategories, setGroupedCategories] = useState<GroupedCategory[]>(
+    []
+  );
   const [total, setTotal] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Local state for price inputs (to enable debouncing)
+  const [minPriceInput, setMinPriceInput] = useState("");
+  const [maxPriceInput, setMaxPriceInput] = useState("");
 
   // URL params
   const page = parseInt(searchParams.get("page") || "1", 10);
@@ -29,9 +166,51 @@ export function ProductsPage() {
   const minPrice = searchParams.get("minPrice") || "";
   const maxPrice = searchParams.get("maxPrice") || "";
 
+  // Debounced price values
+  const debouncedMinPrice = useDebounce(minPriceInput, 500);
+  const debouncedMaxPrice = useDebounce(maxPriceInput, 500);
+
+  // Sync URL params to local state on mount and when URL changes
   useEffect(() => {
-    api<PaginatedResponse<Category>>("/categories").then((res) => {
-      setCategories(res.data);
+    setMinPriceInput(minPrice);
+    setMaxPriceInput(maxPrice);
+  }, [minPrice, maxPrice]);
+
+  // Update URL when debounced values change
+  useEffect(() => {
+    if (debouncedMinPrice !== minPrice || debouncedMaxPrice !== maxPrice) {
+      const newParams = new URLSearchParams(searchParams);
+
+      if (debouncedMinPrice) {
+        newParams.set("minPrice", debouncedMinPrice);
+      } else {
+        newParams.delete("minPrice");
+      }
+
+      if (debouncedMaxPrice) {
+        newParams.set("maxPrice", debouncedMaxPrice);
+      } else {
+        newParams.delete("maxPrice");
+      }
+
+      newParams.set("page", "1"); // Reset to page 1 when filters change
+      setSearchParams(newParams);
+    }
+  }, [debouncedMinPrice, debouncedMaxPrice]);
+
+  // Fetch and organize categories
+  useEffect(() => {
+    api<PaginatedResponse<Category>>("/categories?limit=100").then((res) => {
+      const allCategories = res.data;
+      setCategories(allCategories);
+
+      // Group categories by parent
+      const parentCategories = allCategories.filter((c) => !c.parentId);
+      const grouped: GroupedCategory[] = parentCategories.map((parent) => ({
+        parent,
+        children: allCategories.filter((c) => c.parentId === parent.id),
+      }));
+      setGroupedCategories(grouped);
     });
   }, []);
 
@@ -48,6 +227,11 @@ export function ProductsPage() {
 
         if (categoryId) params.set("category", categoryId);
 
+        // Price range filters
+        if (minPrice) params.set("minPrice", minPrice);
+        if (maxPrice) params.set("maxPrice", maxPrice);
+
+        // Sorting
         switch (sort) {
           case "price-low":
             params.set("sort", "basePrice");
@@ -69,18 +253,8 @@ export function ProductsPage() {
         const res = await api<PaginatedResponse<Product>>(
           `/products?${params.toString()}`
         );
-        let filtered = res.data;
 
-        if (minPrice) {
-          const min = parseFloat(minPrice);
-          filtered = filtered.filter((p) => p.basePrice >= min);
-        }
-        if (maxPrice) {
-          const max = parseFloat(maxPrice);
-          filtered = filtered.filter((p) => p.basePrice <= max);
-        }
-
-        setProducts(filtered);
+        setProducts(res.data);
         setTotal(res.total);
         setTotalPages(res.totalPages);
       } catch (err) {
@@ -112,19 +286,48 @@ export function ProductsPage() {
   const hasActiveFilters =
     categoryId || minPrice || maxPrice || sort !== "newest";
 
-  const handleAddToCart = (e: React.MouseEvent, product: Product) => {
+  const clearFilters = useCallback(() => {
+    setMinPriceInput("");
+    setMaxPriceInput("");
+    setSearchParams({});
+  }, [setSearchParams]);
+
+  // Get selected category name for display
+  const getSelectedCategoryName = () => {
+    if (!categoryId) return "All";
+    const cat = categories.find((c) => c.id === categoryId);
+    return cat?.name || "All";
+  };
+
+  // Get sort label for display
+  const getSortLabel = () => {
+    switch (sort) {
+      case "price-low":
+        return "Price: Low to High";
+      case "price-high":
+        return "Price: High to Low";
+      case "name":
+        return "Name A-Z";
+      default:
+        return "Newest";
+    }
+  };
+
+  const handleAddToCart = (e: React.MouseEvent, cardProduct: ProductCardProduct) => {
     e.preventDefault();
     e.stopPropagation();
-    if (product.variants.length > 0) {
+    const product = products.find((p) => p.id === cardProduct.id);
+    if (product && product.variants.length > 0) {
       addItem(product, product.variants[0], 1);
       addToast(`Added ${product.name} to cart`, "success");
     }
   };
 
-  const handleBuyNow = (e: React.MouseEvent, product: Product) => {
+  const handleBuyNow = (e: React.MouseEvent, cardProduct: ProductCardProduct) => {
     e.preventDefault();
     e.stopPropagation();
-    if (product.variants.length > 0) {
+    const product = products.find((p) => p.id === cardProduct.id);
+    if (product && product.variants.length > 0) {
       addItem(product, product.variants[0], 1);
       navigate("/cart");
     }
@@ -152,101 +355,202 @@ export function ProductsPage() {
 
       <Container>
         <div className="py-8">
-          {/* Filters Bar - Horizontal on desktop */}
+          {/* Filters Bar */}
           <div className="mb-8 pb-6 border-b border-slate-100">
-            <div className="flex flex-wrap items-center gap-4">
-              {/* Category */}
-              <div className="flex items-center gap-2">
-                <label className="text-xs font-medium text-slate-500 uppercase tracking-wider">
-                  Category
-                </label>
-                <select
-                  value={categoryId}
-                  onChange={(e) => updateParams({ category: e.target.value })}
-                  className="text-sm text-slate-700 bg-transparent border-0 border-b border-slate-200 focus:border-slate-400 focus:ring-0 py-1 pr-8 cursor-pointer"
+            <div className="flex flex-wrap items-center gap-3">
+              {/* Category Filter */}
+              <FilterDropdown
+                label="Category"
+                value={getSelectedCategoryName()}
+              >
+                <DropdownItem
+                  selected={categoryId === ""}
+                  onClick={() => updateParams({ category: "" })}
                 >
-                  <option value="">All</option>
-                  {categories.map((cat) => (
-                    <option key={cat.id} value={cat.id}>
-                      {cat.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
+                  All Categories
+                </DropdownItem>
+                <div className="h-px bg-slate-100 my-1" />
+                {groupedCategories.map((group) => (
+                  <div key={group.parent.id}>
+                    {/* Parent Category */}
+                    <DropdownItem
+                      selected={categoryId === group.parent.id}
+                      onClick={() => updateParams({ category: group.parent.id })}
+                    >
+                      <span className="font-medium">{group.parent.name}</span>
+                    </DropdownItem>
+                    {/* Child Categories */}
+                    {group.children.map((child) => (
+                      <DropdownItem
+                        key={child.id}
+                        selected={categoryId === child.id}
+                        onClick={() => updateParams({ category: child.id })}
+                        indent
+                      >
+                        <span className="text-slate-500">{child.name}</span>
+                      </DropdownItem>
+                    ))}
+                  </div>
+                ))}
+              </FilterDropdown>
 
-              {/* Divider */}
-              <div className="hidden sm:block w-px h-4 bg-slate-200" />
-
-              {/* Price Range */}
-              <div className="flex items-center gap-2">
-                <label className="text-xs font-medium text-slate-500 uppercase tracking-wider">
-                  Price
-                </label>
-                <div className="flex items-center gap-1">
+              {/* Price Range Filter */}
+              <div className="flex items-center gap-2 h-[38px] px-3 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition-colors">
+                <span className="text-sm text-slate-500">Price:</span>
+                <div className="flex items-center gap-1.5">
                   <input
                     type="number"
-                    placeholder="Min"
-                    value={minPrice}
-                    onChange={(e) => updateParams({ minPrice: e.target.value })}
-                    className="w-16 text-sm text-slate-700 bg-transparent border-0 border-b border-slate-200 focus:border-slate-400 focus:ring-0 py-1 text-center placeholder:text-slate-300"
+                    placeholder="$ Min"
+                    value={minPriceInput}
+                    onChange={(e) => setMinPriceInput(e.target.value)}
+                    min="0"
+                    className="w-14 h-5 text-sm text-slate-900 bg-transparent border-0 focus:outline-none placeholder:text-slate-400 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   />
-                  <span className="text-slate-300">—</span>
+                  <span className="text-slate-300 text-sm">—</span>
                   <input
                     type="number"
-                    placeholder="Max"
-                    value={maxPrice}
-                    onChange={(e) => updateParams({ maxPrice: e.target.value })}
-                    className="w-16 text-sm text-slate-700 bg-transparent border-0 border-b border-slate-200 focus:border-slate-400 focus:ring-0 py-1 text-center placeholder:text-slate-300"
+                    placeholder="$ Max"
+                    value={maxPriceInput}
+                    onChange={(e) => setMaxPriceInput(e.target.value)}
+                    min="0"
+                    className="w-14 h-5 text-sm text-slate-900 bg-transparent border-0 focus:outline-none placeholder:text-slate-400 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   />
                 </div>
               </div>
 
-              {/* Divider */}
-              <div className="hidden sm:block w-px h-4 bg-slate-200" />
-
-              {/* Sort */}
-              <div className="flex items-center gap-2">
-                <label className="text-xs font-medium text-slate-500 uppercase tracking-wider">
-                  Sort
-                </label>
-                <select
-                  value={sort}
-                  onChange={(e) => updateParams({ sort: e.target.value })}
-                  className="text-sm text-slate-700 bg-transparent border-0 border-b border-slate-200 focus:border-slate-400 focus:ring-0 py-1 pr-8 cursor-pointer"
+              {/* Sort Filter */}
+              <FilterDropdown label="Sort" value={getSortLabel()}>
+                <DropdownItem
+                  selected={sort === "newest"}
+                  onClick={() => updateParams({ sort: "newest" })}
                 >
-                  <option value="newest">Newest</option>
-                  <option value="price-low">Price: Low to High</option>
-                  <option value="price-high">Price: High to Low</option>
-                  <option value="name">Name A-Z</option>
-                </select>
-              </div>
+                  Newest
+                </DropdownItem>
+                <DropdownItem
+                  selected={sort === "price-low"}
+                  onClick={() => updateParams({ sort: "price-low" })}
+                >
+                  Price: Low to High
+                </DropdownItem>
+                <DropdownItem
+                  selected={sort === "price-high"}
+                  onClick={() => updateParams({ sort: "price-high" })}
+                >
+                  Price: High to Low
+                </DropdownItem>
+                <DropdownItem
+                  selected={sort === "name"}
+                  onClick={() => updateParams({ sort: "name" })}
+                >
+                  Name A-Z
+                </DropdownItem>
+              </FilterDropdown>
 
-              {/* Clear Filters */}
+              {/* Active Filters Count & Clear */}
               {hasActiveFilters && (
-                <>
-                  <div className="hidden sm:block w-px h-4 bg-slate-200" />
-                  <button
-                    onClick={() => setSearchParams({})}
-                    className="text-xs text-slate-400 hover:text-slate-600 transition-colors flex items-center gap-1"
+                <button
+                  onClick={clearFilters}
+                  className="flex items-center gap-1.5 px-3 py-2 text-sm text-slate-500 hover:text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
+                >
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
                   >
-                    <svg
-                      className="w-3 h-3"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
-                    Clear
-                  </button>
-                </>
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                  Clear filters
+                </button>
               )}
             </div>
+
+            {/* Active Filter Tags */}
+            {hasActiveFilters && (
+              <div className="flex flex-wrap items-center gap-2 mt-4">
+                {categoryId && (
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium text-slate-600 bg-slate-100 rounded-full">
+                    {getSelectedCategoryName()}
+                    <button
+                      onClick={() => updateParams({ category: "" })}
+                      className="text-slate-400 hover:text-slate-600"
+                    >
+                      <svg
+                        className="w-3 h-3"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      </svg>
+                    </button>
+                  </span>
+                )}
+                {(minPrice || maxPrice) && (
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium text-slate-600 bg-slate-100 rounded-full">
+                    ${minPrice || "0"} — ${maxPrice || "∞"}
+                    <button
+                      onClick={() => {
+                        setMinPriceInput("");
+                        setMaxPriceInput("");
+                        const newParams = new URLSearchParams(searchParams);
+                        newParams.delete("minPrice");
+                        newParams.delete("maxPrice");
+                        setSearchParams(newParams);
+                      }}
+                      className="text-slate-400 hover:text-slate-600"
+                    >
+                      <svg
+                        className="w-3 h-3"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      </svg>
+                    </button>
+                  </span>
+                )}
+                {sort !== "newest" && (
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium text-slate-600 bg-slate-100 rounded-full">
+                    {getSortLabel()}
+                    <button
+                      onClick={() => updateParams({ sort: "" })}
+                      className="text-slate-400 hover:text-slate-600"
+                    >
+                      <svg
+                        className="w-3 h-3"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      </svg>
+                    </button>
+                  </span>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Error State */}
@@ -257,7 +561,13 @@ export function ProductsPage() {
           )}
 
           {/* Loading State */}
-          {isLoading && <ProductGridSkeleton count={12} />}
+          {isLoading && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+              {Array.from({ length: 12 }).map((_, i) => (
+                <ProductCardSkeleton key={i} variant="full" aspectRatio="4:3" />
+              ))}
+            </div>
+          )}
 
           {/* Empty State */}
           {!isLoading && !error && products.length === 0 && (
@@ -266,7 +576,7 @@ export function ProductsPage() {
                 No products match your criteria.
               </p>
               <button
-                onClick={() => setSearchParams({})}
+                onClick={clearFilters}
                 className="text-sm text-slate-600 hover:text-slate-900 underline underline-offset-4"
               >
                 Clear all filters
@@ -279,91 +589,15 @@ export function ProductsPage() {
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
                 {products.map((product) => (
-                  <article
+                  <ProductCard
                     key={product.id}
-                    className="group bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 overflow-hidden"
-                  >
-                    {/* Rich Media */}
-                    <Link to={`/products/${product.slug}`} className="block">
-                      <div className="aspect-[4/3] bg-slate-100 overflow-hidden">
-                        {product.images[0] ? (
-                          <img
-                            src={product.images[0].url}
-                            alt={product.name}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center">
-                            <span className="text-slate-300">No image</span>
-                          </div>
-                        )}
-                      </div>
-                    </Link>
-
-                    {/* Content */}
-                    <div className="p-4">
-                      {/* Primary Title */}
-                      <Link to={`/products/${product.slug}`}>
-                        <h3 className="text-base font-medium text-slate-900 line-clamp-1 mb-1">
-                          {product.name}
-                        </h3>
-                      </Link>
-
-                      {/* Secondary Text - Price */}
-                      <p className="text-sm text-slate-500 mb-2">
-                        <Price
-                          amount={product.basePrice}
-                          currency={product.currency}
-                          className="text-slate-500"
-                        />
-                      </p>
-
-                      {/* Supporting Text - Description with Tooltip */}
-                      {product.description && (
-                        <div className="relative mb-4">
-                          <p className="text-sm text-slate-400 line-clamp-2 cursor-help peer">
-                            {product.description}
-                          </p>
-                          {/* Tooltip */}
-                          <div className="absolute left-0 right-0 bottom-full mb-2 p-3 bg-slate-900/80 backdrop-blur-sm text-white text-xs leading-relaxed rounded-lg shadow-lg opacity-0 invisible peer-hover:opacity-100 peer-hover:visible transition-all duration-200 z-10">
-                            {product.description}
-                            <div className="absolute bottom-0 left-4 transform translate-y-full">
-                              <div className="border-8 border-transparent border-t-slate-900/80"></div>
-                            </div>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Actions */}
-                      <div className="flex items-stretch gap-2 pt-3 border-t border-slate-100">
-                        <button
-                          onClick={(e) => handleBuyNow(e, product)}
-                          className="flex-1 py-2.5 text-xs font-medium text-white bg-slate-800 hover:bg-slate-700 rounded transition-colors"
-                        >
-                          Buy Now
-                        </button>
-                        <button
-                          onClick={(e) => handleAddToCart(e, product)}
-                          className="w-10 flex items-center justify-center border border-slate-200 text-slate-600 hover:border-slate-300 hover:text-slate-800 hover:bg-slate-50 rounded transition-colors"
-                          aria-label="Add to cart"
-                        >
-                          <svg
-                            className="w-4 h-4"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={1.5}
-                              d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
-                            />
-                          </svg>
-                        </button>
-                      </div>
-                    </div>
-                  </article>
+                    product={product}
+                    variant="full"
+                    aspectRatio="4:3"
+                    linkComponent={Link}
+                    onBuyNow={handleBuyNow}
+                    onAddToCart={handleAddToCart}
+                  />
                 ))}
               </div>
 

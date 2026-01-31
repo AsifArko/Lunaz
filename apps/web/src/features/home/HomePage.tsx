@@ -1,25 +1,60 @@
-import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import type { Category, Product, PaginatedResponse } from "@lunaz/types";
-import { Container, Card, Button, Price } from "@lunaz/ui";
+import {
+  Container,
+  Card,
+  Button,
+  ProductCard,
+  ProductCardSkeleton,
+  type ProductCardProduct,
+} from "@lunaz/ui";
 import { api } from "../../api/client";
-import { Skeleton, ProductCardSkeleton } from "../../components/Skeleton";
+import { Skeleton } from "../../components/Skeleton";
 import { HeroAnimation } from "../../components/HeroAnimation";
 import { PromoAnimation } from "../../components/PromoAnimation";
+import { useCart } from "../../context/CartContext";
+import { useToast } from "../../context/ToastContext";
+
+interface GroupedCategory {
+  parent: Category;
+  children: Category[];
+}
 
 export function HomePage() {
-  const [categories, setCategories] = useState<Category[]>([]);
+  const navigate = useNavigate();
+  const { addItem } = useCart();
+  const { addToast } = useToast();
+
+  const [groupedCategories, setGroupedCategories] = useState<GroupedCategory[]>(
+    []
+  );
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [activeParent, setActiveParent] = useState<string | null>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     async function fetchData() {
       try {
         const [catRes, prodRes] = await Promise.all([
-          api<PaginatedResponse<Category>>("/categories?limit=4"),
+          api<PaginatedResponse<Category>>("/categories?limit=50"),
           api<PaginatedResponse<Product>>("/products?status=published&limit=8"),
         ]);
-        setCategories(catRes.data);
+
+        // Group categories by parent
+        const allCategories = catRes.data;
+        const parentCategories = allCategories.filter((c) => !c.parentId);
+        const grouped: GroupedCategory[] = parentCategories.map((parent) => ({
+          parent,
+          children: allCategories.filter((c) => c.parentId === parent.id),
+        }));
+
+        setGroupedCategories(grouped);
+        // Set first parent as active by default
+        if (grouped.length > 0) {
+          setActiveParent(grouped[0].parent.id);
+        }
         setFeaturedProducts(prodRes.data);
       } catch {
         // Silently handle errors, show empty state
@@ -29,6 +64,46 @@ export function HomePage() {
     }
     fetchData();
   }, []);
+
+  const activeGroup = groupedCategories.find(
+    (g) => g.parent.id === activeParent
+  );
+
+  const scrollSubcategories = (direction: "left" | "right") => {
+    if (scrollContainerRef.current) {
+      const scrollAmount = 300;
+      scrollContainerRef.current.scrollBy({
+        left: direction === "left" ? -scrollAmount : scrollAmount,
+        behavior: "smooth",
+      });
+    }
+  };
+
+  const handleAddToCart = (
+    e: React.MouseEvent,
+    cardProduct: ProductCardProduct
+  ) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const product = featuredProducts.find((p) => p.id === cardProduct.id);
+    if (product && product.variants.length > 0) {
+      addItem(product, product.variants[0], 1);
+      addToast(`Added ${product.name} to cart`, "success");
+    }
+  };
+
+  const handleBuyNow = (
+    e: React.MouseEvent,
+    cardProduct: ProductCardProduct
+  ) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const product = featuredProducts.find((p) => p.id === cardProduct.id);
+    if (product && product.variants.length > 0) {
+      addItem(product, product.variants[0], 1);
+      navigate("/cart");
+    }
+  };
 
   return (
     <div>
@@ -70,7 +145,7 @@ export function HomePage() {
               <Link to="/products">
                 <Button
                   size="lg"
-                  className="bg-slate-100 text-slate-800 hover:bg-slate-200 px-6 font-medium transition-all duration-300"
+                  className="bg-slate-400 text-slate-900 hover:bg-slate-300 px-6 font-medium transition-all duration-300"
                 >
                   Explore Collection
                 </Button>
@@ -148,9 +223,6 @@ export function HomePage() {
         <Container>
           <div className="flex items-center justify-between mb-12">
             <div>
-              <p className="heading-sub text-slate-500 mb-3">
-                Curated Selection
-              </p>
               <h2 className="heading-section text-3xl md:text-5xl text-slate-900">
                 Shop by Category
               </h2>
@@ -177,40 +249,220 @@ export function HomePage() {
           </div>
 
           {isLoading ? (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-              {Array.from({ length: 4 }).map((_, i) => (
-                <Skeleton key={i} className="aspect-square rounded-xl" />
-              ))}
+            <div className="space-y-8">
+              {/* Parent category tabs skeleton */}
+              <div className="flex gap-4">
+                <Skeleton className="h-14 w-48 rounded-xl" />
+                <Skeleton className="h-14 w-48 rounded-xl" />
+              </div>
+              {/* Subcategories skeleton */}
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <Skeleton key={i} className="aspect-[4/3] rounded-xl" />
+                ))}
+              </div>
             </div>
-          ) : categories.length > 0 ? (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-              {categories.map((category) => (
-                <Link
-                  key={category.id}
-                  to={`/categories/${category.slug}`}
-                  className="group relative aspect-square rounded-xl overflow-hidden bg-gray-100"
-                >
-                  {category.imageUrl ? (
-                    <img
-                      src={category.imageUrl}
-                      alt={category.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200">
-                      <span className="text-6xl text-slate-400/50 font-light">
-                        {category.name.charAt(0).toUpperCase()}
-                      </span>
+          ) : groupedCategories.length > 0 ? (
+            <div className="space-y-8">
+              {/* Parent Category Tabs */}
+              <div className="flex flex-wrap gap-3">
+                {groupedCategories.map((group) => (
+                  <button
+                    key={group.parent.id}
+                    onClick={() => setActiveParent(group.parent.id)}
+                    className={`group relative flex items-center gap-4 px-5 py-3 rounded-xl transition-all duration-300 ${
+                      activeParent === group.parent.id
+                        ? "bg-slate-900 text-white shadow-lg"
+                        : "bg-white text-slate-700 hover:bg-slate-100 shadow-sm border border-slate-200"
+                    }`}
+                  >
+                    {/* Category thumbnail */}
+                    <div className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0">
+                      {group.parent.imageUrl ? (
+                        <img
+                          src={group.parent.imageUrl}
+                          alt={group.parent.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div
+                          className={`w-full h-full flex items-center justify-center ${
+                            activeParent === group.parent.id
+                              ? "bg-slate-700"
+                              : "bg-slate-100"
+                          }`}
+                        >
+                          <span
+                            className={`text-lg font-light ${
+                              activeParent === group.parent.id
+                                ? "text-slate-400"
+                                : "text-slate-400"
+                            }`}
+                          >
+                            {group.parent.name.charAt(0)}
+                          </span>
+                        </div>
+                      )}
                     </div>
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/20 to-transparent" />
-                  <div className="absolute bottom-0 left-0 right-0 p-5">
-                    <h3 className="font-serif text-xl md:text-2xl font-medium text-white tracking-tight">
-                      {category.name}
-                    </h3>
+                    <div className="text-left">
+                      <h3 className="font-medium text-base">
+                        {group.parent.name}
+                      </h3>
+                      <p
+                        className={`text-xs ${
+                          activeParent === group.parent.id
+                            ? "text-slate-400"
+                            : "text-slate-500"
+                        }`}
+                      >
+                        {group.children.length}{" "}
+                        {group.children.length === 1
+                          ? "subcategory"
+                          : "subcategories"}
+                      </p>
+                    </div>
+                    {/* Active indicator */}
+                    {activeParent === group.parent.id && (
+                      <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-3 h-3 bg-slate-900 rotate-45" />
+                    )}
+                  </button>
+                ))}
+              </div>
+
+              {/* Subcategories Section */}
+              {activeGroup && (
+                <div className="relative">
+                  {/* Section header */}
+                  <div className="flex items-center justify-between mb-5">
+                    <p className="text-sm text-slate-500">
+                      Browse {activeGroup.parent.name}
+                    </p>
+                    <div className="flex items-center gap-2">
+                      {/* Scroll buttons for desktop */}
+                      <button
+                        onClick={() => scrollSubcategories("left")}
+                        className="hidden md:flex w-8 h-8 items-center justify-center rounded-full bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300 transition-colors"
+                        aria-label="Scroll left"
+                      >
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M15 19l-7-7 7-7"
+                          />
+                        </svg>
+                      </button>
+                      <button
+                        onClick={() => scrollSubcategories("right")}
+                        className="hidden md:flex w-8 h-8 items-center justify-center rounded-full bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300 transition-colors"
+                        aria-label="Scroll right"
+                      >
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9 5l7 7-7 7"
+                          />
+                        </svg>
+                      </button>
+                    </div>
                   </div>
-                </Link>
-              ))}
+
+                  {/* Subcategories horizontal scroll */}
+                  <div
+                    ref={scrollContainerRef}
+                    className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory"
+                    style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+                  >
+                    {/* "View All" card for parent category */}
+                    <Link
+                      to={`/categories/${activeGroup.parent.slug}`}
+                      className="group flex-shrink-0 w-40 md:w-48 snap-start"
+                    >
+                      <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-gradient-to-br from-slate-800 to-slate-900">
+                        <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-4">
+                          <div className="w-12 h-12 rounded-full border-2 border-white/30 flex items-center justify-center mb-3 group-hover:border-white/60 group-hover:scale-110 transition-all duration-300">
+                            <svg
+                              className="w-5 h-5"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
+                              />
+                            </svg>
+                          </div>
+                          <span className="text-sm font-medium">View All</span>
+                          <span className="text-xs text-white/60 mt-1">
+                            {activeGroup.parent.name}
+                          </span>
+                        </div>
+                      </div>
+                    </Link>
+
+                    {/* Subcategory cards */}
+                    {activeGroup.children.map((category) => (
+                      <Link
+                        key={category.id}
+                        to={`/categories/${category.slug}`}
+                        className="group flex-shrink-0 w-40 md:w-48 snap-start"
+                      >
+                        <div className="relative aspect-[4/3] rounded-xl overflow-hidden bg-slate-100">
+                          {category.imageUrl ? (
+                            <img
+                              src={category.imageUrl}
+                              alt={category.name}
+                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                            />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200">
+                              <span className="text-4xl text-slate-400/50 font-light">
+                                {category.name.charAt(0).toUpperCase()}
+                              </span>
+                            </div>
+                          )}
+                          <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/20 to-transparent opacity-80 group-hover:opacity-90 transition-opacity" />
+                          <div className="absolute bottom-0 left-0 right-0 p-4">
+                            <h3 className="font-medium text-sm md:text-base text-white line-clamp-2">
+                              {category.name}
+                            </h3>
+                          </div>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+
+                  {/* Scroll indicator for mobile */}
+                  <div className="flex justify-center gap-1.5 mt-4 md:hidden">
+                    {[activeGroup.parent, ...activeGroup.children].map(
+                      (_, idx) => (
+                        <div
+                          key={idx}
+                          className={`w-1.5 h-1.5 rounded-full transition-colors ${
+                            idx === 0 ? "bg-slate-400" : "bg-slate-200"
+                          }`}
+                        />
+                      )
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           ) : (
             <Card className="text-center py-8">
@@ -253,48 +505,21 @@ export function HomePage() {
           {isLoading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {Array.from({ length: 4 }).map((_, i) => (
-                <ProductCardSkeleton key={i} />
+                <ProductCardSkeleton key={i} variant="full" aspectRatio="4:3" />
               ))}
             </div>
           ) : featuredProducts.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {featuredProducts.slice(0, 4).map((product) => (
-                <Link
+              {featuredProducts.slice(0, 8).map((product) => (
+                <ProductCard
                   key={product.id}
-                  to={`/products/${product.slug}`}
-                  className="group"
-                >
-                  <Card
-                    padding="none"
-                    className="overflow-hidden hover:shadow-lg transition-shadow h-full"
-                  >
-                    <div className="aspect-square bg-gray-100 overflow-hidden">
-                      {product.images[0] ? (
-                        <img
-                          src={product.images[0].url}
-                          alt={product.name}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <span className="text-gray-400">No image</span>
-                        </div>
-                      )}
-                    </div>
-                    <div className="p-5">
-                      <h3 className="font-serif text-lg text-slate-900 group-hover:text-slate-600 transition-colors line-clamp-2 tracking-tight">
-                        {product.name}
-                      </h3>
-                      <div className="mt-2">
-                        <Price
-                          amount={product.basePrice}
-                          currency={product.currency}
-                          className="text-base font-medium text-slate-700"
-                        />
-                      </div>
-                    </div>
-                  </Card>
-                </Link>
+                  product={product}
+                  variant="full"
+                  aspectRatio="4:3"
+                  linkComponent={Link}
+                  onBuyNow={handleBuyNow}
+                  onAddToCart={handleAddToCart}
+                />
               ))}
             </div>
           ) : (
@@ -327,7 +552,7 @@ export function HomePage() {
               quality delivered right to your doorstep.
             </p>
             <Link to="/products">
-              <Button className="bg-slate-100 text-slate-800 hover:bg-slate-200 px-8 py-3 font-medium tracking-wide transition-all duration-300">
+              <Button className="bg-slate-400 text-slate-900 hover:bg-slate-300 px-8 py-3 font-medium tracking-wide transition-all duration-300">
                 Shop Now
               </Button>
             </Link>

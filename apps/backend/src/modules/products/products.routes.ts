@@ -76,6 +76,17 @@ router.get('/', async (req, res, next) => {
       ];
     }
 
+    // Price range filtering
+    if (query.minPrice !== undefined || query.maxPrice !== undefined) {
+      filter.basePrice = {};
+      if (query.minPrice !== undefined) {
+        (filter.basePrice as Record<string, number>).$gte = query.minPrice;
+      }
+      if (query.maxPrice !== undefined) {
+        (filter.basePrice as Record<string, number>).$lte = query.maxPrice;
+      }
+    }
+
     const sortDir = query.order === 'asc' ? 1 : -1;
     const sortField = query.sort;
 

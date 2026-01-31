@@ -1,12 +1,23 @@
-import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import type { Category, Product, PaginatedResponse } from '@lunaz/types';
-import { Container, Card, Price } from '@lunaz/ui';
-import { api } from '../../api/client';
-import { ProductGridSkeleton } from '../../components/Skeleton';
+import { useState, useEffect } from "react";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import type { Category, Product, PaginatedResponse } from "@lunaz/types";
+import {
+  Container,
+  Card,
+  ProductCard,
+  ProductCardSkeleton,
+  type ProductCardProduct,
+} from "@lunaz/ui";
+import { api } from "../../api/client";
+import { useCart } from "../../context/CartContext";
+import { useToast } from "../../context/ToastContext";
 
 export function CategoryPage() {
   const { slug } = useParams<{ slug: string }>();
+  const navigate = useNavigate();
+  const { addItem } = useCart();
+  const { addToast } = useToast();
+
   const [category, setCategory] = useState<Category | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -23,7 +34,7 @@ export function CategoryPage() {
         const cat = await api<Category>(`/categories/${slug}`);
 
         if (!cat) {
-          setError('Category not found');
+          setError("Category not found");
           setIsLoading(false);
           return;
         }
@@ -36,7 +47,9 @@ export function CategoryPage() {
         );
         setProducts(productsRes.data);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load category');
+        setError(
+          err instanceof Error ? err.message : "Failed to load category"
+        );
       } finally {
         setIsLoading(false);
       }
@@ -44,13 +57,42 @@ export function CategoryPage() {
     fetchData();
   }, [slug]);
 
+  const handleAddToCart = (
+    e: React.MouseEvent,
+    cardProduct: ProductCardProduct
+  ) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const product = products.find((p) => p.id === cardProduct.id);
+    if (product && product.variants.length > 0) {
+      addItem(product, product.variants[0], 1);
+      addToast(`Added ${product.name} to cart`, "success");
+    }
+  };
+
+  const handleBuyNow = (
+    e: React.MouseEvent,
+    cardProduct: ProductCardProduct
+  ) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const product = products.find((p) => p.id === cardProduct.id);
+    if (product && product.variants.length > 0) {
+      addItem(product, product.variants[0], 1);
+      navigate("/cart");
+    }
+  };
+
   if (error) {
     return (
       <div className="py-8">
         <Container>
           <Card className="text-center py-8">
             <p className="text-red-600 mb-4">{error}</p>
-            <Link to="/categories" className="text-indigo-600 hover:text-indigo-700">
+            <Link
+              to="/categories"
+              className="text-slate-600 hover:text-slate-900 underline underline-offset-4"
+            >
               ← Back to categories
             </Link>
           </Card>
@@ -66,27 +108,44 @@ export function CategoryPage() {
         <nav className="mb-6 text-sm">
           <ol className="flex items-center gap-2 text-gray-500">
             <li>
-              <Link to="/" className="hover:text-gray-700">Home</Link>
+              <Link to="/" className="hover:text-gray-700">
+                Home
+              </Link>
             </li>
             <li>/</li>
             <li>
-              <Link to="/categories" className="hover:text-gray-700">Categories</Link>
+              <Link to="/categories" className="hover:text-gray-700">
+                Categories
+              </Link>
             </li>
             <li>/</li>
-            <li className="text-gray-900 font-medium">{category?.name || 'Loading...'}</li>
+            <li className="text-gray-900 font-medium">
+              {category?.name || "Loading..."}
+            </li>
           </ol>
         </nav>
 
         <h1 className="text-3xl font-bold text-gray-900 mb-8">
-          {category?.name || 'Loading...'}
+          {category?.name || "Loading..."}
         </h1>
 
-        {isLoading && <ProductGridSkeleton count={8} />}
+        {isLoading && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <ProductCardSkeleton key={i} variant="full" aspectRatio="4:3" />
+            ))}
+          </div>
+        )}
 
         {!isLoading && products.length === 0 && (
           <Card className="text-center py-8">
-            <p className="text-gray-600">No products found in this category.</p>
-            <Link to="/products" className="mt-4 inline-block text-indigo-600 hover:text-indigo-700">
+            <p className="text-slate-600">
+              No products found in this category.
+            </p>
+            <Link
+              to="/products"
+              className="mt-4 inline-block text-slate-600 hover:text-slate-900 underline underline-offset-4"
+            >
               Browse all products →
             </Link>
           </Card>
@@ -95,35 +154,15 @@ export function CategoryPage() {
         {!isLoading && products.length > 0 && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {products.map((product) => (
-              <Link key={product.id} to={`/products/${product.slug}`} className="group">
-                <Card padding="none" className="overflow-hidden hover:shadow-lg transition-shadow h-full">
-                  <div className="aspect-square bg-gray-100 overflow-hidden">
-                    {product.images[0] ? (
-                      <img
-                        src={product.images[0].url}
-                        alt={product.name}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-gray-100">
-                        <span className="text-gray-400">No image</span>
-                      </div>
-                    )}
-                  </div>
-                  <div className="p-4">
-                    <h3 className="font-medium text-gray-900 group-hover:text-indigo-600 transition-colors line-clamp-2">
-                      {product.name}
-                    </h3>
-                    <div className="mt-2">
-                      <Price
-                        amount={product.basePrice}
-                        currency={product.currency}
-                        className="text-lg font-semibold text-gray-900"
-                      />
-                    </div>
-                  </div>
-                </Card>
-              </Link>
+              <ProductCard
+                key={product.id}
+                product={product}
+                variant="full"
+                aspectRatio="4:3"
+                linkComponent={Link}
+                onBuyNow={handleBuyNow}
+                onAddToCart={handleAddToCart}
+              />
             ))}
           </div>
         )}
