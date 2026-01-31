@@ -10,10 +10,13 @@ import * as categoryService from './categories.service.js';
 const router = Router();
 const getConfigFn = getConfig;
 
-// GET /categories — public list
-router.get('/', async (_req, res, next) => {
+// GET /categories — public list (with optional counts)
+router.get('/', async (req, res, next) => {
   try {
-    const data = await categoryService.getAllCategories();
+    const withCounts = req.query.withCounts === 'true';
+    const data = withCounts 
+      ? await categoryService.getCategoriesWithCounts()
+      : await categoryService.getAllCategories();
     res.json({ data });
   } catch (e) {
     next(e);

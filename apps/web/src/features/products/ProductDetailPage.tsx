@@ -207,10 +207,27 @@ export function ProductDetailPage() {
                 Premium Collection
               </p>
 
-              {/* Product Name */}
-              <h1 className="font-serif text-3xl md:text-4xl lg:text-5xl font-normal text-slate-900 mb-6 tracking-tight leading-tight">
-                {product.name}
-              </h1>
+              {/* Product Name & Stock Status */}
+              <div className="flex items-start justify-between gap-4 mb-6">
+                <h1 className="font-serif text-3xl md:text-4xl lg:text-5xl font-normal text-slate-900 tracking-tight leading-tight">
+                  {product.name}
+                </h1>
+                <span
+                  className={`shrink-0 mt-2 text-xs font-medium px-2.5 py-1 rounded-full ${
+                    isOutOfStock
+                      ? "bg-red-50 text-red-600"
+                      : isLowStock
+                      ? "bg-amber-50 text-amber-600"
+                      : "bg-emerald-50 text-emerald-600"
+                  }`}
+                >
+                  {isOutOfStock
+                    ? "Out of Stock"
+                    : isLowStock
+                    ? `Only ${stockStatus} left`
+                    : "In Stock"}
+                </span>
+              </div>
 
               {/* Price */}
               <div className="mb-8">
@@ -235,26 +252,9 @@ export function ProductDetailPage() {
                 {/* Variants */}
                 {product.variants.length > 0 && (
                   <div className="flex-1 min-w-[180px]">
-                    <div className="flex items-center justify-between mb-2">
-                      <label className="text-xs font-medium text-slate-500 tracking-wider">
-                        Variant
-                      </label>
-                      <span
-                        className={`text-xs ${
-                          isOutOfStock
-                            ? "text-red-500"
-                            : isLowStock
-                            ? "text-amber-600"
-                            : "text-emerald-600"
-                        }`}
-                      >
-                        {isOutOfStock
-                          ? "Out of Stock"
-                          : isLowStock
-                          ? `Only ${stockStatus} left`
-                          : "In Stock"}
-                      </span>
-                    </div>
+                    <label className="text-xs font-medium text-slate-500 tracking-wider mb-2 block">
+                      Variant
+                    </label>
                     <div className="flex flex-wrap gap-1.5">
                       {product.variants.map((variant) => (
                         <button

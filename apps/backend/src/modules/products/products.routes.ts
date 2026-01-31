@@ -8,6 +8,7 @@ import { validateBody } from '../../middleware/validate.js';
 import { getConfig } from '../../config/index.js';
 import { UserRole, ProductStatus } from '@lunaz/types';
 import { ProductModel } from './products.model.js';
+import { CategoryModel } from '../categories/categories.model.js';
 import {
   createProductSchema,
   updateProductSchema,
@@ -68,7 +69,19 @@ router.get('/', async (req, res, next) => {
       filter.status = query.status;
     }
 
-    if (query.category) filter.categoryId = query.category;
+    // Category filter: include products from the selected category AND its child categories
+    if (query.category) {
+      // Find all child categories of the selected category
+      const childCategories = await CategoryModel.find({ parentId: query.category }).lean();
+      const childCategoryIds = childCategories.map((c) => c._id);
+      
+      // Include the selected category and all its children
+      if (childCategoryIds.length > 0) {
+        filter.categoryId = { $in: [new mongoose.Types.ObjectId(query.category), ...childCategoryIds] };
+      } else {
+        filter.categoryId = query.category;
+      }
+    }
     if (query.search) {
       filter.$or = [
         { name: { $regex: query.search, $options: 'i' } },
