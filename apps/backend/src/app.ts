@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import { getConfig } from './config/index.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { generalLimiter, authLimiter } from './middleware/rateLimit.js';
+import { serverLoggerMiddleware } from './middleware/serverLogger.js';
 import { authRoutes } from './modules/auth/auth.routes.js';
 import { usersRoutes } from './modules/users/users.routes.js';
 import { categoriesRoutes } from './modules/categories/categories.routes.js';
@@ -14,6 +15,7 @@ import { transactionsRoutes } from './modules/transactions/transactions.routes.j
 import { customersRoutes } from './modules/customers/customers.routes.js';
 import { dashboardRoutes } from './modules/dashboard/dashboard.routes.js';
 import { settingsRoutes } from './modules/settings/settings.routes.js';
+import { analyticsRoutes } from './modules/analytics/analytics.routes.js';
 
 export function createApp() {
   const config = getConfig();
@@ -28,6 +30,9 @@ export function createApp() {
     })
   );
   app.use(express.json());
+
+  // Server logging middleware (logs all requests to MongoDB)
+  app.use(serverLoggerMiddleware());
 
   // Rate limiting
   app.use('/api/v1/auth', authLimiter);
@@ -52,6 +57,9 @@ export function createApp() {
   api.use('/dashboard', dashboardRoutes);
   api.use('/transactions', transactionsRoutes);
   api.use('/settings', settingsRoutes);
+  
+  // Analytics
+  api.use('/analytics', analyticsRoutes);
 
   app.use('/api/v1', api);
 

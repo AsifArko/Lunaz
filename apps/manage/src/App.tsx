@@ -14,6 +14,10 @@ import { CustomerDetailPage } from './features/customers/CustomerDetailPage';
 import { TransactionsPage } from './features/reports/TransactionsPage';
 import { ReportsPage } from './features/reports/ReportsPage';
 import { SettingsPage } from './features/settings/SettingsPage';
+import { AnalyticsPage } from './features/analytics/AnalyticsPage';
+import { SpeedInsightsPage } from './features/analytics/SpeedInsightsPage';
+import { ServerLogsPage } from './features/analytics/ServerLogsPage';
+import { TrafficLogsPage } from './features/analytics/TrafficLogsPage';
 
 function App() {
   return (
@@ -41,6 +45,10 @@ function App() {
         <Route path="customers/:id" element={<CustomerDetailPage />} />
         <Route path="transactions" element={<TransactionsPage />} />
         <Route path="reports" element={<ReportsPage />} />
+        <Route path="analytics" element={<AnalyticsPage />} />
+        <Route path="speed-insights" element={<SpeedInsightsPage />} />
+        <Route path="traffic-logs" element={<TrafficLogsPage />} />
+        <Route path="server-logs" element={<ServerLogsPage />} />
         <Route path="settings" element={<SettingsPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />

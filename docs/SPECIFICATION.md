@@ -193,7 +193,7 @@ See [03-DATABASE.md](./03-DATABASE.md) and [06-SHARED-PACKAGES.md](./06-SHARED-P
 - **Email** — Order confirmation, shipping updates, password reset via email service (e.g. SendGrid).
 - **Multi-currency** — Display and charge in multiple currencies (configurable).
 - **Returns and refunds** — Return request flow; refund via payment provider; status in Manage.
-- **Analytics** — Dashboard charts; conversion funnel; optional integration with analytics tools.
+- **Analytics** — ✅ **Implemented** — See [09-ANALYTICS-AND-LOGGING.md](./09-ANALYTICS-AND-LOGGING.md) for self-hosted analytics, traffic logging, speed insights, user behavior tracking, and server logging.
 - **SEO** — Sitemap generation; structured data (e.g. Product schema).
 - **i18n** — Multiple languages for Web and/or Manage (if required later).
 
@@ -209,5 +209,6 @@ See [03-DATABASE.md](./03-DATABASE.md) and [06-SHARED-PACKAGES.md](./06-SHARED-P
 - [06-SHARED-PACKAGES.md](./06-SHARED-PACKAGES.md) — Shared types and UI components.
 - [07-DOCKER-DEPLOYMENT.md](./07-DOCKER-DEPLOYMENT.md) — Docker and deployment.
 - [08-FEATURES-MATRIX.md](./08-FEATURES-MATRIX.md) — Feature list and phasing.
+- [09-ANALYTICS-AND-LOGGING.md](./09-ANALYTICS-AND-LOGGING.md) — Self-hosted analytics, traffic logs, speed insights, user behavior, and server logging.
 
 This specification is the single high-level reference; the numbered documents provide implementation-level detail for each area.
