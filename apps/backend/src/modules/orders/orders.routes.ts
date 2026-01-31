@@ -29,6 +29,9 @@ router.get('/', async (req, res, next) => {
     const isAdmin = req.user!.role === UserRole.ADMIN;
     const query = {
       status: req.query.status as string | undefined,
+      search: req.query.search as string | undefined,
+      startDate: req.query.startDate as string | undefined,
+      endDate: req.query.endDate as string | undefined,
       page: Number(req.query.page) || 1,
       limit: Number(req.query.limit) || 20,
     };

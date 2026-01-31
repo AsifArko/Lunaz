@@ -5,7 +5,7 @@
 # Usage: make <target>
 # ============================================================================
 
-.PHONY: help install dev build clean docker-build docker-up docker-down docker-logs docker-clean seed-admin
+.PHONY: help install dev build clean docker-build docker-up docker-down docker-logs docker-clean seed-admin seed-products seed-data seed-all
 
 # Default target
 help:
@@ -20,8 +20,17 @@ help:
 	@echo "    make build       Build all packages and apps"
 	@echo "    make clean       Remove node_modules and dist folders"
 	@echo ""
-	@echo "  Database:"
-	@echo "    make seed-admin  Create an admin user (requires MONGODB_URI)"
+	@echo "  Database Seeding:"
+	@echo "    make seed-admin     Create an admin user"
+	@echo "    make seed-products  Seed categories and products"
+	@echo "    make seed-data      Seed customers, orders, transactions"
+	@echo "    make seed-all       Run all seed scripts"
+	@echo ""
+	@echo "  Docker Seeding:"
+	@echo "    make docker-seed-admin     Create admin in Docker"
+	@echo "    make docker-seed-products  Seed products in Docker"
+	@echo "    make docker-seed-data      Seed data in Docker"
+	@echo "    make docker-seed-all       Run all seeds in Docker"
 	@echo ""
 	@echo "  Docker:"
 	@echo "    make docker-build    Build all Docker images"
@@ -78,9 +87,45 @@ seed-admin:
 	fi
 	npm run seed:admin --workspace=backend
 
+# Seed products and categories
+seed-products:
+	@if [ -z "$$MONGODB_URI" ]; then \
+		echo "Usage: MONGODB_URI=mongodb://localhost:27017/lunaz make seed-products"; \
+		exit 1; \
+	fi
+	npm run seed:products --workspace=backend
+
+# Seed customers, orders, and transactions
+seed-data:
+	@if [ -z "$$MONGODB_URI" ]; then \
+		echo "Usage: MONGODB_URI=mongodb://localhost:27017/lunaz make seed-data"; \
+		exit 1; \
+	fi
+	npm run seed:data --workspace=backend
+
+# Seed everything (admin, products, customers, orders, transactions)
+seed-all:
+	@if [ -z "$$MONGODB_URI" ]; then \
+		echo "Usage: MONGODB_URI=mongodb://localhost:27017/lunaz make seed-all"; \
+		exit 1; \
+	fi
+	npm run seed:all --workspace=backend
+
 # Seed admin in Docker environment
 docker-seed-admin:
 	docker compose exec backend npm run seed:admin
+
+# Seed products in Docker environment
+docker-seed-products:
+	docker compose exec backend npm run seed:products
+
+# Seed data (customers, orders, transactions) in Docker environment
+docker-seed-data:
+	docker compose exec backend npm run seed:data
+
+# Seed everything in Docker environment
+docker-seed-all:
+	docker compose exec backend npm run seed:all
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Docker (Development)

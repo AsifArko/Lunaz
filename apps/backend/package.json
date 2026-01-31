@@ -10,7 +10,9 @@
     "start": "node dist/index.js",
     "lint": "eslint src --ext .ts",
     "seed:admin": "tsx src/scripts/seed-admin.ts",
-    "seed:products": "tsx src/scripts/seed-products.ts"
+    "seed:products": "tsx src/scripts/seed-products.ts",
+    "seed:data": "tsx src/scripts/seed-data.ts",
+    "seed:all": "npm run seed:admin && npm run seed:products && npm run seed:data"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.978.0",

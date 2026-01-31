@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import { OrderStatus, PaymentStatus } from '@lunaz/types';
 
 const orderAddressSchema = new mongoose.Schema({
+  name: { type: String, required: true },
   line1: { type: String, required: true },
   line2: String,
   city: { type: String, required: true },
@@ -31,7 +32,7 @@ const orderSchema = new mongoose.Schema(
     shippingAmount: { type: Number, default: 0 },
     taxAmount: Number,
     total: { type: Number, required: true },
-    currency: { type: String, default: 'USD' },
+    currency: { type: String, default: 'BDT' },
     shippingAddress: { type: orderAddressSchema, required: true },
     billingAddress: orderAddressSchema,
     paymentIntentId: String,

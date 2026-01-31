@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { OrderStatus } from '@lunaz/types';
 
 const addressSchema = z.object({
+  name: z.string().min(1),
   line1: z.string().min(1),
   line2: z.string().optional(),
   city: z.string().min(1),

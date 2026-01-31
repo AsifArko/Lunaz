@@ -6,7 +6,7 @@ const transactionSchema = new mongoose.Schema(
     orderId: { type: mongoose.Schema.Types.ObjectId, ref: 'Order', required: true },
     type: { type: String, enum: Object.values(TransactionType), required: true },
     amount: { type: Number, required: true },
-    currency: { type: String, default: 'USD' },
+    currency: { type: String, default: 'BDT' },
     paymentMethod: { type: String, required: true },
     externalId: String,
     status: { type: String, enum: Object.values(TransactionStatus), default: TransactionStatus.PENDING },
@@ -25,7 +25,7 @@ export const TransactionModel = mongoose.model('Transaction', transactionSchema)
 const payoutSchema = new mongoose.Schema(
   {
     amount: { type: Number, required: true },
-    currency: { type: String, default: 'USD' },
+    currency: { type: String, default: 'BDT' },
     status: { type: String, enum: Object.values(TransactionStatus), default: TransactionStatus.PENDING },
     reference: String,
     completedAt: Date,

@@ -3,6 +3,7 @@ import type { OrderStatus, PaymentStatus } from './enums.js';
 
 /** Snapshot of shipping/billing address on order. */
 export interface OrderAddress {
+  name: string;
   line1: string;
   line2?: string;
   city: string;
@@ -28,6 +29,7 @@ export interface Order {
   id: Id;
   orderNumber: string;
   userId: Id;
+  customerName?: string;
   status: OrderStatus;
   items: OrderItem[];
   subtotal: number;

@@ -70,7 +70,7 @@ const productSchema = new mongoose.Schema(
       default: ProductStatus.DRAFT,
     },
     basePrice: { type: Number, required: true },
-    currency: { type: String, default: "USD" },
+    currency: { type: String, default: "BDT" },
     variants: [variantSchema],
     images: [imageSchema],
     meta: { title: String, description: String },
@@ -216,17 +216,17 @@ const products: ProductSeed[] = [
     description:
       "Transform your space with this stunning abstract ocean canvas print. Featuring calming blue tones and fluid brushstrokes, this piece brings a sense of tranquility to any room. Printed on premium gallery-wrapped canvas with fade-resistant inks.",
     categorySlug: "wall-art",
-    basePrice: 89.99,
+    basePrice: 9900,
     status: ProductStatus.PUBLISHED,
     variants: [
       { name: "Small (18x24)", sku: "AOCP-S", stock: 25, attributes: { size: "18x24 inches" } },
-      { name: "Medium (24x36)", sku: "AOCP-M", priceOverride: 129.99, stock: 20, attributes: { size: "24x36 inches" } },
-      { name: "Large (36x48)", sku: "AOCP-L", priceOverride: 189.99, stock: 15, attributes: { size: "36x48 inches" } },
+      { name: "Medium (24x36)", sku: "AOCP-M", priceOverride: 14500, stock: 20, attributes: { size: "24x36 inches" } },
+      { name: "Large (36x48)", sku: "AOCP-L", priceOverride: 21000, stock: 15, attributes: { size: "36x48 inches" } },
     ],
     imageCount: 4,
     meta: {
       title: "Abstract Ocean Canvas Print | Modern Wall Art",
-      description: "Shop our abstract ocean canvas print. Available in multiple sizes. Free shipping on orders over $50.",
+      description: "Shop our abstract ocean canvas print. Available in multiple sizes. Free shipping on orders over ৳5000.",
     },
   },
   {
@@ -235,11 +235,11 @@ const products: ProductSeed[] = [
     description:
       "Elevate your walls with this elegant set of 3 minimalist botanical line art prints. Each piece features delicate plant illustrations in a contemporary single-line style. Perfect for creating a cohesive gallery wall.",
     categorySlug: "wall-art",
-    basePrice: 59.99,
+    basePrice: 6600,
     status: ProductStatus.PUBLISHED,
     variants: [
       { name: "Set of 3 - 8x10", sku: "MBLA-S3", stock: 30 },
-      { name: "Set of 3 - 11x14", sku: "MBLA-M3", priceOverride: 79.99, stock: 25 },
+      { name: "Set of 3 - 11x14", sku: "MBLA-M3", priceOverride: 8800, stock: 25 },
     ],
     imageCount: 3,
   },
@@ -249,11 +249,11 @@ const products: ProductSeed[] = [
     description:
       "A beautifully aged vintage-style world map poster that adds character and wanderlust to any space. Printed on archival matte paper with rich sepia tones and intricate cartographic details.",
     categorySlug: "wall-art",
-    basePrice: 34.99,
+    basePrice: 3850,
     status: ProductStatus.PUBLISHED,
     variants: [
       { name: "Standard (24x36)", sku: "VMWP-24", stock: 50 },
-      { name: "Large (36x48)", sku: "VMWP-36", priceOverride: 54.99, stock: 30 },
+      { name: "Large (36x48)", sku: "VMWP-36", priceOverride: 6000, stock: 30 },
     ],
     imageCount: 2,
   },
@@ -265,7 +265,7 @@ const products: ProductSeed[] = [
     description:
       "Handcrafted soy wax candles infused with pure essential oils. Each candle burns cleanly for up to 45 hours and comes in a reusable glass jar. Choose from our signature scents designed to promote relaxation and well-being.",
     categorySlug: "candles-holders",
-    basePrice: 28.99,
+    basePrice: 3200,
     status: ProductStatus.PUBLISHED,
     variants: [
       { name: "Lavender Dreams", sku: "SWAC-LAV", stock: 40, attributes: { scent: "Lavender & Chamomile" } },
@@ -281,12 +281,12 @@ const products: ProductSeed[] = [
     description:
       "Add a touch of modern elegance with this set of 3 geometric brass candle holders. Each piece features a unique angular design with a brushed brass finish. Perfect for taper or pillar candles.",
     categorySlug: "candles-holders",
-    basePrice: 45.99,
+    basePrice: 5000,
     status: ProductStatus.PUBLISHED,
     variants: [
       { name: "Brushed Brass", sku: "GBCH-BB", stock: 20 },
       { name: "Matte Black", sku: "GBCH-MB", stock: 25 },
-      { name: "Rose Gold", sku: "GBCH-RG", priceOverride: 52.99, stock: 15 },
+      { name: "Rose Gold", sku: "GBCH-RG", priceOverride: 5800, stock: 15 },
     ],
     imageCount: 3,
   },
@@ -296,7 +296,7 @@ const products: ProductSeed[] = [
     description:
       "100% pure beeswax pillar candles, hand-poured in small batches. These natural candles emit a subtle honey scent and a warm, golden glow. Set of 3 in graduating sizes.",
     categorySlug: "candles-holders",
-    basePrice: 38.99,
+    basePrice: 4300,
     status: ProductStatus.PUBLISHED,
     variants: [
       { name: "Natural Honey", sku: "HPBP-NAT", stock: 30 },
@@ -312,7 +312,7 @@ const products: ProductSeed[] = [
     description:
       "A collection of 5 artisan ceramic bud vases in varying heights and organic shapes. Each piece is handcrafted with subtle imperfections that make it unique. Perfect for displaying single stems or small flower arrangements.",
     categorySlug: "vases-planters",
-    basePrice: 64.99,
+    basePrice: 7100,
     status: ProductStatus.PUBLISHED,
     variants: [
       { name: "Matte White", sku: "HCBV-WHT", stock: 20 },
@@ -328,12 +328,12 @@ const products: ProductSeed[] = [
     description:
       "Sustainably sourced seagrass basket planter with a waterproof liner. Hand-woven by skilled artisans using traditional techniques. Perfect for indoor plants or as decorative storage.",
     categorySlug: "vases-planters",
-    basePrice: 32.99,
+    basePrice: 3600,
     status: ProductStatus.PUBLISHED,
     variants: [
       { name: "Small (8 inch)", sku: "WSPB-S", stock: 40 },
-      { name: "Medium (10 inch)", sku: "WSPB-M", priceOverride: 42.99, stock: 35 },
-      { name: "Large (12 inch)", sku: "WSPB-L", priceOverride: 54.99, stock: 25 },
+      { name: "Medium (10 inch)", sku: "WSPB-M", priceOverride: 4700, stock: 35 },
+      { name: "Large (12 inch)", sku: "WSPB-L", priceOverride: 6000, stock: 25 },
     ],
     imageCount: 3,
   },
@@ -343,7 +343,7 @@ const products: ProductSeed[] = [
     description:
       "Sleek and minimalist concrete planter with drainage hole and rubber plug. Features a smooth finish with subtle natural variations. Perfect for succulents, cacti, or small houseplants.",
     categorySlug: "vases-planters",
-    basePrice: 24.99,
+    basePrice: 2750,
     status: ProductStatus.PUBLISHED,
     variants: [
       { name: "Natural Grey", sku: "MCP-GRY", stock: 50 },
@@ -360,7 +360,7 @@ const products: ProductSeed[] = [
     description:
       "Add bohemian flair with this hand-tufted decorative pillow. Features intricate geometric patterns and soft cotton tassels. Includes a plush feather-down insert for ultimate comfort.",
     categorySlug: "cushions-throws",
-    basePrice: 49.99,
+    basePrice: 5500,
     status: ProductStatus.PUBLISHED,
     variants: [
       { name: "Cream & Mustard", sku: "MITP-CM", stock: 30 },
@@ -375,7 +375,7 @@ const products: ProductSeed[] = [
     description:
       "Luxuriously soft chunky knit throw blanket made from premium acrylic yarn. This statement piece adds texture and warmth to any sofa or bed. Machine washable for easy care.",
     categorySlug: "cushions-throws",
-    basePrice: 79.99,
+    basePrice: 8800,
     status: ProductStatus.PUBLISHED,
     variants: [
       { name: "Ivory", sku: "CKTB-IVY", stock: 20 },
@@ -391,12 +391,12 @@ const products: ProductSeed[] = [
     description:
       "Set of 2 premium linen-cotton blend cushion covers with hidden zipper closure. Features a beautiful natural texture and pre-washed softness. Inserts not included.",
     categorySlug: "cushions-throws",
-    basePrice: 39.99,
+    basePrice: 4400,
     status: ProductStatus.PUBLISHED,
     variants: [
       { name: "Natural (18x18)", sku: "LBCC-N18", stock: 35 },
       { name: "Oatmeal (18x18)", sku: "LBCC-O18", stock: 30 },
-      { name: "Charcoal (20x20)", sku: "LBCC-C20", priceOverride: 44.99, stock: 25 },
+      { name: "Charcoal (20x20)", sku: "LBCC-C20", priceOverride: 4950, stock: 25 },
     ],
     imageCount: 2,
   },
@@ -408,7 +408,7 @@ const products: ProductSeed[] = [
     description:
       "Make a statement with this gorgeous sunburst mirror featuring hand-woven natural rattan rays. The warm, organic texture brings coastal-boho charm to any wall. Includes mounting hardware.",
     categorySlug: "mirrors",
-    basePrice: 119.99,
+    basePrice: 13200,
     status: ProductStatus.PUBLISHED,
     variants: [
       { name: "Natural Rattan", sku: "SRWM-NAT", stock: 15 },
@@ -422,11 +422,11 @@ const products: ProductSeed[] = [
     description:
       "Elegant full-length arched mirror with slim metal frame. This timeless piece makes any room feel larger and brighter. Can be leaned against wall or mounted.",
     categorySlug: "mirrors",
-    basePrice: 199.99,
+    basePrice: 22000,
     status: ProductStatus.PUBLISHED,
     variants: [
       { name: "Matte Black", sku: "AFM-BLK", stock: 10 },
-      { name: "Brass", sku: "AFM-BRS", priceOverride: 229.99, stock: 8 },
+      { name: "Brass", sku: "AFM-BRS", priceOverride: 25300, stock: 8 },
       { name: "White", sku: "AFM-WHT", stock: 12 },
     ],
     imageCount: 4,
@@ -439,13 +439,13 @@ const products: ProductSeed[] = [
     description:
       "Bring timeless elegance to your space with this vintage-inspired Persian rug. Machine-woven with distressed finishing for an authentic antique look. Low pile makes it perfect for high-traffic areas.",
     categorySlug: "rugs-carpets",
-    basePrice: 149.99,
+    basePrice: 16500,
     status: ProductStatus.PUBLISHED,
     variants: [
       { name: "5x7 ft - Ivory/Blue", sku: "VIPR-57IB", stock: 15 },
       { name: "5x7 ft - Rust/Gold", sku: "VIPR-57RG", stock: 12 },
-      { name: "8x10 ft - Ivory/Blue", sku: "VIPR-810IB", priceOverride: 279.99, stock: 8 },
-      { name: "8x10 ft - Rust/Gold", sku: "VIPR-810RG", priceOverride: 279.99, stock: 10 },
+      { name: "8x10 ft - Ivory/Blue", sku: "VIPR-810IB", priceOverride: 30800, stock: 8 },
+      { name: "8x10 ft - Rust/Gold", sku: "VIPR-810RG", priceOverride: 30800, stock: 10 },
     ],
     imageCount: 4,
   },
@@ -455,12 +455,12 @@ const products: ProductSeed[] = [
     description:
       "Natural jute runner handwoven by skilled artisans. Features a beautiful braided texture and adds organic warmth to hallways, entryways, or kitchens. Non-slip backing included.",
     categorySlug: "rugs-carpets",
-    basePrice: 68.99,
+    basePrice: 7600,
     status: ProductStatus.PUBLISHED,
     variants: [
       { name: "2x6 ft", sku: "HJR-26", stock: 25 },
-      { name: "2.5x8 ft", sku: "HJR-258", priceOverride: 89.99, stock: 20 },
-      { name: "2.5x10 ft", sku: "HJR-2510", priceOverride: 109.99, stock: 15 },
+      { name: "2.5x8 ft", sku: "HJR-258", priceOverride: 9900, stock: 20 },
+      { name: "2.5x10 ft", sku: "HJR-2510", priceOverride: 12100, stock: 15 },
     ],
     imageCount: 2,
   },
@@ -472,7 +472,7 @@ const products: ProductSeed[] = [
     description:
       "Start each day with intention using this beautifully crafted gratitude journal. Features genuine leather cover, 365 guided prompts, and acid-free paper. Includes ribbon bookmark and elastic closure.",
     categorySlug: "journals-stationery",
-    basePrice: 34.99,
+    basePrice: 3850,
     status: ProductStatus.PUBLISHED,
     variants: [
       { name: "Cognac Brown", sku: "LBGJ-COG", stock: 40 },
@@ -487,7 +487,7 @@ const products: ProductSeed[] = [
     description:
       "Declutter your workspace with this elegant 5-piece desk organizer set. Includes pen holder, paper tray, business card holder, memo pad holder, and clip dish. Made from sustainable bamboo.",
     categorySlug: "journals-stationery",
-    basePrice: 54.99,
+    basePrice: 6000,
     status: ProductStatus.PUBLISHED,
     variants: [
       { name: "Natural Bamboo", sku: "MDOS-NAT", stock: 25 },
@@ -501,7 +501,7 @@ const products: ProductSeed[] = [
     description:
       "Express yourself with this charming botanical stationery set. Includes 20 flat cards, 20 lined envelopes, and a matching notepad. Printed on recycled paper with soy-based inks.",
     categorySlug: "journals-stationery",
-    basePrice: 28.99,
+    basePrice: 3200,
     status: ProductStatus.PUBLISHED,
     variants: [
       { name: "Wildflower", sku: "BSC-WF", stock: 30 },
@@ -518,11 +518,11 @@ const products: ProductSeed[] = [
     description:
       "Elevate your practice with this eco-friendly cork yoga mat. Natural cork surface provides excellent grip that improves with moisture. Backed with natural rubber for cushioning and stability.",
     categorySlug: "wellness",
-    basePrice: 89.99,
+    basePrice: 9900,
     status: ProductStatus.PUBLISHED,
     variants: [
       { name: "Standard (68x24 inches)", sku: "PCYM-STD", stock: 30 },
-      { name: "Long (72x26 inches)", sku: "PCYM-LNG", priceOverride: 99.99, stock: 20 },
+      { name: "Long (72x26 inches)", sku: "PCYM-LNG", priceOverride: 11000, stock: 20 },
     ],
     imageCount: 4,
   },
@@ -532,7 +532,7 @@ const products: ProductSeed[] = [
     description:
       "Create your perfect meditation space with this set including a zafu cushion and zabuton mat. Filled with organic buckwheat hulls for adjustable support. Removable covers are machine washable.",
     categorySlug: "wellness",
-    basePrice: 74.99,
+    basePrice: 8200,
     status: ProductStatus.PUBLISHED,
     variants: [
       { name: "Dusty Lavender", sku: "MCS-LAV", stock: 18 },
@@ -548,7 +548,7 @@ const products: ProductSeed[] = [
     description:
       "Transform your space with aromatherapy. This ceramic ultrasonic diffuser features 7 LED color options and auto shut-off. Includes 4 pure essential oils: lavender, eucalyptus, peppermint, and sweet orange.",
     categorySlug: "wellness",
-    basePrice: 49.99,
+    basePrice: 5500,
     status: ProductStatus.PUBLISHED,
     variants: [
       { name: "White Ceramic", sku: "EODK-WHT", stock: 35 },
@@ -563,12 +563,12 @@ const products: ProductSeed[] = [
     description:
       "Experience deeper, more restful sleep with our premium weighted blanket. Features evenly distributed glass beads and breathable cotton cover. Reduces anxiety and promotes relaxation.",
     categorySlug: "wellness",
-    basePrice: 119.99,
+    basePrice: 13200,
     status: ProductStatus.PUBLISHED,
     variants: [
       { name: "10 lbs - Grey", sku: "WSB-10G", stock: 20 },
       { name: "15 lbs - Grey", sku: "WSB-15G", stock: 25 },
-      { name: "20 lbs - Grey", sku: "WSB-20G", priceOverride: 139.99, stock: 15 },
+      { name: "20 lbs - Grey", sku: "WSB-20G", priceOverride: 15400, stock: 15 },
       { name: "15 lbs - Navy", sku: "WSB-15N", stock: 18 },
     ],
     imageCount: 3,
@@ -581,7 +581,7 @@ const products: ProductSeed[] = [
     description:
       "The perfect everyday tote crafted from durable organic canvas with genuine leather handles and accents. Features interior pockets, magnetic closure, and reinforced bottom. Fits laptops up to 15 inches.",
     categorySlug: "bags-accessories",
-    basePrice: 78.99,
+    basePrice: 8700,
     status: ProductStatus.PUBLISHED,
     variants: [
       { name: "Natural/Tan", sku: "CLTB-NT", stock: 22 },
@@ -596,11 +596,11 @@ const products: ProductSeed[] = [
     description:
       "Handwoven from sustainable palm leaves by skilled artisans. This versatile basket is perfect for farmers markets, beach trips, or home storage. Features sturdy leather handles.",
     categorySlug: "bags-accessories",
-    basePrice: 45.99,
+    basePrice: 5000,
     status: ProductStatus.PUBLISHED,
     variants: [
       { name: "Natural", sku: "WMB-NAT", stock: 25 },
-      { name: "Natural with Pom-Poms", sku: "WMB-POM", priceOverride: 52.99, stock: 18 },
+      { name: "Natural with Pom-Poms", sku: "WMB-POM", priceOverride: 5800, stock: 18 },
     ],
     imageCount: 3,
   },
@@ -610,7 +610,7 @@ const products: ProductSeed[] = [
     description:
       "Slim, functional, and beautifully crafted from full-grain leather. Holds 6 cards plus cash without the bulk. Features RFID-blocking technology and develops a beautiful patina over time.",
     categorySlug: "bags-accessories",
-    basePrice: 54.99,
+    basePrice: 6000,
     status: ProductStatus.PUBLISHED,
     variants: [
       { name: "Black", sku: "MLW-BLK", stock: 30 },
@@ -627,7 +627,7 @@ const products: ProductSeed[] = [
     description:
       "Elevate your table with this handcrafted 16-piece stoneware set. Includes 4 dinner plates, 4 salad plates, 4 bowls, and 4 mugs. Each piece features a reactive glaze finish making it uniquely beautiful.",
     categorySlug: "kitchen-dining",
-    basePrice: 189.99,
+    basePrice: 20900,
     status: ProductStatus.PUBLISHED,
     variants: [
       { name: "Speckled White", sku: "ASD-SW", stock: 12 },
@@ -642,7 +642,7 @@ const products: ProductSeed[] = [
     description:
       "Set of 3 sustainably sourced bamboo serving boards in varying sizes and shapes. Perfect for cheese boards, charcuterie, or as stylish trivets. Food-safe finish and easy to clean.",
     categorySlug: "kitchen-dining",
-    basePrice: 49.99,
+    basePrice: 5500,
     status: ProductStatus.PUBLISHED,
     variants: [
       { name: "Natural", sku: "BSBC-NAT", stock: 30 },
@@ -656,13 +656,13 @@ const products: ProductSeed[] = [
     description:
       "Add effortless elegance to your dining table with this premium linen runner. Pre-washed for a soft, relaxed texture. Features frayed edges for a modern, organic look.",
     categorySlug: "kitchen-dining",
-    basePrice: 38.99,
+    basePrice: 4300,
     status: ProductStatus.PUBLISHED,
     variants: [
       { name: "Natural (14x72)", sku: "LTR-N72", stock: 25 },
       { name: "Sage (14x72)", sku: "LTR-S72", stock: 20 },
       { name: "Charcoal (14x72)", sku: "LTR-C72", stock: 22 },
-      { name: "Terracotta (14x90)", sku: "LTR-T90", priceOverride: 44.99, stock: 18 },
+      { name: "Terracotta (14x90)", sku: "LTR-T90", priceOverride: 4950, stock: 18 },
     ],
     imageCount: 3,
   },
@@ -672,7 +672,7 @@ const products: ProductSeed[] = [
     description:
       "Stunning hand-blown borosilicate glass carafe with matching glasses. Set includes 1 carafe (1.2L) and 4 tumblers. Perfect for water, wine, or cocktails. Dishwasher safe.",
     categorySlug: "kitchen-dining",
-    basePrice: 64.99,
+    basePrice: 7100,
     status: ProductStatus.PUBLISHED,
     variants: [
       { name: "Clear", sku: "HBGC-CLR", stock: 20 },
@@ -689,7 +689,7 @@ const products: ProductSeed[] = [
     description:
       "The ultimate gift of relaxation. This curated box includes a soy candle, bath salts, body lotion, lip balm, and silk eye mask. Beautifully packaged in a reusable keepsake box.",
     categorySlug: "gift-sets",
-    basePrice: 79.99,
+    basePrice: 8800,
     status: ProductStatus.PUBLISHED,
     variants: [
       { name: "Lavender Bliss", sku: "SCSG-LAV", stock: 20 },
@@ -704,7 +704,7 @@ const products: ProductSeed[] = [
     description:
       "Everything you need for the perfect cozy evening. Includes a chunky knit throw blanket, soy candle, gourmet hot chocolate mix, and ceramic mug. Gift-wrapped and ready to give.",
     categorySlug: "gift-sets",
-    basePrice: 99.99,
+    basePrice: 11000,
     status: ProductStatus.PUBLISHED,
     variants: [
       { name: "Ivory & Vanilla", sku: "CNIB-IV", stock: 15 },
@@ -718,7 +718,7 @@ const products: ProductSeed[] = [
     description:
       "The perfect housewarming gift! This thoughtfully curated set includes a scented candle, linen tea towels (set of 2), olive wood coasters, and a small potted faux plant.",
     categorySlug: "gift-sets",
-    basePrice: 68.99,
+    basePrice: 7600,
     status: ProductStatus.PUBLISHED,
     variants: [
       { name: "Classic", sku: "NHEK-CLS", stock: 18 },
@@ -732,7 +732,7 @@ const products: ProductSeed[] = [
     description:
       "Begin your mindfulness journey with this comprehensive starter kit. Includes a meditation cushion, gratitude journal, essential oil roller, and guided meditation card deck.",
     categorySlug: "gift-sets",
-    basePrice: 89.99,
+    basePrice: 9900,
     status: ProductStatus.PUBLISHED,
     variants: [
       { name: "Sage & Natural", sku: "MSS-SN", stock: 20 },
@@ -748,7 +748,7 @@ const products: ProductSeed[] = [
     description:
       "Beautiful handcrafted macrame wall hanging made from 100% cotton rope. Features intricate knotwork and natural wooden dowel. Coming soon!",
     categorySlug: "wall-art",
-    basePrice: 65.99,
+    basePrice: 7250,
     status: ProductStatus.DRAFT,
     variants: [
       { name: "Natural White", sku: "MWH-NW", stock: 0 },
@@ -762,7 +762,7 @@ const products: ProductSeed[] = [
     description:
       "Elegant ceramic oil burner for essential oils. Features a removable dish and space for tea light candle. Available soon.",
     categorySlug: "wellness",
-    basePrice: 29.99,
+    basePrice: 3300,
     status: ProductStatus.DRAFT,
     variants: [
       { name: "Matte White", sku: "COB-MW", stock: 0 },
@@ -858,7 +858,7 @@ async function createProducts(
       categoryId,
       status: product.status,
       basePrice: product.basePrice,
-      currency: "USD",
+      currency: "BDT",
       variants,
       images,
       meta: product.meta || {

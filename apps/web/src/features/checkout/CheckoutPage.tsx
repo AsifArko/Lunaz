@@ -8,6 +8,7 @@ import { useCart } from '../../context/CartContext';
 import { useToast } from '../../context/ToastContext';
 
 interface AddressFormData {
+  name: string;
   line1: string;
   line2: string;
   city: string;
@@ -17,6 +18,7 @@ interface AddressFormData {
 }
 
 const emptyAddress: AddressFormData = {
+  name: '',
   line1: '',
   line2: '',
   city: '',
@@ -85,12 +87,13 @@ export function CheckoutPage() {
 
       if (useNewAddress) {
         // Validate new address
-        if (!addressForm.line1 || !addressForm.city || !addressForm.postalCode || !addressForm.country) {
+        if (!addressForm.name || !addressForm.line1 || !addressForm.city || !addressForm.postalCode || !addressForm.country) {
           addToast('Please fill in all required address fields', 'error');
           setIsPlacingOrder(false);
           return;
         }
         shippingAddress = {
+          name: addressForm.name,
           line1: addressForm.line1,
           line2: addressForm.line2 || undefined,
           city: addressForm.city,
@@ -107,6 +110,7 @@ export function CheckoutPage() {
           return;
         }
         shippingAddress = {
+          name: selected.label || 'Customer',
           line1: selected.line1,
           line2: selected.line2,
           city: selected.city,
@@ -229,6 +233,12 @@ export function CheckoutPage() {
                       </button>
                     )}
 
+                    <Input
+                      label="Full Name"
+                      value={addressForm.name}
+                      onChange={(e) => setAddressForm({ ...addressForm, name: e.target.value })}
+                      required
+                    />
                     <Input
                       label="Address Line 1"
                       value={addressForm.line1}

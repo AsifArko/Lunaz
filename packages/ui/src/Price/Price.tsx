@@ -6,12 +6,14 @@ export interface PriceProps {
   className?: string;
 }
 
-const defaultCurrency = 'USD';
+const defaultCurrency = 'BDT';
 
 export function Price({ amount, currency = defaultCurrency, className = '' }: PriceProps) {
-  const formatted = new Intl.NumberFormat('en-US', {
+  const formatted = new Intl.NumberFormat('en-IN', {
     style: 'currency',
     currency,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
   }).format(amount);
   return <span className={className}>{formatted}</span>;
 }

@@ -12,7 +12,9 @@
     "lint": "npm run lint --workspaces --if-present",
     "clean": "rm -rf apps/*/dist apps/*/build packages/*/dist node_modules",
     "seed:admin": "npm run seed:admin --workspace=apps/backend",
-    "seed:products": "npm run seed:products --workspace=apps/backend"
+    "seed:products": "npm run seed:products --workspace=apps/backend",
+    "seed:data": "npm run seed:data --workspace=apps/backend",
+    "seed:all": "npm run seed:admin --workspace=apps/backend && npm run seed:products --workspace=apps/backend && npm run seed:data --workspace=apps/backend"
   },
   "workspaces": [
     "apps/*",

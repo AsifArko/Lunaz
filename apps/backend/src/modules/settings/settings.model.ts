@@ -10,7 +10,7 @@ const settingsSchema = new mongoose.Schema(
     storeName: { type: String, default: 'Lunaz Store' },
     storeEmail: { type: String, default: '' },
     supportEmail: { type: String, default: '' },
-    currency: { type: String, default: 'USD' },
+    currency: { type: String, default: 'BDT' },
     
     // Shipping settings
     freeShippingThreshold: { type: Number, default: 0 },

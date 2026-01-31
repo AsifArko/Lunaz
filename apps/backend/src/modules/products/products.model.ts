@@ -24,7 +24,7 @@ const productSchema = new mongoose.Schema(
     categoryId: { type: mongoose.Schema.Types.ObjectId, ref: 'Category', required: true },
     status: { type: String, enum: Object.values(ProductStatus), default: ProductStatus.DRAFT },
     basePrice: { type: Number, required: true },
-    currency: { type: String, default: 'USD' },
+    currency: { type: String, default: 'BDT' },
     variants: [variantSchema],
     images: [imageSchema],
     meta: { title: String, description: String },

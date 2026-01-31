@@ -3,6 +3,7 @@ import { OrderStatus, PaymentStatus } from '@lunaz/types';
 import { OrderModel } from './orders.model.js';
 import { CartModel } from '../cart/cart.model.js';
 import { ProductModel } from '../products/products.model.js';
+import { UserModel } from '../auth/auth.model.js';
 import type { CreateOrderInput, UpdateOrderStatusInput } from './orders.validation.js';
 
 function createError(message: string, statusCode: number): Error & { statusCode: number } {
@@ -11,11 +12,13 @@ function createError(message: string, statusCode: number): Error & { statusCode:
   return err;
 }
 
-function formatOrder(doc: Record<string, unknown>) {
+function formatOrder(doc: Record<string, unknown>, customerName?: string) {
+  const shippingAddress = doc.shippingAddress as Record<string, unknown> | undefined;
   return {
     id: (doc._id as mongoose.Types.ObjectId).toString(),
     orderNumber: doc.orderNumber,
     userId: (doc.userId as mongoose.Types.ObjectId).toString(),
+    customerName: customerName || (shippingAddress?.name as string) || undefined,
     status: doc.status,
     items: doc.items,
     subtotal: doc.subtotal,
@@ -110,9 +113,46 @@ export async function createOrder(userId: string, input: CreateOrderInput) {
   return formatOrder(order.toObject());
 }
 
-export async function listOrders(userId: string, isAdmin: boolean, query: { status?: string; page?: number; limit?: number }) {
+export async function listOrders(
+  userId: string,
+  isAdmin: boolean,
+  query: { status?: string; search?: string; startDate?: string; endDate?: string; page?: number; limit?: number }
+) {
   const filter: Record<string, unknown> = isAdmin ? {} : { userId };
   if (query.status) filter.status = query.status;
+
+  // Date range filter
+  if (query.startDate || query.endDate) {
+    filter.createdAt = {};
+    if (query.startDate) {
+      (filter.createdAt as Record<string, Date>).$gte = new Date(query.startDate);
+    }
+    if (query.endDate) {
+      // Set end date to end of day
+      const endDate = new Date(query.endDate);
+      endDate.setHours(23, 59, 59, 999);
+      (filter.createdAt as Record<string, Date>).$lte = endDate;
+    }
+  }
+
+  // Search filter - search by order number OR customer name
+  if (query.search && isAdmin) {
+    // First, find users whose names match the search
+    const matchingUsers = await UserModel.find(
+      { name: { $regex: query.search, $options: 'i' } },
+      { _id: 1 }
+    ).lean();
+    const matchingUserIds = matchingUsers.map((u) => u._id);
+
+    // Search by order number OR by matching user IDs
+    filter.$or = [
+      { orderNumber: { $regex: query.search, $options: 'i' } },
+      ...(matchingUserIds.length > 0 ? [{ userId: { $in: matchingUserIds } }] : []),
+    ];
+  } else if (query.search) {
+    // Non-admin: only search by order number
+    filter.orderNumber = { $regex: query.search, $options: 'i' };
+  }
 
   const page = Math.max(1, query.page ?? 1);
   const limit = Math.min(100, Math.max(1, query.limit ?? 20));
@@ -126,8 +166,13 @@ export async function listOrders(userId: string, isAdmin: boolean, query: { stat
     OrderModel.countDocuments(filter),
   ]);
 
+  // Fetch user names for all orders
+  const userIds = [...new Set(orders.map((o) => o.userId.toString()))];
+  const users = await UserModel.find({ _id: { $in: userIds } }, { _id: 1, name: 1 }).lean();
+  const userMap = new Map(users.map((u) => [u._id.toString(), u.name as string]));
+
   return {
-    data: orders.map(formatOrder),
+    data: orders.map((order) => formatOrder(order, userMap.get(order.userId.toString()))),
     total,
     page,
     limit,
