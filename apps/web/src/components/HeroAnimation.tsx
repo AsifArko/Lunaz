@@ -28,12 +28,12 @@ export function HeroAnimation({ className = '' }: HeroAnimationProps) {
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
 
-    // Aurora wave colors
+    // Aurora wave colors - Grayscale
     const colors = [
-      { r: 99, g: 102, b: 241 },   // Indigo
-      { r: 139, g: 92, b: 246 },   // Purple
-      { r: 236, g: 72, b: 153 },   // Pink
-      { r: 59, g: 130, b: 246 },   // Blue
+      { r: 180, g: 180, b: 180 },   // Light gray
+      { r: 140, g: 140, b: 140 },   // Medium gray
+      { r: 100, g: 100, b: 100 },   // Dark gray
+      { r: 200, g: 200, b: 200 },   // Lighter gray
     ];
 
     // Draw smooth aurora waves

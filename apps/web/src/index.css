@@ -2,11 +2,69 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Typography Variables */
+:root {
+  --font-serif: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  letter-spacing: -0.01em;
+}
+
+/* Elegant Typography Classes */
+@layer components {
+  .font-serif {
+    font-family: var(--font-serif);
+  }
+  
+  .font-sans {
+    font-family: var(--font-sans);
+  }
+  
+  /* Display headings - Large, elegant serif */
+  .heading-display {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+  }
+  
+  /* Section headings - Refined serif */
+  .heading-section {
+    font-family: var(--font-serif);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+  }
+  
+  /* Subheadings - Clean sans */
+  .heading-sub {
+    font-family: var(--font-sans);
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+  }
+  
+  /* Body text - Readable sans */
+  .text-body {
+    font-family: var(--font-sans);
+    font-weight: 400;
+    letter-spacing: -0.01em;
+    line-height: 1.6;
+  }
+  
+  /* Elegant italic accent */
+  .text-accent {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 300;
+  }
 }
 
 /* Custom utilities */

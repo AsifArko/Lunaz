@@ -5,6 +5,7 @@ import { Container, Card, Button, Price } from "@lunaz/ui";
 import { api } from "../../api/client";
 import { Skeleton, ProductCardSkeleton } from "../../components/Skeleton";
 import { HeroAnimation } from "../../components/HeroAnimation";
+import { PromoAnimation } from "../../components/PromoAnimation";
 
 export function HomePage() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -36,30 +37,30 @@ export function HomePage() {
         {/* Animated Background */}
         <HeroAnimation />
 
-        {/* Subtle gradient overlays */}
-        <div className="absolute inset-0 bg-gradient-to-r from-indigo-600/10 via-transparent to-purple-600/10" />
+        {/* Subtle gradient overlays - Grayscale */}
+        <div className="absolute inset-0 bg-gradient-to-r from-gray-400/10 via-transparent to-gray-500/10" />
         <div className="absolute inset-0 bg-gradient-to-t from-slate-900/50 via-transparent to-slate-900/30" />
 
         <Container>
           <div className="relative z-10 py-16 md:py-24 max-w-2xl">
             {/* Tagline */}
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-5 rounded-md bg-white/5 border border-white/10 backdrop-blur-sm">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-6 rounded-md bg-white/5 border border-white/10 backdrop-blur-sm">
               <span className="w-1.5 h-1.5 rounded-sm bg-emerald-400 animate-pulse" />
-              <span className="text-xs text-white/70 tracking-wide">
-                Home Decor and Lifestyle
+              <span className="heading-sub text-white/70">
+                Home Decor & Lifestyle
               </span>
             </div>
 
             {/* Main Heading */}
-            <h1 className="text-3xl md:text-5xl font-light tracking-tight mb-4">
+            <h1 className="heading-display text-4xl md:text-6xl text-white mb-6">
               Elevate Your{" "}
-              <span className="bg-gradient-to-r from-white via-white to-white/60 bg-clip-text text-transparent font-medium">
+              <span className="text-accent bg-gradient-to-r from-white via-white to-white/60 bg-clip-text text-transparent">
                 Living Space
               </span>
             </h1>
 
             {/* Description */}
-            <p className="text-base text-white/60 mb-8 max-w-xl font-light">
+            <p className="text-body text-lg text-white/60 mb-10 max-w-xl">
               Discover curated décor pieces and lifestyle essentials that bring
               sophistication to your home.
             </p>
@@ -69,7 +70,7 @@ export function HomePage() {
               <Link to="/products">
                 <Button
                   size="lg"
-                  className="bg-white text-slate-900 hover:bg-white/90 px-6 font-medium transition-all duration-300"
+                  className="bg-slate-100 text-slate-800 hover:bg-slate-200 px-6 font-medium transition-all duration-300"
                 >
                   Explore Collection
                 </Button>
@@ -145,18 +146,18 @@ export function HomePage() {
       {/* Featured Categories */}
       <section className="py-20 bg-slate-50">
         <Container>
-          <div className="flex items-center justify-between mb-10">
+          <div className="flex items-center justify-between mb-12">
             <div>
-              <p className="text-sm text-slate-500 tracking-widest uppercase mb-2">
+              <p className="heading-sub text-slate-500 mb-3">
                 Curated Selection
               </p>
-              <h2 className="text-3xl md:text-4xl font-light text-slate-900 tracking-tight">
+              <h2 className="heading-section text-3xl md:text-5xl text-slate-900">
                 Shop by Category
               </h2>
             </div>
             <Link
               to="/categories"
-              className="text-slate-600 hover:text-slate-900 font-medium text-sm tracking-wide transition-colors flex items-center gap-2"
+              className="text-slate-600 hover:text-slate-900 text-sm tracking-wide transition-colors flex items-center gap-2 font-medium"
             >
               View all
               <svg
@@ -203,8 +204,8 @@ export function HomePage() {
                     </div>
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/20 to-transparent" />
-                  <div className="absolute bottom-0 left-0 right-0 p-4">
-                    <h3 className="text-lg md:text-xl font-semibold text-white">
+                  <div className="absolute bottom-0 left-0 right-0 p-5">
+                    <h3 className="font-serif text-xl md:text-2xl font-medium text-white tracking-tight">
                       {category.name}
                     </h3>
                   </div>
@@ -220,20 +221,17 @@ export function HomePage() {
       </section>
 
       {/* Featured Products */}
-      <section className="py-20">
+      <section className="py-10">
         <Container>
-          <div className="flex items-center justify-between mb-10">
+          <div className="flex items-center justify-between mb-12">
             <div>
-              <p className="text-sm text-slate-500 tracking-widest uppercase mb-2">
-                New Arrivals
-              </p>
-              <h2 className="text-3xl md:text-4xl font-light text-slate-900 tracking-tight">
+              <h2 className="heading-section text-3xl md:text-5xl text-slate-900">
                 Featured Products
               </h2>
             </div>
             <Link
               to="/products"
-              className="text-slate-600 hover:text-slate-900 font-medium text-sm tracking-wide transition-colors flex items-center gap-2"
+              className="text-slate-600 hover:text-slate-900 text-sm tracking-wide transition-colors flex items-center gap-2 font-medium"
             >
               View all
               <svg
@@ -283,15 +281,15 @@ export function HomePage() {
                         </div>
                       )}
                     </div>
-                    <div className="p-4">
-                      <h3 className="font-medium text-slate-900 group-hover:text-slate-600 transition-colors line-clamp-2">
+                    <div className="p-5">
+                      <h3 className="font-serif text-lg text-slate-900 group-hover:text-slate-600 transition-colors line-clamp-2 tracking-tight">
                         {product.name}
                       </h3>
                       <div className="mt-2">
                         <Price
                           amount={product.basePrice}
                           currency={product.currency}
-                          className="text-lg font-semibold text-slate-900"
+                          className="text-base font-medium text-slate-700"
                         />
                       </div>
                     </div>
@@ -309,33 +307,27 @@ export function HomePage() {
 
       {/* Promo Banner */}
       <section className="py-20 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white relative overflow-hidden">
-        {/* Subtle background pattern */}
-        <div className="absolute inset-0 opacity-5">
-          <div
-            className="absolute inset-0"
-            style={{
-              backgroundImage: `radial-gradient(circle at 1px 1px, white 1px, transparent 1px)`,
-              backgroundSize: "40px 40px",
-            }}
-          />
-        </div>
+        {/* Animated Background */}
+        <PromoAnimation />
+
+        {/* Subtle gradient overlays - Grayscale */}
+        <div className="absolute inset-0 bg-gradient-to-r from-gray-400/5 via-transparent to-gray-500/5" />
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-900/30 via-transparent to-slate-900/20" />
 
         <Container>
-          <div className="relative text-center max-w-3xl mx-auto">
-            <div className="inline-flex items-center gap-2 px-3 py-1 mb-6 rounded-full bg-white/5 border border-white/10">
-              <span className="text-xs text-white/60 tracking-widest uppercase">
-                Limited Time
-              </span>
+          <div className="relative z-10 text-left max-w-3xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-6 rounded-md bg-white/5 border border-white/10">
+              <span className="heading-sub text-white/60">Limited Time</span>
             </div>
-            <h2 className="text-3xl md:text-4xl font-light text-white mb-4 tracking-tight">
+            <h2 className="heading-section text-4xl md:text-5xl text-white mb-5">
               Complimentary Shipping
             </h2>
-            <p className="text-white/50 mb-8 text-lg font-light">
+            <p className="text-body text-lg text-white/50 mb-10 max-w-xl">
               Enjoy free delivery on all orders over $100. Experience premium
               quality delivered right to your doorstep.
             </p>
             <Link to="/products">
-              <Button className="bg-white text-slate-900 hover:bg-white/90 px-8 py-3 font-medium tracking-wide transition-all duration-300">
+              <Button className="bg-slate-100 text-slate-800 hover:bg-slate-200 px-8 py-3 font-medium tracking-wide transition-all duration-300">
                 Shop Now
               </Button>
             </Link>

@@ -49,8 +49,8 @@ export function PageHeader({
       <BackButton />
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">{title}</h1>
-          {subtitle && <p className="mt-1 text-sm text-gray-500">{subtitle}</p>}
+          <h1 className="text-3xl font-medium text-gray-900 tracking-tight" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif" }}>{title}</h1>
+          {subtitle && <p className="mt-2 text-sm text-gray-500 tracking-wide">{subtitle}</p>}
         </div>
         {actions && <div className="flex items-center gap-3">{actions}</div>}
       </div>

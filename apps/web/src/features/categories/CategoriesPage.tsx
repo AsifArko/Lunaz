@@ -27,7 +27,10 @@ export function CategoriesPage() {
   return (
     <div className="py-8">
       <Container>
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">Categories</h1>
+        <div className="mb-10">
+          <p className="heading-sub text-slate-500 mb-3">Browse</p>
+          <h1 className="font-serif text-4xl md:text-5xl font-medium text-gray-900 tracking-tight">Categories</h1>
+        </div>
 
         {error && (
           <Card className="text-center py-8">
@@ -73,8 +76,8 @@ export function CategoriesPage() {
                       </div>
                     )}
                   </div>
-                  <div className="p-4">
-                    <h2 className="text-lg font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors">
+                  <div className="p-5">
+                    <h2 className="font-serif text-xl font-medium text-gray-900 group-hover:text-slate-600 transition-colors tracking-tight">
                       {category.name}
                     </h2>
                   </div>

@@ -87,7 +87,10 @@ export function CartPage() {
     return (
       <div className="py-8">
         <Container>
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">Shopping Cart</h1>
+          <div className="mb-8">
+            <p className="heading-sub text-slate-500 mb-2">Your</p>
+            <h1 className="font-serif text-3xl md:text-4xl font-medium text-gray-900 tracking-tight">Shopping Cart</h1>
+          </div>
           <div className="animate-pulse space-y-4">
             <div className="h-24 bg-gray-200 rounded-lg" />
             <div className="h-24 bg-gray-200 rounded-lg" />
@@ -101,14 +104,17 @@ export function CartPage() {
     return (
       <div className="py-8">
         <Container>
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">Shopping Cart</h1>
+          <div className="mb-8">
+            <p className="heading-sub text-slate-500 mb-2">Your</p>
+            <h1 className="font-serif text-3xl md:text-4xl font-medium text-gray-900 tracking-tight">Shopping Cart</h1>
+          </div>
           <Card className="text-center py-12">
             <div className="w-20 h-20 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
               <svg className="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
               </svg>
             </div>
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">Your cart is empty</h2>
+            <h2 className="font-serif text-2xl font-medium text-gray-900 mb-2">Your cart is empty</h2>
             <p className="text-gray-600 mb-6">
               Looks like you haven't added anything to your cart yet.
             </p>
@@ -124,13 +130,16 @@ export function CartPage() {
   return (
     <div className="py-8">
       <Container>
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
-            Shopping Cart ({itemCount} {itemCount === 1 ? 'item' : 'items'})
-          </h1>
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <p className="heading-sub text-slate-500 mb-2">Your</p>
+            <h1 className="font-serif text-3xl md:text-4xl font-medium text-gray-900 tracking-tight">
+              Shopping Cart <span className="text-2xl text-gray-500">({itemCount})</span>
+            </h1>
+          </div>
           <button
             onClick={clearCart}
-            className="text-sm text-red-600 hover:text-red-700"
+            className="text-sm text-red-600 hover:text-red-700 tracking-wide"
           >
             Clear Cart
           </button>
@@ -149,7 +158,7 @@ export function CartPage() {
           {/* Order Summary */}
           <div>
             <Card>
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Order Summary</h2>
+              <h2 className="font-serif text-xl font-medium text-gray-900 mb-5 tracking-tight">Order Summary</h2>
 
               <div className="space-y-3 mb-6">
                 <div className="flex justify-between text-gray-600">
