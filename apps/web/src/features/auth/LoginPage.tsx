@@ -74,10 +74,7 @@ export function LoginPage() {
             />
 
             <div className="flex items-center justify-end">
-              <Link
-                to="/forgot-password"
-                className="text-sm text-indigo-600 hover:text-indigo-700"
-              >
+              <Link to="/forgot-password" className="text-sm text-indigo-600 hover:text-indigo-700">
                 Forgot password?
               </Link>
             </div>

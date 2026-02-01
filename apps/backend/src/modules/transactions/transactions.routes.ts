@@ -21,7 +21,8 @@ router.get('/', async (req, res, next) => {
 
     if (dateFrom || dateTo) {
       filter.createdAt = {};
-      if (dateFrom) (filter.createdAt as Record<string, unknown>).$gte = new Date(dateFrom as string);
+      if (dateFrom)
+        (filter.createdAt as Record<string, unknown>).$gte = new Date(dateFrom as string);
       if (dateTo) (filter.createdAt as Record<string, unknown>).$lte = new Date(dateTo as string);
     }
     if (type) filter.type = type;
@@ -51,7 +52,13 @@ router.get('/', async (req, res, next) => {
       createdAt: t.createdAt.toISOString(),
     }));
 
-    res.json({ data, total, page: pageNum, limit: limitNum, totalPages: Math.ceil(total / limitNum) });
+    res.json({
+      data,
+      total,
+      page: pageNum,
+      limit: limitNum,
+      totalPages: Math.ceil(total / limitNum),
+    });
   } catch (e) {
     next(e);
   }
@@ -83,7 +90,13 @@ router.get('/payouts', async (req, res, next) => {
       completedAt: p.completedAt?.toISOString?.(),
     }));
 
-    res.json({ data, total, page: pageNum, limit: limitNum, totalPages: Math.ceil(total / limitNum) });
+    res.json({
+      data,
+      total,
+      page: pageNum,
+      limit: limitNum,
+      totalPages: Math.ceil(total / limitNum),
+    });
   } catch (e) {
     next(e);
   }
@@ -93,15 +106,17 @@ router.get('/payouts', async (req, res, next) => {
 router.get('/reports/sales', async (req, res, next) => {
   try {
     const { period = 'day', dateFrom, dateTo } = req.query;
-    
+
     const matchStage: Record<string, unknown> = {
       status: { $nin: ['cancelled'] },
     };
 
     if (dateFrom || dateTo) {
       matchStage.createdAt = {};
-      if (dateFrom) (matchStage.createdAt as Record<string, unknown>).$gte = new Date(dateFrom as string);
-      if (dateTo) (matchStage.createdAt as Record<string, unknown>).$lte = new Date(dateTo as string);
+      if (dateFrom)
+        (matchStage.createdAt as Record<string, unknown>).$gte = new Date(dateFrom as string);
+      if (dateTo)
+        (matchStage.createdAt as Record<string, unknown>).$lte = new Date(dateTo as string);
     }
 
     // Group by period

@@ -6,14 +6,7 @@ export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 
   size?: 'sm' | 'md' | 'lg';
 }
 
-export function Input({
-  label,
-  error,
-  size = 'md',
-  id,
-  className = '',
-  ...props
-}: InputProps) {
+export function Input({ label, error, size = 'md', id, className = '', ...props }: InputProps) {
   const inputId = id ?? label?.toLowerCase().replace(/\s/g, '-');
   const sizes = {
     sm: 'px-2 py-1 text-sm',

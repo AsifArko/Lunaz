@@ -28,7 +28,13 @@ export function Badge({
     lg: 'px-3 py-1 text-base',
   };
   const radius = pill ? 'rounded-full' : 'rounded';
-  const cn = ['inline-flex items-center font-medium', variants[variant], sizes[size], radius, className]
+  const cn = [
+    'inline-flex items-center font-medium',
+    variants[variant],
+    sizes[size],
+    radius,
+    className,
+  ]
     .filter(Boolean)
     .join(' ');
 

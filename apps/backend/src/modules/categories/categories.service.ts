@@ -30,9 +30,7 @@ export async function getAllCategories(): Promise<Category[]> {
  * Get category by ID or slug.
  */
 export async function getCategoryByIdOrSlug(idOrSlug: string): Promise<Category | null> {
-  const query = mongoose.Types.ObjectId.isValid(idOrSlug)
-    ? { _id: idOrSlug }
-    : { slug: idOrSlug };
+  const query = mongoose.Types.ObjectId.isValid(idOrSlug) ? { _id: idOrSlug } : { slug: idOrSlug };
   const doc = await CategoryModel.findOne(query).lean();
   return doc ? toCategory(doc) : null;
 }
@@ -141,9 +139,9 @@ export interface CategoryWithCounts extends Category {
 export async function getCategoriesWithCounts(): Promise<CategoryWithCounts[]> {
   const { ProductModel } = await import('../products/products.model.js');
   const { ProductStatus } = await import('@lunaz/types');
-  
+
   const categories = await getAllCategories();
-  
+
   // Get child counts for each category
   const childCounts = await CategoryModel.aggregate([
     { $match: { parentId: { $ne: null } } },
@@ -152,7 +150,7 @@ export async function getCategoriesWithCounts(): Promise<CategoryWithCounts[]> {
   const childCountMap = new Map<string, number>(
     childCounts.map((c) => [c._id.toString(), c.count])
   );
-  
+
   // Get product counts for each category (only published products)
   const productCounts = await ProductModel.aggregate([
     { $match: { status: ProductStatus.PUBLISHED } },
@@ -161,7 +159,7 @@ export async function getCategoriesWithCounts(): Promise<CategoryWithCounts[]> {
   const productCountMap = new Map<string, number>(
     productCounts.map((p) => [p._id.toString(), p.count])
   );
-  
+
   // For parent categories, also count products in child categories
   const parentProductCounts = new Map<string, number>();
   for (const cat of categories) {
@@ -176,12 +174,12 @@ export async function getCategoriesWithCounts(): Promise<CategoryWithCounts[]> {
       parentProductCounts.set(cat.id, totalProducts);
     }
   }
-  
+
   return categories.map((cat) => ({
     ...cat,
     childCount: childCountMap.get(cat.id) || 0,
-    productCount: cat.parentId 
-      ? (productCountMap.get(cat.id) || 0)
-      : (parentProductCounts.get(cat.id) || 0),
+    productCount: cat.parentId
+      ? productCountMap.get(cat.id) || 0
+      : parentProductCounts.get(cat.id) || 0,
   }));
 }

@@ -64,8 +64,18 @@ function VitalCard({
   isLoading: boolean;
 }) {
   const ratingColors = {
-    good: { bg: 'bg-emerald-50', text: 'text-emerald-600', border: 'border-emerald-200', label: 'Good' },
-    'needs-improvement': { bg: 'bg-amber-50', text: 'text-amber-600', border: 'border-amber-200', label: 'Needs Improvement' },
+    good: {
+      bg: 'bg-emerald-50',
+      text: 'text-emerald-600',
+      border: 'border-emerald-200',
+      label: 'Good',
+    },
+    'needs-improvement': {
+      bg: 'bg-amber-50',
+      text: 'text-amber-600',
+      border: 'border-amber-200',
+      label: 'Needs Improvement',
+    },
     poor: { bg: 'bg-rose-50', text: 'text-rose-600', border: 'border-rose-200', label: 'Poor' },
   };
 
@@ -93,13 +103,14 @@ function VitalCard({
       ) : (
         <>
           <div className="flex items-end gap-1 mb-2">
-            <span className={`text-3xl font-light ${colors.text}`}>
-              {value.toLocaleString()}
-            </span>
+            <span className={`text-3xl font-light ${colors.text}`}>{value.toLocaleString()}</span>
             <span className="text-sm text-gray-500 mb-1">{unit}</span>
           </div>
           <div className="flex items-center justify-between text-xs text-gray-500">
-            <span>P75: {p75.toLocaleString()}{unit}</span>
+            <span>
+              P75: {p75.toLocaleString()}
+              {unit}
+            </span>
             <span>Target: {target}</span>
           </div>
         </>
@@ -133,9 +144,12 @@ function MetricBar({
   return (
     <div className="flex-1">
       <div className="flex items-center justify-between mb-1.5">
-        <span className="text-[10px] font-medium text-gray-500 uppercase tracking-wider">{label}</span>
+        <span className="text-[10px] font-medium text-gray-500 uppercase tracking-wider">
+          {label}
+        </span>
         <span className={`text-xs font-semibold ${c.text}`}>
-          {value.toLocaleString()}{unit}
+          {value.toLocaleString()}
+          {unit}
         </span>
       </div>
       <div className={`h-2 ${c.bg} rounded-full overflow-hidden`}>
@@ -167,16 +181,22 @@ function PagePerformanceCard({
   // Calculate overall score (simplified)
   const getScore = () => {
     const ratings = [lcpRating, fidRating, clsRating, ttfbRating];
-    const scores = ratings.map(r => r === 'good' ? 100 : r === 'needs-improvement' ? 60 : 20);
+    const scores = ratings.map((r) => (r === 'good' ? 100 : r === 'needs-improvement' ? 60 : 20));
     return Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
   };
 
   const score = getScore();
-  const scoreColor = score >= 80 ? 'text-emerald-600 bg-emerald-50' : score >= 50 ? 'text-amber-600 bg-amber-50' : 'text-rose-600 bg-rose-50';
-  const ringColor = score >= 80 ? 'stroke-emerald-500' : score >= 50 ? 'stroke-amber-500' : 'stroke-rose-500';
+  const scoreColor =
+    score >= 80
+      ? 'text-emerald-600 bg-emerald-50'
+      : score >= 50
+        ? 'text-amber-600 bg-amber-50'
+        : 'text-rose-600 bg-rose-50';
+  const ringColor =
+    score >= 80 ? 'stroke-emerald-500' : score >= 50 ? 'stroke-amber-500' : 'stroke-rose-500';
 
   return (
-    <div 
+    <div
       className="bg-white rounded-xl border border-gray-100 p-5 hover:border-gray-200 hover:shadow-sm transition-all duration-200"
       style={{ animationDelay: `${index * 50}ms` }}
     >
@@ -185,19 +205,31 @@ function PagePerformanceCard({
         <div className="flex-1 min-w-0 pr-4">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
-              <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+              <svg
+                className="w-4 h-4 text-gray-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
+                />
               </svg>
             </div>
             <div className="min-w-0 flex-1">
               <h3 className="text-sm font-medium text-gray-900 truncate" title={page.path}>
                 {page.path}
               </h3>
-              <p className="text-xs text-gray-400">{page.samples} sample{page.samples !== 1 ? 's' : ''}</p>
+              <p className="text-xs text-gray-400">
+                {page.samples} sample{page.samples !== 1 ? 's' : ''}
+              </p>
             </div>
           </div>
         </div>
-        
+
         {/* Score Circle */}
         <div className="relative flex-shrink-0">
           <svg className="w-14 h-14 -rotate-90" viewBox="0 0 36 36">
@@ -228,31 +260,10 @@ function PagePerformanceCard({
 
       {/* Metrics Grid */}
       <div className="grid grid-cols-2 gap-4">
-        <MetricBar
-          value={page.lcp}
-          max={maxLcp}
-          rating={lcpRating}
-          label="LCP"
-        />
-        <MetricBar
-          value={page.fid}
-          max={300}
-          rating={fidRating}
-          label="FID"
-        />
-        <MetricBar
-          value={page.cls}
-          max={0.25}
-          rating={clsRating}
-          label="CLS"
-          unit=""
-        />
-        <MetricBar
-          value={page.ttfb}
-          max={maxTtfb}
-          rating={ttfbRating}
-          label="TTFB"
-        />
+        <MetricBar value={page.lcp} max={maxLcp} rating={lcpRating} label="LCP" />
+        <MetricBar value={page.fid} max={300} rating={fidRating} label="FID" />
+        <MetricBar value={page.cls} max={0.25} rating={clsRating} label="CLS" unit="" />
+        <MetricBar value={page.ttfb} max={maxTtfb} rating={ttfbRating} label="TTFB" />
       </div>
     </div>
   );
@@ -321,9 +332,7 @@ export function SpeedInsightsPage() {
           <p className="mt-1 text-sm text-gray-500">Core Web Vitals and performance metrics</p>
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-xs text-gray-500">
-            {overview?.samples || 0} samples collected
-          </span>
+          <span className="text-xs text-gray-500">{overview?.samples || 0} samples collected</span>
           <select
             value={dateRange}
             onChange={(e) => setDateRange(e.target.value)}
@@ -407,7 +416,9 @@ export function SpeedInsightsPage() {
                 <div className="h-8 w-20 bg-gray-100 rounded animate-pulse" />
               ) : (
                 <div className="text-right">
-                  <span className="text-2xl font-light text-gray-900">{overview?.ttfb.value || 0}</span>
+                  <span className="text-2xl font-light text-gray-900">
+                    {overview?.ttfb.value || 0}
+                  </span>
                   <span className="text-sm text-gray-500 ml-1">ms</span>
                 </div>
               )}
@@ -437,7 +448,7 @@ export function SpeedInsightsPage() {
             </div>
           )}
         </div>
-        
+
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {[...Array(6)].map((_, i) => (
@@ -466,8 +477,8 @@ export function SpeedInsightsPage() {
         ) : pages.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {pages.map((page, i) => {
-              const maxLcp = Math.max(...pages.map(p => p.lcp), 4000);
-              const maxTtfb = Math.max(...pages.map(p => p.ttfb), 1800);
+              const maxLcp = Math.max(...pages.map((p) => p.lcp), 4000);
+              const maxTtfb = Math.max(...pages.map((p) => p.ttfb), 1800);
               return (
                 <PagePerformanceCard
                   key={i}
@@ -482,11 +493,23 @@ export function SpeedInsightsPage() {
         ) : (
           <div className="bg-white rounded-xl border border-gray-100 py-16 text-center">
             <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl flex items-center justify-center">
-              <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
+              <svg
+                className="w-8 h-8 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"
+                />
               </svg>
             </div>
-            <p className="text-sm font-medium text-gray-900 mb-1">No performance data collected yet</p>
+            <p className="text-sm font-medium text-gray-900 mb-1">
+              No performance data collected yet
+            </p>
             <p className="text-xs text-gray-500 max-w-xs mx-auto">
               Performance metrics are collected automatically from visitors browsing your site.
             </p>
@@ -498,15 +521,26 @@ export function SpeedInsightsPage() {
       <div className="bg-blue-50 rounded-xl border border-blue-100 p-5">
         <div className="flex items-start gap-3">
           <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-            <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
+            <svg
+              className="w-4 h-4 text-blue-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"
+              />
             </svg>
           </div>
           <div>
             <h3 className="text-sm font-medium text-blue-900">About Core Web Vitals</h3>
             <p className="text-xs text-blue-700 mt-1 leading-relaxed">
-              Core Web Vitals are a set of metrics that measure real-world user experience for loading performance, 
-              interactivity, and visual stability. These metrics are collected from actual visitors to your site.
+              Core Web Vitals are a set of metrics that measure real-world user experience for
+              loading performance, interactivity, and visual stability. These metrics are collected
+              from actual visitors to your site.
             </p>
             <div className="mt-3 flex flex-wrap gap-4 text-xs text-blue-700">
               <div>

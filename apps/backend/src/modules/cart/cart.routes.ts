@@ -4,11 +4,7 @@ import { requireRole } from '../../middleware/requireRole.js';
 import { validateBody } from '../../middleware/validate.js';
 import { getConfig } from '../../config/index.js';
 import { UserRole } from '@lunaz/types';
-import {
-  replaceCartSchema,
-  addCartItemSchema,
-  updateCartItemSchema,
-} from './cart.validation.js';
+import { replaceCartSchema, addCartItemSchema, updateCartItemSchema } from './cart.validation.js';
 import {
   getCart,
   replaceCart,

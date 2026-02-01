@@ -39,25 +39,25 @@ export function createApp() {
   app.use('/api/v1', generalLimiter);
 
   const api = express.Router();
-  
+
   // Auth & Users
   api.use('/auth', authRoutes);
   api.use('/users', usersRoutes);
-  
+
   // Catalog
   api.use('/categories', categoriesRoutes);
   api.use('/products', productsRoutes);
-  
+
   // Shopping
   api.use('/cart', cartRoutes);
   api.use('/orders', ordersRoutes);
-  
+
   // Admin
   api.use('/customers', customersRoutes);
   api.use('/dashboard', dashboardRoutes);
   api.use('/transactions', transactionsRoutes);
   api.use('/settings', settingsRoutes);
-  
+
   // Analytics
   api.use('/analytics', analyticsRoutes);
 

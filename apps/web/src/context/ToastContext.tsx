@@ -51,8 +51,8 @@ function ToastContainer({ toasts, onRemove }: { toasts: Toast[]; onRemove: (id: 
             toast.type === 'success'
               ? 'bg-green-600'
               : toast.type === 'error'
-              ? 'bg-red-600'
-              : 'bg-gray-800'
+                ? 'bg-red-600'
+                : 'bg-gray-800'
           }`}
         >
           <span className="text-sm">{toast.message}</span>
@@ -62,7 +62,12 @@ function ToastContainer({ toasts, onRemove }: { toasts: Toast[]; onRemove: (id: 
             aria-label="Dismiss"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           </button>
         </div>

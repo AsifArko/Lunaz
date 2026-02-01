@@ -1,32 +1,28 @@
-import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import type { Category, PaginatedResponse } from "@lunaz/types";
-import { Container } from "@lunaz/ui";
-import { api } from "../../api/client";
+import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import type { Category, PaginatedResponse } from '@lunaz/types';
+import { Container } from '@lunaz/ui';
+import { api } from '../../api/client';
 
 interface CategoryWithCounts extends Category {
   childCount: number;
   productCount: number;
 }
 
-function CategoryCardSkeleton({
-  size = "normal",
-}: {
-  size?: "normal" | "small";
-}) {
+function CategoryCardSkeleton({ size = 'normal' }: { size?: 'normal' | 'small' }) {
   return (
     <div
       className={`bg-white rounded-lg overflow-hidden shadow-sm animate-pulse ${
-        size === "small" ? "border border-slate-100" : ""
+        size === 'small' ? 'border border-slate-100' : ''
       }`}
     >
-      <div className={size === "small" ? "aspect-[4/3]" : "aspect-[4/3]"}>
+      <div className={size === 'small' ? 'aspect-[4/3]' : 'aspect-[4/3]'}>
         <div className="w-full h-full bg-slate-200" />
       </div>
-      <div className={size === "small" ? "p-3" : "p-4"}>
+      <div className={size === 'small' ? 'p-3' : 'p-4'}>
         <div
           className={`bg-slate-200 rounded ${
-            size === "small" ? "h-4 w-2/3 mb-2" : "h-5 w-3/4 mb-3"
+            size === 'small' ? 'h-4 w-2/3 mb-2' : 'h-5 w-3/4 mb-3'
           }`}
         />
         <div className="flex items-center gap-3">
@@ -72,16 +68,8 @@ function ParentCategoryCard({ category }: { category: CategoryWithCounts }) {
         {/* Metadata */}
         <div className="flex items-center gap-4 text-xs text-slate-400">
           {/* Product Count */}
-          <div
-            className="flex items-center gap-1.5"
-            title={`${category.productCount} products`}
-          >
-            <svg
-              className="w-3.5 h-3.5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+          <div className="flex items-center gap-1.5" title={`${category.productCount} products`}>
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -98,12 +86,7 @@ function ParentCategoryCard({ category }: { category: CategoryWithCounts }) {
               className="flex items-center gap-1.5"
               title={`${category.childCount} subcategories`}
             >
-              <svg
-                className="w-3.5 h-3.5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -168,16 +151,8 @@ function ChildCategoryCard({
 
         {/* Metadata */}
         <div className="flex items-center gap-3 text-xs text-slate-400">
-          <div
-            className="flex items-center gap-1"
-            title={`${category.productCount} products`}
-          >
-            <svg
-              className="w-3 h-3"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+          <div className="flex items-center gap-1" title={`${category.productCount} products`}>
+            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
@@ -204,14 +179,10 @@ export function CategoriesPage() {
   useEffect(() => {
     async function fetchCategories() {
       try {
-        const res = await api<PaginatedResponse<CategoryWithCounts>>(
-          "/categories?withCounts=true"
-        );
+        const res = await api<PaginatedResponse<CategoryWithCounts>>('/categories?withCounts=true');
         setCategories(res.data);
       } catch (err) {
-        setError(
-          err instanceof Error ? err.message : "Failed to load categories"
-        );
+        setError(err instanceof Error ? err.message : 'Failed to load categories');
       } finally {
         setIsLoading(false);
       }
@@ -223,9 +194,7 @@ export function CategoriesPage() {
   const childCategories = categories.filter((c) => c.parentId);
 
   // Pagination for subcategories
-  const totalSubcategoryPages = Math.ceil(
-    childCategories.length / SUBCATEGORIES_PER_PAGE
-  );
+  const totalSubcategoryPages = Math.ceil(childCategories.length / SUBCATEGORIES_PER_PAGE);
   const paginatedChildCategories = childCategories.slice(
     (subcategoryPage - 1) * SUBCATEGORIES_PER_PAGE,
     subcategoryPage * SUBCATEGORIES_PER_PAGE
@@ -235,10 +204,7 @@ export function CategoriesPage() {
   const parentNameMap = new Map<string, string>();
   parentCategories.forEach((c) => parentNameMap.set(c.id, c.name));
 
-  const totalProducts = parentCategories.reduce(
-    (sum, c) => sum + c.productCount,
-    0
-  );
+  const totalProducts = parentCategories.reduce((sum, c) => sum + c.productCount, 0);
 
   return (
     <div className="bg-slate-50/50 min-h-screen">
@@ -255,10 +221,9 @@ export function CategoriesPage() {
               </h1>
               {!isLoading && !error && (
                 <p className="text-sm text-slate-500">
-                  Explore our collection across {parentCategories.length}{" "}
-                  {parentCategories.length === 1 ? "category" : "categories"}{" "}
-                  with {totalProducts}{" "}
-                  {totalProducts === 1 ? "product" : "products"}
+                  Explore our collection across {parentCategories.length}{' '}
+                  {parentCategories.length === 1 ? 'category' : 'categories'} with {totalProducts}{' '}
+                  {totalProducts === 1 ? 'product' : 'products'}
                 </p>
               )}
             </div>
@@ -286,9 +251,7 @@ export function CategoriesPage() {
                   />
                 </svg>
               </div>
-              <p className="text-slate-600 font-medium mb-1">
-                Failed to load categories
-              </p>
+              <p className="text-slate-600 font-medium mb-1">Failed to load categories</p>
               <p className="text-sm text-slate-400">{error}</p>
             </div>
           )}
@@ -333,12 +296,8 @@ export function CategoriesPage() {
                   />
                 </svg>
               </div>
-              <p className="text-slate-600 font-medium mb-1">
-                No categories found
-              </p>
-              <p className="text-sm text-slate-400">
-                Check back later for new categories
-              </p>
+              <p className="text-slate-600 font-medium mb-1">No categories found</p>
+              <p className="text-sm text-slate-400">Check back later for new categories</p>
             </div>
           )}
 
@@ -350,16 +309,11 @@ export function CategoriesPage() {
                 <section>
                   <h2 className="text-sm font-medium text-slate-700 mb-5 flex items-center gap-2">
                     <span>Main Categories</span>
-                    <span className="text-slate-400 font-normal">
-                      ({parentCategories.length})
-                    </span>
+                    <span className="text-slate-400 font-normal">({parentCategories.length})</span>
                   </h2>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
                     {parentCategories.map((category) => (
-                      <ParentCategoryCard
-                        key={category.id}
-                        category={category}
-                      />
+                      <ParentCategoryCard key={category.id} category={category} />
                     ))}
                   </div>
                 </section>
@@ -370,9 +324,7 @@ export function CategoriesPage() {
                 <section>
                   <h2 className="text-sm font-medium text-slate-700 mb-4 flex items-center gap-2">
                     <span>Subcategories</span>
-                    <span className="text-slate-400 font-normal">
-                      ({childCategories.length})
-                    </span>
+                    <span className="text-slate-400 font-normal">({childCategories.length})</span>
                   </h2>
                   <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                     {paginatedChildCategories.map((category) => (
@@ -388,9 +340,7 @@ export function CategoriesPage() {
                   {totalSubcategoryPages > 1 && (
                     <div className="mt-6 flex items-center justify-center gap-2">
                       <button
-                        onClick={() =>
-                          setSubcategoryPage((p) => Math.max(1, p - 1))
-                        }
+                        onClick={() => setSubcategoryPage((p) => Math.max(1, p - 1))}
                         disabled={subcategoryPage === 1}
                         className="p-2 text-slate-400 hover:text-slate-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                         aria-label="Previous page"
@@ -411,29 +361,26 @@ export function CategoriesPage() {
                       </button>
 
                       <div className="flex items-center gap-1">
-                        {Array.from(
-                          { length: totalSubcategoryPages },
-                          (_, i) => i + 1
-                        ).map((page) => (
-                          <button
-                            key={page}
-                            onClick={() => setSubcategoryPage(page)}
-                            className={`min-w-[32px] h-8 px-2 text-sm rounded transition-colors ${
-                              page === subcategoryPage
-                                ? "bg-slate-800 text-white"
-                                : "text-slate-500 hover:bg-slate-100 hover:text-slate-700"
-                            }`}
-                          >
-                            {page}
-                          </button>
-                        ))}
+                        {Array.from({ length: totalSubcategoryPages }, (_, i) => i + 1).map(
+                          (page) => (
+                            <button
+                              key={page}
+                              onClick={() => setSubcategoryPage(page)}
+                              className={`min-w-[32px] h-8 px-2 text-sm rounded transition-colors ${
+                                page === subcategoryPage
+                                  ? 'bg-slate-800 text-white'
+                                  : 'text-slate-500 hover:bg-slate-100 hover:text-slate-700'
+                              }`}
+                            >
+                              {page}
+                            </button>
+                          )
+                        )}
                       </div>
 
                       <button
                         onClick={() =>
-                          setSubcategoryPage((p) =>
-                            Math.min(totalSubcategoryPages, p + 1)
-                          )
+                          setSubcategoryPage((p) => Math.min(totalSubcategoryPages, p + 1))
                         }
                         disabled={subcategoryPage === totalSubcategoryPages}
                         className="p-2 text-slate-400 hover:text-slate-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"

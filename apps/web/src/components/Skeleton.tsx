@@ -3,12 +3,7 @@ interface SkeletonProps {
 }
 
 export function Skeleton({ className = '' }: SkeletonProps) {
-  return (
-    <div
-      className={`animate-pulse bg-gray-200 rounded ${className}`}
-      aria-hidden="true"
-    />
-  );
+  return <div className={`animate-pulse bg-gray-200 rounded ${className}`} aria-hidden="true" />;
 }
 
 export function ProductCardSkeleton() {

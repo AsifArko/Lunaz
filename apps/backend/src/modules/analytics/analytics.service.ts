@@ -1,4 +1,3 @@
-import { randomUUID } from 'crypto';
 import type {
   AnalyticsEventType,
   DeviceType,
@@ -26,7 +25,6 @@ import {
   ProductAnalyticsModel,
   ServerLogModel,
   SessionModel,
-  DailyAnalyticsModel,
 } from './analytics.model.js';
 
 /* -------------------------------------------------------------------------- */
@@ -116,9 +114,21 @@ export function parseUserAgent(ua: string): Partial<DeviceData> {
 /* -------------------------------------------------------------------------- */
 
 const searchEngines = ['google', 'bing', 'yahoo', 'duckduckgo', 'baidu', 'yandex'];
-const socialNetworks = ['facebook', 'twitter', 'linkedin', 'instagram', 'pinterest', 'reddit', 'youtube', 'tiktok'];
+const socialNetworks = [
+  'facebook',
+  'twitter',
+  'linkedin',
+  'instagram',
+  'pinterest',
+  'reddit',
+  'youtube',
+  'tiktok',
+];
 
-export function parseReferrer(referrerUrl: string | undefined, currentHostname: string): ReferrerData {
+export function parseReferrer(
+  referrerUrl: string | undefined,
+  currentHostname: string
+): ReferrerData {
   if (!referrerUrl) {
     return { type: 'direct' as ReferrerType };
   }
@@ -219,7 +229,7 @@ export async function geoLookup(ip: string): Promise<GeoData> {
   // const reader = await maxmind.open('path/to/GeoLite2-City.mmdb');
   // const result = reader.get(ip);
   // return { country: result?.country?.iso_code, ... };
-  
+
   return {};
 }
 
@@ -234,9 +244,22 @@ export const analyticsService = {
     events: Array<{
       type: AnalyticsEventType;
       timestamp: string;
-      page: { url: string; path: string; hostname: string; title?: string; search?: string; hash?: string };
+      page: {
+        url: string;
+        path: string;
+        hostname: string;
+        title?: string;
+        search?: string;
+        hash?: string;
+      };
       referrer?: { url?: string };
-      utm?: { source?: string; medium?: string; campaign?: string; term?: string; content?: string };
+      utm?: {
+        source?: string;
+        medium?: string;
+        campaign?: string;
+        term?: string;
+        content?: string;
+      };
       event?: { name: string; properties?: Record<string, unknown> };
       device?: Partial<DeviceData>;
     }>,
@@ -281,10 +304,7 @@ export const analyticsService = {
           visitorId
         );
       } else if (e.type === 'add_to_cart' && e.event?.properties?.productId) {
-        await this.incrementProductAnalytics(
-          e.event.properties.productId as string,
-          'addToCart'
-        );
+        await this.incrementProductAnalytics(e.event.properties.productId as string, 'addToCart');
       } else if (e.type === 'purchase' && e.event?.properties?.items) {
         const items = e.event.properties.items as Array<{ productId: string; total: number }>;
         for (const item of items) {
@@ -330,7 +350,7 @@ export const analyticsService = {
     const lastPage = events[events.length - 1]?.page?.path;
 
     const session = await SessionModel.findOne({ sessionId });
-    
+
     if (session) {
       session.pageViews += pageViews;
       session.events += events.length;
@@ -373,11 +393,9 @@ export const analyticsService = {
       update.$inc = { ...(update.$inc as object), revenue };
     }
 
-    await ProductAnalyticsModel.findOneAndUpdate(
-      { productId, date: today },
-      update,
-      { upsert: true }
-    );
+    await ProductAnalyticsModel.findOneAndUpdate({ productId, date: today }, update, {
+      upsert: true,
+    });
 
     // Track unique viewers
     if (field === 'views' && visitorId) {
@@ -396,10 +414,7 @@ export const analyticsService = {
   async getOverview(from: Date, to: Date): Promise<AnalyticsOverview> {
     const [current, previous] = await Promise.all([
       this.getMetricsForPeriod(from, to),
-      this.getMetricsForPeriod(
-        new Date(from.getTime() - (to.getTime() - from.getTime())),
-        from
-      ),
+      this.getMetricsForPeriod(new Date(from.getTime() - (to.getTime() - from.getTime())), from),
     ]);
 
     const calcChange = (curr: number, prev: number) =>
@@ -454,24 +469,46 @@ export const analyticsService = {
     ]);
 
     const traffic = trafficStats[0] || { pageViews: 0, visitors: 0, uniqueVisitors: 0 };
-    const sessions = sessionStats[0] || { sessions: 0, bounces: 0, totalDuration: 0, totalPageViews: 0 };
+    const sessions = sessionStats[0] || {
+      sessions: 0,
+      bounces: 0,
+      totalDuration: 0,
+      totalPageViews: 0,
+    };
 
     return {
       visitors: traffic.visitors,
       uniqueVisitors: traffic.uniqueVisitors,
       pageViews: traffic.pageViews,
       sessions: sessions.sessions,
-      bounceRate: sessions.sessions > 0 ? Math.round((sessions.bounces / sessions.sessions) * 100 * 10) / 10 : 0,
-      avgSessionDuration: sessions.sessions > 0 ? Math.round(sessions.totalDuration / sessions.sessions) : 0,
-      pagesPerSession: sessions.sessions > 0 ? Math.round((sessions.totalPageViews / sessions.sessions) * 10) / 10 : 0,
+      bounceRate:
+        sessions.sessions > 0
+          ? Math.round((sessions.bounces / sessions.sessions) * 100 * 10) / 10
+          : 0,
+      avgSessionDuration:
+        sessions.sessions > 0 ? Math.round(sessions.totalDuration / sessions.sessions) : 0,
+      pagesPerSession:
+        sessions.sessions > 0
+          ? Math.round((sessions.totalPageViews / sessions.sessions) * 10) / 10
+          : 0,
     };
   },
 
-  async getTimeSeries(from: Date, to: Date, period: 'hour' | 'day' | 'week' | 'month'): Promise<AnalyticsTimeSeries[]> {
+  async getTimeSeries(
+    from: Date,
+    to: Date,
+    period: 'hour' | 'day' | 'week' | 'month'
+  ): Promise<AnalyticsTimeSeries[]> {
     const dateFormat = {
-      hour: { format: '%Y-%m-%dT%H:00:00Z', dateFromParts: { year: '$year', month: '$month', day: '$day', hour: '$hour' } },
+      hour: {
+        format: '%Y-%m-%dT%H:00:00Z',
+        dateFromParts: { year: '$year', month: '$month', day: '$day', hour: '$hour' },
+      },
       day: { format: '%Y-%m-%d', dateFromParts: { year: '$year', month: '$month', day: '$day' } },
-      week: { format: '%Y-W%V', dateFromParts: { isoWeekYear: '$isoWeekYear', isoWeek: '$isoWeek' } },
+      week: {
+        format: '%Y-W%V',
+        dateFromParts: { isoWeekYear: '$isoWeekYear', isoWeek: '$isoWeek' },
+      },
       month: { format: '%Y-%m', dateFromParts: { year: '$year', month: '$month' } },
     };
 
@@ -816,11 +853,13 @@ export const analyticsService = {
         rating: getClsRating(clsAvg),
         p75: Math.round(getPercentile(data.clsValues, 75) * 1000) / 1000,
       },
-      inp: inpAvg ? {
-        value: Math.round(inpAvg),
-        rating: inpAvg <= 200 ? 'good' : inpAvg <= 500 ? 'needs-improvement' : 'poor',
-        p75: Math.round(getPercentile(data.inpValues, 75)),
-      } : undefined,
+      inp: inpAvg
+        ? {
+            value: Math.round(inpAvg),
+            rating: inpAvg <= 200 ? 'good' : inpAvg <= 500 ? 'needs-improvement' : 'poor',
+            p75: Math.round(getPercentile(data.inpValues, 75)),
+          }
+        : undefined,
       ttfb: {
         value: Math.round(ttfbAvg),
         p75: Math.round(getPercentile(data.ttfbValues, 75)),
@@ -858,20 +897,18 @@ export const analyticsService = {
 
   /* -------------------------- Traffic Logs Methods ------------------------- */
 
-  async getTrafficLogs(
-    query: {
-      from?: Date;
-      to?: Date;
-      type?: string;
-      path?: string;
-      country?: string;
-      device?: string;
-      browser?: string;
-      search?: string;
-      page?: number;
-      limit?: number;
-    }
-  ): Promise<{ data: any[]; total: number; page: number; limit: number; totalPages: number }> {
+  async getTrafficLogs(query: {
+    from?: Date;
+    to?: Date;
+    type?: string;
+    path?: string;
+    country?: string;
+    device?: string;
+    browser?: string;
+    search?: string;
+    page?: number;
+    limit?: number;
+  }): Promise<{ data: any[]; total: number; page: number; limit: number; totalPages: number }> {
     const filter: Record<string, unknown> = {};
     const page = query.page || 1;
     const limit = Math.min(query.limit || 10, 100);
@@ -930,20 +967,18 @@ export const analyticsService = {
 
   /* -------------------------- Server Logs Methods ------------------------- */
 
-  async getServerLogs(
-    query: {
-      from?: Date;
-      to?: Date;
-      level?: LogLevel;
-      status?: string;
-      method?: string;
-      path?: string;
-      country?: string;
-      search?: string;
-      page?: number;
-      limit?: number;
-    }
-  ): Promise<{ data: any[]; total: number; page: number; limit: number; totalPages: number }> {
+  async getServerLogs(query: {
+    from?: Date;
+    to?: Date;
+    level?: LogLevel;
+    status?: string;
+    method?: string;
+    path?: string;
+    country?: string;
+    search?: string;
+    page?: number;
+    limit?: number;
+  }): Promise<{ data: any[]; total: number; page: number; limit: number; totalPages: number }> {
     const filter: Record<string, unknown> = {};
     const page = query.page || 1;
     const limit = Math.min(query.limit || 50, 100);
@@ -1051,10 +1086,13 @@ export const analyticsService = {
       errorCount: s.errorCount,
       warnCount: s.warnCount,
       avgResponseTime: Math.round(s.avgResponseTime || 0),
-      statusCodes: statusCodes.reduce((acc, r) => {
-        acc[r._id] = r.count;
-        return acc;
-      }, {} as Record<string, number>),
+      statusCodes: statusCodes.reduce(
+        (acc, r) => {
+          acc[r._id] = r.count;
+          return acc;
+        },
+        {} as Record<string, number>
+      ),
       topPaths: topPaths.map((r) => ({ path: r._id, count: r.count })),
       topErrors: topErrors.map((r) => ({ message: r._id, count: r.count })),
     };
@@ -1082,16 +1120,23 @@ export const analyticsService = {
       },
     ]);
 
-    return result[0] || {
-      totalViews: 0,
-      totalUniqueViewers: 0,
-      totalAddToCart: 0,
-      totalPurchases: 0,
-      totalRevenue: 0,
-    };
+    return (
+      result[0] || {
+        totalViews: 0,
+        totalUniqueViewers: 0,
+        totalAddToCart: 0,
+        totalPurchases: 0,
+        totalRevenue: 0,
+      }
+    );
   },
 
-  async getTopProducts(from: Date, to: Date, limit: number = 10, sortBy: 'views' | 'purchases' | 'revenue' = 'views') {
+  async getTopProducts(
+    from: Date,
+    to: Date,
+    limit: number = 10,
+    sortBy: 'views' | 'purchases' | 'revenue' = 'views'
+  ) {
     return ProductAnalyticsModel.aggregate([
       { $match: { date: { $gte: from, $lte: to } } },
       {

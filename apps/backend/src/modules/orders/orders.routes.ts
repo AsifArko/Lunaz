@@ -14,14 +14,19 @@ const getConfigFn = getConfig;
 router.use(authMiddleware(getConfigFn));
 
 // POST /orders — customer create order from cart
-router.post('/', requireRole(UserRole.CUSTOMER), validateBody(createOrderSchema), async (req, res, next) => {
-  try {
-    const order = await createOrder(req.user!.id, req.body);
-    res.status(201).json(order);
-  } catch (e) {
-    next(e);
+router.post(
+  '/',
+  requireRole(UserRole.CUSTOMER),
+  validateBody(createOrderSchema),
+  async (req, res, next) => {
+    try {
+      const order = await createOrder(req.user!.id, req.body);
+      res.status(201).json(order);
+    } catch (e) {
+      next(e);
+    }
   }
-});
+);
 
 // GET /orders — list orders (customer: own; admin: all)
 router.get('/', async (req, res, next) => {
@@ -54,13 +59,18 @@ router.get('/:id', async (req, res, next) => {
 });
 
 // PATCH /orders/:id/status — admin update status
-router.patch('/:id/status', requireRole(UserRole.ADMIN), validateBody(updateOrderStatusSchema), async (req, res, next) => {
-  try {
-    const order = await updateOrderStatus(req.params.id, req.body);
-    res.json(order);
-  } catch (e) {
-    next(e);
+router.patch(
+  '/:id/status',
+  requireRole(UserRole.ADMIN),
+  validateBody(updateOrderStatusSchema),
+  async (req, res, next) => {
+    try {
+      const order = await updateOrderStatus(req.params.id, req.body);
+      res.json(order);
+    } catch (e) {
+      next(e);
+    }
   }
-});
+);
 
 export const ordersRoutes = router;

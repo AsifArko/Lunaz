@@ -1,10 +1,10 @@
-import { useState, useEffect, useRef } from "react";
-import { Link, useSearchParams } from "react-router-dom";
-import type { Product, Category, PaginatedResponse } from "@lunaz/types";
-import { Price } from "@lunaz/ui";
-import { api } from "../../api/client";
-import { useAuth } from "../../context/AuthContext";
-import { useToast } from "../../context/ToastContext";
+import { useState, useEffect, useRef } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
+import type { Product, Category, PaginatedResponse } from '@lunaz/types';
+import { Price } from '@lunaz/ui';
+import { api } from '../../api/client';
+import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
 
 // Custom Dropdown Component
 interface DropdownOption {
@@ -31,15 +31,12 @@ function FilterDropdown({
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsOpen(false);
       }
     }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   return (
@@ -49,25 +46,21 @@ function FilterDropdown({
         onClick={() => setIsOpen(!isOpen)}
         className={`inline-flex items-center justify-between gap-2 px-3 py-1.5 text-xs border rounded-md transition-all min-w-[120px] ${
           value
-            ? "bg-gray-900 text-white border-gray-900"
-            : "bg-white text-gray-600 border-gray-200 hover:border-gray-300"
+            ? 'bg-gray-900 text-white border-gray-900'
+            : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'
         }`}
       >
         <span className="truncate">{displayLabel}</span>
         <svg
           className={`w-3.5 h-3.5 transition-transform ${
-            isOpen ? "rotate-180" : ""
-          } ${value ? "text-white" : "text-gray-400"}`}
+            isOpen ? 'rotate-180' : ''
+          } ${value ? 'text-white' : 'text-gray-400'}`}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
           strokeWidth={2}
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M19 9l-7 7-7-7"
-          />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
         </svg>
       </button>
 
@@ -76,13 +69,13 @@ function FilterDropdown({
           <button
             type="button"
             onClick={() => {
-              onChange("");
+              onChange('');
               setIsOpen(false);
             }}
             className={`w-full px-3 py-2 text-left text-xs transition-colors flex items-center justify-between ${
               !value
-                ? "text-gray-900 bg-gray-50"
-                : "text-gray-500 hover:bg-gray-50 hover:text-gray-700"
+                ? 'text-gray-900 bg-gray-50'
+                : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700'
             }`}
           >
             <span>{placeholder}</span>
@@ -94,11 +87,7 @@ function FilterDropdown({
                 viewBox="0 0 24 24"
                 strokeWidth={2}
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M5 13l4 4L19 7"
-                />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
               </svg>
             )}
           </button>
@@ -112,8 +101,8 @@ function FilterDropdown({
               }}
               className={`w-full px-3 py-2 text-left text-xs transition-colors flex items-center justify-between ${
                 value === option.value
-                  ? "text-gray-900 bg-gray-50"
-                  : "text-gray-500 hover:bg-gray-50 hover:text-gray-700"
+                  ? 'text-gray-900 bg-gray-50'
+                  : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700'
               }`}
             >
               <span>{option.label}</span>
@@ -125,11 +114,7 @@ function FilterDropdown({
                   viewBox="0 0 24 24"
                   strokeWidth={2}
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M5 13l4 4L19 7"
-                  />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                 </svg>
               )}
             </button>
@@ -157,19 +142,16 @@ function CategoryFilterDropdown({
   const childCategories = categories.filter((c) => c.parentId);
 
   const selectedCategory = categories.find((c) => c.id === value);
-  const displayLabel = selectedCategory?.name || "All Categories";
+  const displayLabel = selectedCategory?.name || 'All Categories';
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsOpen(false);
       }
     }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   const getChildrenOf = (parentId: string) =>
@@ -182,25 +164,21 @@ function CategoryFilterDropdown({
         onClick={() => setIsOpen(!isOpen)}
         className={`inline-flex items-center justify-between gap-2 px-3 py-1.5 text-xs border rounded-md transition-all min-w-[140px] ${
           value
-            ? "bg-gray-900 text-white border-gray-900"
-            : "bg-white text-gray-600 border-gray-200 hover:border-gray-300"
+            ? 'bg-gray-900 text-white border-gray-900'
+            : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'
         }`}
       >
         <span className="truncate">{displayLabel}</span>
         <svg
           className={`w-3.5 h-3.5 transition-transform ${
-            isOpen ? "rotate-180" : ""
-          } ${value ? "text-white" : "text-gray-400"}`}
+            isOpen ? 'rotate-180' : ''
+          } ${value ? 'text-white' : 'text-gray-400'}`}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
           strokeWidth={2}
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M19 9l-7 7-7-7"
-          />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
         </svg>
       </button>
 
@@ -210,13 +188,13 @@ function CategoryFilterDropdown({
           <button
             type="button"
             onClick={() => {
-              onChange("");
+              onChange('');
               setIsOpen(false);
             }}
             className={`w-full px-3 py-2 text-left text-xs transition-colors flex items-center justify-between ${
               !value
-                ? "text-gray-900 bg-gray-50"
-                : "text-gray-500 hover:bg-gray-50 hover:text-gray-700"
+                ? 'text-gray-900 bg-gray-50'
+                : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700'
             }`}
           >
             <span>All Categories</span>
@@ -228,11 +206,7 @@ function CategoryFilterDropdown({
                 viewBox="0 0 24 24"
                 strokeWidth={2}
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M5 13l4 4L19 7"
-                />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
               </svg>
             )}
           </button>
@@ -251,8 +225,8 @@ function CategoryFilterDropdown({
                   }}
                   className={`w-full px-3 py-2 text-left text-xs transition-colors flex items-center justify-between ${
                     value === parent.id
-                      ? "text-gray-900 bg-gray-50"
-                      : "text-gray-700 hover:bg-gray-50"
+                      ? 'text-gray-900 bg-gray-50'
+                      : 'text-gray-700 hover:bg-gray-50'
                   }`}
                 >
                   <span className="font-medium">{parent.name}</span>
@@ -264,11 +238,7 @@ function CategoryFilterDropdown({
                       viewBox="0 0 24 24"
                       strokeWidth={2}
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M5 13l4 4L19 7"
-                      />
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                     </svg>
                   )}
                 </button>
@@ -284,8 +254,8 @@ function CategoryFilterDropdown({
                     }}
                     className={`w-full pl-6 pr-3 py-1.5 text-left text-[11px] transition-colors flex items-center justify-between ${
                       value === child.id
-                        ? "text-gray-900 bg-gray-50"
-                        : "text-gray-500 hover:bg-gray-50 hover:text-gray-700"
+                        ? 'text-gray-900 bg-gray-50'
+                        : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700'
                     }`}
                   >
                     <span>{child.name}</span>
@@ -297,11 +267,7 @@ function CategoryFilterDropdown({
                         viewBox="0 0 24 24"
                         strokeWidth={2}
                       >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M5 13l4 4L19 7"
-                        />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                       </svg>
                     )}
                   </button>
@@ -315,15 +281,14 @@ function CategoryFilterDropdown({
   );
 }
 
-const statusConfig: Record<string, { bg: string; text: string; dot: string }> =
-  {
-    draft: { bg: "bg-gray-50", text: "text-gray-600", dot: "bg-gray-400" },
-    published: {
-      bg: "bg-emerald-50",
-      text: "text-emerald-700",
-      dot: "bg-emerald-500",
-    },
-  };
+const statusConfig: Record<string, { bg: string; text: string; dot: string }> = {
+  draft: { bg: 'bg-gray-50', text: 'text-gray-600', dot: 'bg-gray-400' },
+  published: {
+    bg: 'bg-emerald-50',
+    text: 'text-emerald-700',
+    dot: 'bg-emerald-500',
+  },
+};
 
 export function ProductsPage() {
   const { token } = useAuth();
@@ -336,18 +301,16 @@ export function ProductsPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
 
-  const page = parseInt(searchParams.get("page") || "1", 10);
+  const page = parseInt(searchParams.get('page') || '1', 10);
   const limit = 10;
-  const status = searchParams.get("status") || "";
-  const categoryId = searchParams.get("category") || "";
-  const search = searchParams.get("search") || "";
+  const status = searchParams.get('status') || '';
+  const categoryId = searchParams.get('category') || '';
+  const search = searchParams.get('search') || '';
 
   useEffect(() => {
-    api<PaginatedResponse<Category>>("/categories", { token: token! }).then(
-      (res) => {
-        setCategories(res.data);
-      }
-    );
+    api<PaginatedResponse<Category>>('/categories', { token: token! }).then((res) => {
+      setCategories(res.data);
+    });
   }, [token]);
 
   useEffect(() => {
@@ -357,23 +320,22 @@ export function ProductsPage() {
 
       try {
         const params = new URLSearchParams();
-        params.set("page", page.toString());
-        params.set("limit", limit.toString());
-        params.set("sort", "createdAt");
-        params.set("order", "desc");
-        if (status) params.set("status", status);
-        if (categoryId) params.set("category", categoryId);
-        if (search) params.set("search", search);
+        params.set('page', page.toString());
+        params.set('limit', limit.toString());
+        params.set('sort', 'createdAt');
+        params.set('order', 'desc');
+        if (status) params.set('status', status);
+        if (categoryId) params.set('category', categoryId);
+        if (search) params.set('search', search);
 
-        const res = await api<PaginatedResponse<Product>>(
-          `/products?${params.toString()}`,
-          { token }
-        );
+        const res = await api<PaginatedResponse<Product>>(`/products?${params.toString()}`, {
+          token,
+        });
         setProducts(res.data);
         setTotal(res.total);
         setTotalPages(res.totalPages);
       } catch {
-        addToast("Failed to load products", "error");
+        addToast('Failed to load products', 'error');
       } finally {
         setIsLoading(false);
       }
@@ -390,29 +352,24 @@ export function ProductsPage() {
         newParams.delete(key);
       }
     });
-    if (!updates.page) newParams.set("page", "1");
+    if (!updates.page) newParams.set('page', '1');
     setSearchParams(newParams);
   };
 
   const handleDelete = async (id: string, name: string) => {
-    if (
-      !token ||
-      !window.confirm(`Delete "${name}"? This action cannot be undone.`)
-    )
-      return;
+    if (!token || !window.confirm(`Delete "${name}"? This action cannot be undone.`)) return;
 
     try {
-      await api(`/products/${id}`, { method: "DELETE", token });
-      addToast("Product deleted", "success");
+      await api(`/products/${id}`, { method: 'DELETE', token });
+      addToast('Product deleted', 'success');
       setProducts((prev) => prev.filter((p) => p.id !== id));
       setTotal((prev) => prev - 1);
     } catch {
-      addToast("Failed to delete product", "error");
+      addToast('Failed to delete product', 'error');
     }
   };
 
-  const getCategoryName = (id: string) =>
-    categories.find((c) => c.id === id)?.name || "—";
+  const getCategoryName = (id: string) => categories.find((c) => c.id === id)?.name || '—';
 
   const getTotalStock = (product: Product) => {
     return product.variants.reduce((sum, v) => sum + (v.stock || 0), 0);
@@ -429,9 +386,7 @@ export function ProductsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-medium text-gray-900">Products</h1>
-          <p className="mt-1 text-sm text-gray-500">
-            Manage your product catalog
-          </p>
+          <p className="mt-1 text-sm text-gray-500">Manage your product catalog</p>
         </div>
         <Link
           to="/products/new"
@@ -444,11 +399,7 @@ export function ProductsPage() {
             viewBox="0 0 24 24"
             strokeWidth={2}
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M12 4v16m8-8H4"
-            />
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
           </svg>
           Add Product
         </Link>
@@ -483,8 +434,8 @@ export function ProductsPage() {
         {/* Status Filter */}
         <FilterDropdown
           options={[
-            { value: "draft", label: "Draft" },
-            { value: "published", label: "Published" },
+            { value: 'draft', label: 'Draft' },
+            { value: 'published', label: 'Published' },
           ]}
           value={status}
           onChange={(val) => updateParams({ status: val })}
@@ -512,18 +463,14 @@ export function ProductsPage() {
               viewBox="0 0 24 24"
               strokeWidth={1.5}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M6 18L18 6M6 6l12 12"
-              />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         )}
 
         {/* Results count */}
         <div className="ml-auto text-[11px] text-gray-400">
-          {total} product{total !== 1 ? "s" : ""}
+          {total} product{total !== 1 ? 's' : ''}
         </div>
       </div>
 
@@ -532,11 +479,7 @@ export function ProductsPage() {
         {isLoading ? (
           <div className="p-12 text-center">
             <div className="inline-flex items-center gap-2 text-sm text-gray-500">
-              <svg
-                className="w-4 h-4 animate-spin"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
+              <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
                 <circle
                   className="opacity-25"
                   cx="12"
@@ -572,9 +515,7 @@ export function ProductsPage() {
               </svg>
             </div>
             <p className="text-sm text-gray-500 mb-4">
-              {hasFilters
-                ? "No products match your filters"
-                : "No products yet"}
+              {hasFilters ? 'No products match your filters' : 'No products yet'}
             </p>
             {!hasFilters && (
               <Link
@@ -612,28 +553,23 @@ export function ProductsPage() {
                     <th className="px-4 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">
                       Status
                     </th>
-                    <th className="px-4 py-2 text-right text-[10px] font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                    <th className="px-4 py-2 text-right text-[10px] font-medium text-gray-500 uppercase tracking-wider">
+                      Action
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
                   {products.map((product, index) => {
-                    const statusStyle =
-                      statusConfig[product.status] || statusConfig.draft;
+                    const statusStyle = statusConfig[product.status] || statusConfig.draft;
                     const totalStock = getTotalStock(product);
                     const isLowStock = totalStock > 0 && totalStock < 10;
                     const isOutOfStock = totalStock === 0;
                     // Mock data for orders and sales (would come from API in production)
-                    const mockOrders =
-                      Math.floor(totalStock * 0.3 + index * 2) % 50;
-                    const mockSalesQty = Math.floor(
-                      mockOrders * 1.5 + (index % 10)
-                    );
+                    const mockOrders = Math.floor(totalStock * 0.3 + index * 2) % 50;
+                    const mockSalesQty = Math.floor(mockOrders * 1.5 + (index % 10));
 
                     return (
-                      <tr
-                        key={product.id}
-                        className="hover:bg-gray-50/50 transition-colors"
-                      >
+                      <tr key={product.id} className="hover:bg-gray-50/50 transition-colors">
                         <td className="px-4 py-2">
                           <div className="flex items-center gap-2.5">
                             <div className="w-7 h-7 bg-gray-100 rounded overflow-hidden shrink-0 opacity-80">
@@ -685,32 +621,26 @@ export function ProductsPage() {
                           <span
                             className={`text-xs ${
                               isOutOfStock
-                                ? "text-red-600"
+                                ? 'text-red-600'
                                 : isLowStock
-                                ? "text-amber-600"
-                                : "text-gray-600"
+                                  ? 'text-amber-600'
+                                  : 'text-gray-600'
                             }`}
                           >
                             {totalStock}
                           </span>
                         </td>
                         <td className="px-4 py-2 text-center">
-                          <span className="text-xs text-gray-600">
-                            {mockOrders}
-                          </span>
+                          <span className="text-xs text-gray-600">{mockOrders}</span>
                         </td>
                         <td className="px-4 py-2 text-center">
-                          <span className="text-xs text-gray-600">
-                            {mockSalesQty}
-                          </span>
+                          <span className="text-xs text-gray-600">{mockSalesQty}</span>
                         </td>
                         <td className="px-4 py-2">
                           <span
                             className={`inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded ${statusStyle.bg} ${statusStyle.text}`}
                           >
-                            <span
-                              className={`w-1 h-1 rounded-full ${statusStyle.dot}`}
-                            />
+                            <span className={`w-1 h-1 rounded-full ${statusStyle.dot}`} />
                             {product.status}
                           </span>
                         </td>
@@ -736,9 +666,7 @@ export function ProductsPage() {
                               </svg>
                             </Link>
                             <button
-                              onClick={() =>
-                                handleDelete(product.id, product.name)
-                              }
+                              onClick={() => handleDelete(product.id, product.name)}
                               className="p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
                               title="Delete"
                             >
@@ -768,8 +696,8 @@ export function ProductsPage() {
             {/* Pagination */}
             <div className="px-4 py-3 border-t border-gray-100 flex items-center justify-between">
               <p className="text-xs text-gray-500">
-                Showing <span className="font-medium">{startItem}</span> to{" "}
-                <span className="font-medium">{endItem}</span> of{" "}
+                Showing <span className="font-medium">{startItem}</span> to{' '}
+                <span className="font-medium">{endItem}</span> of{' '}
                 <span className="font-medium">{total}</span> products
               </p>
               <div className="flex items-center gap-1">
@@ -813,8 +741,8 @@ export function ProductsPage() {
                         onClick={() => updateParams({ page: String(pageNum) })}
                         className={`min-w-[28px] h-7 text-xs font-medium rounded-md transition-colors ${
                           page === pageNum
-                            ? "bg-gray-900 text-white"
-                            : "text-gray-600 hover:bg-gray-100"
+                            ? 'bg-gray-900 text-white'
+                            : 'text-gray-600 hover:bg-gray-100'
                         }`}
                       >
                         {pageNum}

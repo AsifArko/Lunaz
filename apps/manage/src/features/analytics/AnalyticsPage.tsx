@@ -135,7 +135,8 @@ function StatCard({
                 change >= 0 ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'
               }`}
             >
-              {change >= 0 ? '+' : ''}{change}%
+              {change >= 0 ? '+' : ''}
+              {change}%
             </span>
           )}
         </div>
@@ -144,12 +145,12 @@ function StatCard({
   );
 }
 
-function VisitorsChart({ 
-  data, 
+function VisitorsChart({
+  data,
   height = 200,
-  showPageViews = false 
-}: { 
-  data: TimeSeries[]; 
+  showPageViews: _showPageViews = false,
+}: {
+  data: TimeSeries[];
   height?: number;
   showPageViews?: boolean;
 }) {
@@ -158,10 +159,8 @@ function VisitorsChart({
 
   if (!data.length) return null;
 
-  const values = data.map(d => d[metric]);
+  const values = data.map((d) => d[metric]);
   const maxValue = Math.max(...values, 1);
-  const minValue = Math.min(...values);
-  const range = maxValue - minValue || 1;
 
   // Calculate nice Y-axis labels
   const yAxisLabels = [
@@ -222,31 +221,27 @@ function VisitorsChart({
 
         {/* Chart area */}
         <div className="ml-12 h-full">
-          <svg 
-            viewBox="0 0 100 100" 
-            preserveAspectRatio="none" 
+          <svg
+            viewBox="0 0 100 100"
+            preserveAspectRatio="none"
             className="w-full h-full"
             onMouseLeave={() => setHoveredIndex(null)}
           >
             {/* Grid lines */}
             {[0, 25, 50, 75, 100].map((y, i) => (
-              <line 
-                key={i} 
-                x1="0" 
-                y1={5 + (y * 0.9)} 
-                x2="100" 
-                y2={5 + (y * 0.9)} 
-                stroke="#f1f5f9" 
-                strokeWidth="0.3" 
+              <line
+                key={i}
+                x1="0"
+                y1={5 + y * 0.9}
+                x2="100"
+                y2={5 + y * 0.9}
+                stroke="#f1f5f9"
+                strokeWidth="0.3"
               />
             ))}
 
             {/* Area fill */}
-            <path
-              d={areaD}
-              fill={`url(#chartGradient-${metric})`}
-              opacity="0.15"
-            />
+            <path d={areaD} fill={`url(#chartGradient-${metric})`} opacity="0.15" />
 
             {/* Line */}
             <path
@@ -270,7 +265,7 @@ function VisitorsChart({
                 />
                 {/* Hover area */}
                 <rect
-                  x={p.x - (100 / data.length / 2)}
+                  x={p.x - 100 / data.length / 2}
                   y="0"
                   width={100 / data.length}
                   height="100"
@@ -306,7 +301,7 @@ function VisitorsChart({
 
         {/* Tooltip */}
         {hoveredIndex !== null && (
-          <div 
+          <div
             className="absolute bg-gray-900 text-white px-3 py-2 rounded-lg text-xs shadow-lg pointer-events-none z-10"
             style={{
               left: `calc(${(hoveredIndex / (data.length - 1)) * 100}% + 48px)`,
@@ -315,13 +310,15 @@ function VisitorsChart({
             }}
           >
             <p className="text-gray-400 mb-1">
-              {new Date(data[hoveredIndex].date).toLocaleDateString(undefined, { 
-                weekday: 'short', 
-                month: 'short', 
-                day: 'numeric' 
+              {new Date(data[hoveredIndex].date).toLocaleDateString(undefined, {
+                weekday: 'short',
+                month: 'short',
+                day: 'numeric',
               })}
             </p>
-            <p className="font-semibold">{data[hoveredIndex][metric].toLocaleString()} {metric}</p>
+            <p className="font-semibold">
+              {data[hoveredIndex][metric].toLocaleString()} {metric}
+            </p>
           </div>
         )}
       </div>
@@ -330,11 +327,26 @@ function VisitorsChart({
       <div className="ml-12 flex justify-between mt-2 text-[10px] text-gray-400">
         {data.length > 0 && (
           <>
-            <span>{new Date(data[0].date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
+            <span>
+              {new Date(data[0].date).toLocaleDateString(undefined, {
+                month: 'short',
+                day: 'numeric',
+              })}
+            </span>
             {data.length > 2 && (
-              <span>{new Date(data[Math.floor(data.length / 2)].date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
+              <span>
+                {new Date(data[Math.floor(data.length / 2)].date).toLocaleDateString(undefined, {
+                  month: 'short',
+                  day: 'numeric',
+                })}
+              </span>
             )}
-            <span>{new Date(data[data.length - 1].date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</span>
+            <span>
+              {new Date(data[data.length - 1].date).toLocaleDateString(undefined, {
+                month: 'short',
+                day: 'numeric',
+              })}
+            </span>
           </>
         )}
       </div>
@@ -382,7 +394,13 @@ function EngagementCard({
   );
 }
 
-function ConversionFunnelChart({ data, isLoading }: { data: ConversionFunnel[]; isLoading: boolean }) {
+function ConversionFunnelChart({
+  data,
+  isLoading,
+}: {
+  data: ConversionFunnel[];
+  isLoading: boolean;
+}) {
   if (isLoading) {
     return (
       <div className="space-y-3">
@@ -394,11 +412,7 @@ function ConversionFunnelChart({ data, isLoading }: { data: ConversionFunnel[]; 
   }
 
   if (!data.length) {
-    return (
-      <div className="py-8 text-center text-sm text-gray-400">
-        No funnel data available
-      </div>
-    );
+    return <div className="py-8 text-center text-sm text-gray-400">No funnel data available</div>;
   }
 
   const maxVisitors = data[0]?.visitors || 1;
@@ -408,7 +422,7 @@ function ConversionFunnelChart({ data, isLoading }: { data: ConversionFunnel[]; 
       {data.map((step, i) => {
         const width = (step.visitors / maxVisitors) * 100;
         const dropOff = i > 0 ? data[i - 1].visitors - step.visitors : 0;
-        
+
         return (
           <div key={i}>
             <div className="flex items-center justify-between mb-1.5">
@@ -417,7 +431,9 @@ function ConversionFunnelChart({ data, isLoading }: { data: ConversionFunnel[]; 
                 {i > 0 && dropOff > 0 && (
                   <span className="text-xs text-rose-500">-{dropOff.toLocaleString()}</span>
                 )}
-                <span className="text-sm font-semibold text-gray-900">{step.visitors.toLocaleString()}</span>
+                <span className="text-sm font-semibold text-gray-900">
+                  {step.visitors.toLocaleString()}
+                </span>
               </div>
             </div>
             <div className="relative h-8 bg-gray-100 rounded-lg overflow-hidden">
@@ -436,7 +452,13 @@ function ConversionFunnelChart({ data, isLoading }: { data: ConversionFunnel[]; 
   );
 }
 
-function RecentSessionsTable({ sessions, isLoading }: { sessions: RecentSession[]; isLoading: boolean }) {
+function RecentSessionsTable({
+  sessions,
+  isLoading,
+}: {
+  sessions: RecentSession[];
+  isLoading: boolean;
+}) {
   if (isLoading) {
     return (
       <div className="space-y-2">
@@ -448,11 +470,7 @@ function RecentSessionsTable({ sessions, isLoading }: { sessions: RecentSession[
   }
 
   if (!sessions.length) {
-    return (
-      <div className="py-8 text-center text-sm text-gray-400">
-        No recent sessions
-      </div>
-    );
+    return <div className="py-8 text-center text-sm text-gray-400">No recent sessions</div>;
   }
 
   const formatDuration = (seconds: number) => {
@@ -464,27 +482,31 @@ function RecentSessionsTable({ sessions, isLoading }: { sessions: RecentSession[
 
   const getDeviceIcon = (device: string) => {
     switch (device.toLowerCase()) {
-      case 'desktop': return '🖥️';
-      case 'mobile': return '📱';
-      case 'tablet': return '📟';
-      default: return '💻';
+      case 'desktop':
+        return '🖥️';
+      case 'mobile':
+        return '📱';
+      case 'tablet':
+        return '📟';
+      default:
+        return '💻';
     }
   };
 
   return (
     <div className="space-y-2">
       {sessions.map((session) => (
-        <div 
-          key={session.id} 
+        <div
+          key={session.id}
           className="flex items-center gap-4 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
         >
           <span className="text-lg">{getDeviceIcon(session.device)}</span>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-gray-900 truncate">{session.entryPage}</p>
             <p className="text-xs text-gray-500">
-              {new Date(session.startTime).toLocaleTimeString(undefined, { 
-                hour: '2-digit', 
-                minute: '2-digit' 
+              {new Date(session.startTime).toLocaleTimeString(undefined, {
+                hour: '2-digit',
+                minute: '2-digit',
               })}
               {session.country && ` · ${session.country}`}
             </p>
@@ -553,15 +575,21 @@ export function AnalyticsPage() {
         sessionsRes,
       ] = await Promise.all([
         api<AnalyticsOverview>(`/analytics/overview?from=${from}&to=${to}`, { token }),
-        api<TimeSeries[]>(`/analytics/timeseries?from=${from}&to=${to}&period=${period}`, { token }),
+        api<TimeSeries[]>(`/analytics/timeseries?from=${from}&to=${to}&period=${period}`, {
+          token,
+        }),
         api<TopPage[]>(`/analytics/pages?from=${from}&to=${to}&limit=10`, { token }),
         api<CountryStats[]>(`/analytics/countries?from=${from}&to=${to}&limit=10`, { token }),
         api<DeviceStats[]>(`/analytics/devices?from=${from}&to=${to}`, { token }),
         api<BrowserStats[]>(`/analytics/browsers?from=${from}&to=${to}&limit=5`, { token }),
         api<OSStats[]>(`/analytics/os?from=${from}&to=${to}&limit=5`, { token }),
         api<RealTimeData>('/analytics/realtime', { token }),
-        api<EngagementData>(`/analytics/engagement?from=${from}&to=${to}`, { token }).catch(() => null),
-        api<ConversionFunnel[]>(`/analytics/funnel?from=${from}&to=${to}`, { token }).catch(() => []),
+        api<EngagementData>(`/analytics/engagement?from=${from}&to=${to}`, { token }).catch(
+          () => null
+        ),
+        api<ConversionFunnel[]>(`/analytics/funnel?from=${from}&to=${to}`, { token }).catch(
+          () => []
+        ),
         api<RecentSession[]>(`/analytics/sessions/recent?limit=8`, { token }).catch(() => []),
       ]);
 
@@ -576,7 +604,6 @@ export function AnalyticsPage() {
       setEngagement(engagementRes);
       setFunnel(funnelRes);
       setRecentSessions(sessionsRes);
-      
     } catch (err) {
       console.error('Failed to fetch analytics:', err);
     } finally {
@@ -626,7 +653,7 @@ export function AnalyticsPage() {
               {realtime?.activeVisitors || 0} online now
             </span>
           </div>
-          
+
           {/* Date range selector */}
           <select
             value={dateRange}
@@ -704,8 +731,18 @@ export function AnalyticsPage() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <EngagementCard
             icon={
-              <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 13.5L12 21m0 0l-7.5-7.5M12 21V3" />
+              <svg
+                className="w-5 h-5 text-blue-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M19.5 13.5L12 21m0 0l-7.5-7.5M12 21V3"
+                />
               </svg>
             }
             label="Avg. Scroll Depth"
@@ -717,8 +754,18 @@ export function AnalyticsPage() {
           />
           <EngagementCard
             icon={
-              <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <svg
+                className="w-5 h-5 text-purple-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
             }
             label="Avg. Time on Site"
@@ -729,8 +776,18 @@ export function AnalyticsPage() {
           />
           <EngagementCard
             icon={
-              <svg className="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+              <svg
+                className="w-5 h-5 text-emerald-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
+                />
               </svg>
             }
             label="Pages per Session"
@@ -741,8 +798,18 @@ export function AnalyticsPage() {
           />
           <EngagementCard
             icon={
-              <svg className="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM4 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 0110.374 21c-2.331 0-4.512-.645-6.374-1.766z" />
+              <svg
+                className="w-5 h-5 text-amber-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM4 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 0110.374 21c-2.331 0-4.512-.645-6.374-1.766z"
+                />
               </svg>
             }
             label="Returning Visitors"
@@ -765,8 +832,18 @@ export function AnalyticsPage() {
               <p className="text-xs text-gray-500 mt-0.5">Visitor journey to purchase</p>
             </div>
             <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
-              <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3 4.5h14.25M3 9h9.75M3 13.5h9.75m4.5-4.5v12m0 0l-3.75-3.75M17.25 21l3.75-3.75" />
+              <svg
+                className="w-4 h-4 text-blue-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M3 4.5h14.25M3 9h9.75M3 13.5h9.75m4.5-4.5v12m0 0l-3.75-3.75M17.25 21l3.75-3.75"
+                />
               </svg>
             </div>
           </div>
@@ -781,8 +858,18 @@ export function AnalyticsPage() {
               <p className="text-xs text-gray-500 mt-0.5">Latest visitor activity</p>
             </div>
             <div className="w-8 h-8 bg-emerald-50 rounded-lg flex items-center justify-center">
-              <svg className="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+              <svg
+                className="w-4 h-4 text-emerald-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"
+                />
               </svg>
             </div>
           </div>
@@ -807,21 +894,26 @@ export function AnalyticsPage() {
           ) : pages.length > 0 ? (
             <div className="space-y-1">
               {pages.slice(0, 8).map((page, i) => {
-                const maxViews = Math.max(...pages.map(p => p.views));
+                const maxViews = Math.max(...pages.map((p) => p.views));
                 const width = (page.views / maxViews) * 100;
                 return (
-                  <div 
-                    key={i} 
+                  <div
+                    key={i}
                     className="relative flex items-center justify-between py-2.5 px-3 rounded-lg hover:bg-gray-50 group"
                   >
-                    <div 
+                    <div
                       className="absolute inset-y-1 left-0 bg-blue-50 rounded-lg transition-all group-hover:bg-blue-100"
                       style={{ width: `${width}%` }}
                     />
-                    <span className="relative text-sm text-gray-700 truncate max-w-[70%]" title={page.path}>
+                    <span
+                      className="relative text-sm text-gray-700 truncate max-w-[70%]"
+                      title={page.path}
+                    >
                       {page.path}
                     </span>
-                    <span className="relative text-sm font-semibold text-gray-900">{page.views.toLocaleString()}</span>
+                    <span className="relative text-sm font-semibold text-gray-900">
+                      {page.views.toLocaleString()}
+                    </span>
                   </div>
                 );
               })}
@@ -846,14 +938,14 @@ export function AnalyticsPage() {
           ) : countries.length > 0 ? (
             <div className="space-y-1">
               {countries.slice(0, 8).map((country, i) => {
-                const maxPercentage = Math.max(...countries.map(c => c.percentage));
+                const maxPercentage = Math.max(...countries.map((c) => c.percentage));
                 const width = (country.percentage / maxPercentage) * 100;
                 return (
-                  <div 
-                    key={i} 
+                  <div
+                    key={i}
                     className="relative flex items-center justify-between py-2.5 px-3 rounded-lg hover:bg-gray-50 group"
                   >
-                    <div 
+                    <div
                       className="absolute inset-y-1 left-0 bg-emerald-50 rounded-lg transition-all group-hover:bg-emerald-100"
                       style={{ width: `${width}%` }}
                     />
@@ -863,7 +955,9 @@ export function AnalyticsPage() {
                     </span>
                     <div className="relative flex items-center gap-2">
                       <span className="text-xs text-gray-500">{country.percentage}%</span>
-                      <span className="text-sm font-semibold text-gray-900">{country.visitors.toLocaleString()}</span>
+                      <span className="text-sm font-semibold text-gray-900">
+                        {country.visitors.toLocaleString()}
+                      </span>
                     </div>
                   </div>
                 );
@@ -881,8 +975,18 @@ export function AnalyticsPage() {
         <div className="bg-white rounded-xl border border-gray-100 p-5">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-medium text-gray-900">Devices</h3>
-            <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0V12a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 12V5.25" />
+            <svg
+              className="w-4 h-4 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0V12a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 12V5.25"
+              />
             </svg>
           </div>
           {isLoading ? (
@@ -897,28 +1001,60 @@ export function AnalyticsPage() {
                 <div key={i} className="flex items-center gap-3">
                   <div className="w-9 h-9 rounded-lg bg-gray-50 flex items-center justify-center flex-shrink-0">
                     {device.type === 'desktop' && (
-                      <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0V12a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 12V5.25" />
+                      <svg
+                        className="w-4 h-4 text-gray-500"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.5}
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0V12a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 12V5.25"
+                        />
                       </svg>
                     )}
                     {device.type === 'mobile' && (
-                      <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" />
+                      <svg
+                        className="w-4 h-4 text-gray-500"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.5}
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3"
+                        />
                       </svg>
                     )}
                     {device.type === 'tablet' && (
-                      <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5h3m-6.75 2.25h10.5a2.25 2.25 0 002.25-2.25v-15a2.25 2.25 0 00-2.25-2.25H6.75A2.25 2.25 0 004.5 4.5v15a2.25 2.25 0 002.25 2.25z" />
+                      <svg
+                        className="w-4 h-4 text-gray-500"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.5}
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M10.5 19.5h3m-6.75 2.25h10.5a2.25 2.25 0 002.25-2.25v-15a2.25 2.25 0 00-2.25-2.25H6.75A2.25 2.25 0 004.5 4.5v15a2.25 2.25 0 002.25 2.25z"
+                        />
                       </svg>
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between mb-1">
                       <span className="text-sm text-gray-700 capitalize">{device.type}</span>
-                      <span className="text-sm font-medium text-gray-900">{device.percentage}%</span>
+                      <span className="text-sm font-medium text-gray-900">
+                        {device.percentage}%
+                      </span>
                     </div>
                     <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                      <div 
+                      <div
                         className="h-full bg-gray-400 rounded-full transition-all duration-500"
                         style={{ width: `${device.percentage}%` }}
                       />
@@ -936,8 +1072,18 @@ export function AnalyticsPage() {
         <div className="bg-white rounded-xl border border-gray-100 p-5">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-medium text-gray-900">Operating Systems</h3>
-            <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.737 5.1a3.375 3.375 0 012.7-1.35h7.126c1.062 0 2.062.5 2.7 1.35l2.587 3.45a4.5 4.5 0 01.9 2.7m0 0a3 3 0 01-3 3m0 3h.008v.008h-.008v-.008zm0-6h.008v.008h-.008v-.008zm-3 6h.008v.008h-.008v-.008zm0-6h.008v.008h-.008v-.008z" />
+            <svg
+              className="w-4 h-4 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.737 5.1a3.375 3.375 0 012.7-1.35h7.126c1.062 0 2.062.5 2.7 1.35l2.587 3.45a4.5 4.5 0 01.9 2.7m0 0a3 3 0 01-3 3m0 3h.008v.008h-.008v-.008zm0-6h.008v.008h-.008v-.008zm-3 6h.008v.008h-.008v-.008zm0-6h.008v.008h-.008v-.008z"
+              />
             </svg>
           </div>
           {isLoading ? (
@@ -959,7 +1105,7 @@ export function AnalyticsPage() {
                       <span className="text-sm font-medium text-gray-900">{os.percentage}%</span>
                     </div>
                     <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                      <div 
+                      <div
                         className="h-full bg-gray-400 rounded-full transition-all duration-500"
                         style={{ width: `${os.percentage}%` }}
                       />
@@ -977,8 +1123,18 @@ export function AnalyticsPage() {
         <div className="bg-white rounded-xl border border-gray-100 p-5">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-medium text-gray-900">Browsers</h3>
-            <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" />
+            <svg
+              className="w-4 h-4 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418"
+              />
             </svg>
           </div>
           {isLoading ? (
@@ -997,10 +1153,12 @@ export function AnalyticsPage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between mb-1">
                       <span className="text-sm text-gray-700">{browser.browser}</span>
-                      <span className="text-sm font-medium text-gray-900">{browser.percentage}%</span>
+                      <span className="text-sm font-medium text-gray-900">
+                        {browser.percentage}%
+                      </span>
                     </div>
                     <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                      <div 
+                      <div
                         className="h-full bg-gray-400 rounded-full transition-all duration-500"
                         style={{ width: `${browser.percentage}%` }}
                       />

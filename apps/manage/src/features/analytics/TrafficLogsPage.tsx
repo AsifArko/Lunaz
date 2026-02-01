@@ -49,9 +49,10 @@ function FilterDropdown({
         className={`
           flex items-center gap-2 px-3 py-2 text-sm bg-white border rounded-lg
           transition-all duration-200 min-w-[160px]
-          ${isOpen 
-            ? 'border-blue-500 ring-2 ring-blue-100' 
-            : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+          ${
+            isOpen
+              ? 'border-blue-500 ring-2 ring-blue-100'
+              : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
           }
         `}
       >
@@ -59,11 +60,11 @@ function FilterDropdown({
         <span className="flex-1 text-left text-gray-700 font-medium truncate">
           {selectedOption.label}
         </span>
-        <svg 
-          className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} 
-          fill="none" 
-          stroke="currentColor" 
-          viewBox="0 0 24 24" 
+        <svg
+          className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
           strokeWidth={2}
         >
           <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
@@ -74,7 +75,9 @@ function FilterDropdown({
         <div className="absolute z-50 w-full mt-1.5 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden animate-in fade-in slide-in-from-top-1 duration-150">
           <div className="py-1.5 max-h-[280px] overflow-y-auto">
             <div className="px-3 py-1.5 mb-1">
-              <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">{label}</p>
+              <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider">
+                {label}
+              </p>
             </div>
             {options.map((option) => (
               <button
@@ -86,19 +89,24 @@ function FilterDropdown({
                 }}
                 className={`
                   w-full flex items-center gap-3 px-3 py-2.5 text-left transition-colors
-                  ${option.value === value 
-                    ? 'bg-blue-50 text-blue-700' 
-                    : 'text-gray-700 hover:bg-gray-50'
+                  ${
+                    option.value === value
+                      ? 'bg-blue-50 text-blue-700'
+                      : 'text-gray-700 hover:bg-gray-50'
                   }
                 `}
               >
                 {option.icon && (
-                  <span className={`flex-shrink-0 ${option.value === value ? 'text-blue-500' : 'text-gray-400'}`}>
+                  <span
+                    className={`flex-shrink-0 ${option.value === value ? 'text-blue-500' : 'text-gray-400'}`}
+                  >
                     {option.icon}
                   </span>
                 )}
                 <div className="flex-1 min-w-0">
-                  <p className={`text-sm font-medium truncate ${option.value === value ? 'text-blue-700' : 'text-gray-900'}`}>
+                  <p
+                    className={`text-sm font-medium truncate ${option.value === value ? 'text-blue-700' : 'text-gray-900'}`}
+                  >
                     {option.label}
                   </p>
                   {option.description && (
@@ -106,7 +114,13 @@ function FilterDropdown({
                   )}
                 </div>
                 {option.value === value && (
-                  <svg className="w-4 h-4 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                  <svg
+                    className="w-4 h-4 text-blue-500 flex-shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    strokeWidth={2}
+                  >
                     <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                   </svg>
                 )}
@@ -203,7 +217,7 @@ function EventTypeBadge({ type }: { type: string }) {
 
 function DeviceBadge({ type }: { type?: string }) {
   if (!type) return <span className="text-sm text-gray-400">-</span>;
-  
+
   const icons: Record<string, string> = {
     desktop: '🖥️',
     mobile: '📱',
@@ -218,15 +232,12 @@ function DeviceBadge({ type }: { type?: string }) {
   );
 }
 
-function TrafficDetailModal({
-  log,
-  onClose,
-}: {
-  log: TrafficLog;
-  onClose: () => void;
-}) {
+function TrafficDetailModal({ log, onClose }: { log: TrafficLog; onClose: () => void }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={onClose}>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+      onClick={onClose}
+    >
       <div
         className="bg-white rounded-xl shadow-xl w-full max-w-3xl max-h-[90vh] overflow-hidden"
         onClick={(e) => e.stopPropagation()}
@@ -237,11 +248,14 @@ function TrafficDetailModal({
             <h2 className="text-lg font-medium text-gray-900">Traffic Log Details</h2>
             <p className="text-xs text-gray-500 mt-0.5">Visitor: {log.visitorId}</p>
           </div>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-          >
-            <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+          <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+            <svg
+              className="w-5 h-5 text-gray-500"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+            >
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
@@ -253,9 +267,7 @@ function TrafficDetailModal({
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
             <div>
               <p className="text-xs text-gray-500 mb-1">Timestamp</p>
-              <p className="text-sm text-gray-900">
-                {new Date(log.timestamp).toLocaleString()}
-              </p>
+              <p className="text-sm text-gray-900">{new Date(log.timestamp).toLocaleString()}</p>
             </div>
             <div>
               <p className="text-xs text-gray-500 mb-1">Event Type</p>
@@ -450,159 +462,442 @@ export function TrafficLogsPage() {
     { label: 'Last 30 days', value: '30d', minutes: 43200 },
   ];
 
-  const timeRangeOptions: DropdownOption[] = useMemo(() => [
-    { 
-      label: 'Last hour', 
-      value: '1h',
-      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
-      description: '60 minutes'
-    },
-    { 
-      label: 'Last 6 hours', 
-      value: '6h',
-      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
-      description: '6 hours ago'
-    },
-    { 
-      label: 'Last 24 hours', 
-      value: '24h',
-      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
-      description: '1 day ago'
-    },
-    { 
-      label: 'Last 7 days', 
-      value: '7d',
-      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" /></svg>,
-      description: '1 week ago'
-    },
-    { 
-      label: 'Last 30 days', 
-      value: '30d',
-      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" /></svg>,
-      description: '1 month ago'
-    },
-  ], []);
+  const timeRangeOptions: DropdownOption[] = useMemo(
+    () => [
+      {
+        label: 'Last hour',
+        value: '1h',
+        icon: (
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+        ),
+        description: '60 minutes',
+      },
+      {
+        label: 'Last 6 hours',
+        value: '6h',
+        icon: (
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+        ),
+        description: '6 hours ago',
+      },
+      {
+        label: 'Last 24 hours',
+        value: '24h',
+        icon: (
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+        ),
+        description: '1 day ago',
+      },
+      {
+        label: 'Last 7 days',
+        value: '7d',
+        icon: (
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"
+            />
+          </svg>
+        ),
+        description: '1 week ago',
+      },
+      {
+        label: 'Last 30 days',
+        value: '30d',
+        icon: (
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"
+            />
+          </svg>
+        ),
+        description: '1 month ago',
+      },
+    ],
+    []
+  );
 
-  const eventTypeOptions: DropdownOption[] = useMemo(() => [
-    { 
-      label: 'All Events', 
-      value: '',
-      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" /></svg>,
-    },
-    { 
-      label: 'Page View', 
-      value: 'pageview',
-      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>,
-    },
-    { 
-      label: 'Session Start', 
-      value: 'session_start',
-      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M5.636 5.636a9 9 0 1012.728 0M12 3v9" /></svg>,
-    },
-    { 
-      label: 'Session End', 
-      value: 'session_end',
-      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
-    },
-    { 
-      label: 'Product View', 
-      value: 'product_view',
-      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z" /></svg>,
-    },
-    { 
-      label: 'Add to Cart', 
-      value: 'add_to_cart',
-      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" /></svg>,
-    },
-    { 
-      label: 'Purchase', 
-      value: 'purchase',
-      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" /></svg>,
-    },
-    { 
-      label: 'Search', 
-      value: 'search',
-      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>,
-    },
-    { 
-      label: 'Click', 
-      value: 'click',
-      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M15.042 21.672L13.684 16.6m0 0l-2.51 2.225.569-9.47 5.227 7.917-3.286-.672zM12 2.25V4.5m5.834.166l-1.591 1.591M20.25 10.5H18M7.757 14.743l-1.59 1.59M6 10.5H3.75m4.007-4.243l-1.59-1.59" /></svg>,
-    },
-    { 
-      label: 'Error', 
-      value: 'error',
-      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" /></svg>,
-    },
-  ], []);
+  const eventTypeOptions: DropdownOption[] = useMemo(
+    () => [
+      {
+        label: 'All Events',
+        value: '',
+        icon: (
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"
+            />
+          </svg>
+        ),
+      },
+      {
+        label: 'Page View',
+        value: 'pageview',
+        icon: (
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"
+            />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+            />
+          </svg>
+        ),
+      },
+      {
+        label: 'Session Start',
+        value: 'session_start',
+        icon: (
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M5.636 5.636a9 9 0 1012.728 0M12 3v9"
+            />
+          </svg>
+        ),
+      },
+      {
+        label: 'Session End',
+        value: 'session_end',
+        icon: (
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M9.75 9.75l4.5 4.5m0-4.5l-4.5 4.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+        ),
+      },
+      {
+        label: 'Product View',
+        value: 'product_view',
+        icon: (
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"
+            />
+          </svg>
+        ),
+      },
+      {
+        label: 'Add to Cart',
+        value: 'add_to_cart',
+        icon: (
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z"
+            />
+          </svg>
+        ),
+      },
+      {
+        label: 'Purchase',
+        value: 'purchase',
+        icon: (
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z"
+            />
+          </svg>
+        ),
+      },
+      {
+        label: 'Search',
+        value: 'search',
+        icon: (
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+            />
+          </svg>
+        ),
+      },
+      {
+        label: 'Click',
+        value: 'click',
+        icon: (
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M15.042 21.672L13.684 16.6m0 0l-2.51 2.225.569-9.47 5.227 7.917-3.286-.672zM12 2.25V4.5m5.834.166l-1.591 1.591M20.25 10.5H18M7.757 14.743l-1.59 1.59M6 10.5H3.75m4.007-4.243l-1.59-1.59"
+            />
+          </svg>
+        ),
+      },
+      {
+        label: 'Error',
+        value: 'error',
+        icon: (
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"
+            />
+          </svg>
+        ),
+      },
+    ],
+    []
+  );
 
-  const deviceTypeOptions: DropdownOption[] = useMemo(() => [
-    { 
-      label: 'All Devices', 
-      value: '',
-      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" /></svg>,
-    },
-    { 
-      label: 'Desktop', 
-      value: 'desktop',
-      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0V12a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 12V5.25" /></svg>,
-      description: 'Windows, Mac, Linux'
-    },
-    { 
-      label: 'Mobile', 
-      value: 'mobile',
-      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" /></svg>,
-      description: 'iPhone, Android'
-    },
-    { 
-      label: 'Tablet', 
-      value: 'tablet',
-      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}><path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5h3m-6.75 2.25h10.5a2.25 2.25 0 002.25-2.25v-15a2.25 2.25 0 00-2.25-2.25H6.75A2.25 2.25 0 004.5 4.5v15a2.25 2.25 0 002.25 2.25z" /></svg>,
-      description: 'iPad, Android tablets'
-    },
-  ], []);
+  const deviceTypeOptions: DropdownOption[] = useMemo(
+    () => [
+      {
+        label: 'All Devices',
+        value: '',
+        icon: (
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3"
+            />
+          </svg>
+        ),
+      },
+      {
+        label: 'Desktop',
+        value: 'desktop',
+        icon: (
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0V12a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 12V5.25"
+            />
+          </svg>
+        ),
+        description: 'Windows, Mac, Linux',
+      },
+      {
+        label: 'Mobile',
+        value: 'mobile',
+        icon: (
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3"
+            />
+          </svg>
+        ),
+        description: 'iPhone, Android',
+      },
+      {
+        label: 'Tablet',
+        value: 'tablet',
+        icon: (
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M10.5 19.5h3m-6.75 2.25h10.5a2.25 2.25 0 002.25-2.25v-15a2.25 2.25 0 00-2.25-2.25H6.75A2.25 2.25 0 004.5 4.5v15a2.25 2.25 0 002.25 2.25z"
+            />
+          </svg>
+        ),
+        description: 'iPad, Android tablets',
+      },
+    ],
+    []
+  );
 
-  const fetchLogs = useCallback(async (page: number = 1, isBackgroundRefresh: boolean = false) => {
-    if (!token) return;
-    
-    if (!isBackgroundRefresh && !hasLoadedRef.current) {
-      setIsInitialLoad(true);
-    } else if (!isBackgroundRefresh) {
-      setIsRefreshing(true);
-    }
+  const fetchLogs = useCallback(
+    async (page: number = 1, isBackgroundRefresh: boolean = false) => {
+      if (!token) return;
 
-    const range = timeRangesData.find((r) => r.value === filters.timeRange) || timeRangesData[2];
-    const to = new Date().toISOString();
-    const from = new Date(Date.now() - range.minutes * 60 * 1000).toISOString();
+      if (!isBackgroundRefresh && !hasLoadedRef.current) {
+        setIsInitialLoad(true);
+      } else if (!isBackgroundRefresh) {
+        setIsRefreshing(true);
+      }
 
-    const params = new URLSearchParams({
-      from,
-      to,
-      page: page.toString(),
-      limit: '10',
-    });
+      const range = timeRangesData.find((r) => r.value === filters.timeRange) || timeRangesData[2];
+      const to = new Date().toISOString();
+      const from = new Date(Date.now() - range.minutes * 60 * 1000).toISOString();
 
-    if (filters.type) params.set('type', filters.type);
-    if (filters.device) params.set('device', filters.device);
-    if (filters.search) params.set('search', filters.search);
-
-    try {
-      const res = await api<TrafficLogsResponse>(`/analytics/traffic?${params}`, { token });
-
-      setLogs(res.data);
-      setPagination({
-        page: res.page,
-        totalPages: res.totalPages,
-        total: res.total,
+      const params = new URLSearchParams({
+        from,
+        to,
+        page: page.toString(),
+        limit: '10',
       });
-      hasLoadedRef.current = true;
-    } catch (err) {
-      console.error('Failed to fetch traffic logs:', err);
-    } finally {
-      setIsInitialLoad(false);
-      setIsRefreshing(false);
-    }
-  }, [token, filters]);
+
+      if (filters.type) params.set('type', filters.type);
+      if (filters.device) params.set('device', filters.device);
+      if (filters.search) params.set('search', filters.search);
+
+      try {
+        const res = await api<TrafficLogsResponse>(`/analytics/traffic?${params}`, { token });
+
+        setLogs(res.data);
+        setPagination({
+          page: res.page,
+          totalPages: res.totalPages,
+          total: res.total,
+        });
+        hasLoadedRef.current = true;
+      } catch (err) {
+        console.error('Failed to fetch traffic logs:', err);
+      } finally {
+        setIsInitialLoad(false);
+        setIsRefreshing(false);
+      }
+    },
+    [token, filters]
+  );
 
   useEffect(() => {
     fetchLogs();
@@ -626,12 +921,12 @@ export function TrafficLogsPage() {
 
   const handleSearchChange = (value: string) => {
     setSearchInput(value);
-    
+
     // Clear existing timeout
     if (searchTimeoutRef.current) {
       clearTimeout(searchTimeoutRef.current);
     }
-    
+
     // Debounce search - wait 400ms after user stops typing
     searchTimeoutRef.current = setTimeout(() => {
       hasLoadedRef.current = false;
@@ -671,8 +966,18 @@ export function TrafficLogsPage() {
           disabled={isRefreshing}
           className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50"
         >
-          <svg className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+          <svg
+            className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"
+            />
           </svg>
           {isRefreshing ? 'Refreshing...' : 'Refresh'}
         </button>
@@ -696,7 +1001,7 @@ export function TrafficLogsPage() {
             <div className="h-7 w-20 bg-gray-100 rounded animate-pulse mt-2" />
           ) : (
             <p className="text-2xl font-light text-blue-600 mt-1 transition-all duration-300">
-              {logs.filter(l => l.type === 'pageview').length}
+              {logs.filter((l) => l.type === 'pageview').length}
             </p>
           )}
         </div>
@@ -706,7 +1011,7 @@ export function TrafficLogsPage() {
             <div className="h-7 w-20 bg-gray-100 rounded animate-pulse mt-2" />
           ) : (
             <p className="text-2xl font-light text-emerald-600 mt-1 transition-all duration-300">
-              {new Set(logs.map(l => l.visitorId)).size}
+              {new Set(logs.map((l) => l.visitorId)).size}
             </p>
           )}
         </div>
@@ -716,7 +1021,7 @@ export function TrafficLogsPage() {
             <div className="h-7 w-20 bg-gray-100 rounded animate-pulse mt-2" />
           ) : (
             <p className="text-2xl font-light text-gray-900 mt-1 transition-all duration-300">
-              {new Set(logs.map(l => l.sessionId)).size}
+              {new Set(logs.map((l) => l.sessionId)).size}
             </p>
           )}
         </div>
@@ -732,8 +1037,18 @@ export function TrafficLogsPage() {
             value={filters.timeRange}
             onChange={(value) => handleFilterChange('timeRange', value)}
             icon={
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
             }
           />
@@ -745,8 +1060,18 @@ export function TrafficLogsPage() {
             value={filters.type}
             onChange={(value) => handleFilterChange('type', value)}
             icon={
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z" />
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z"
+                />
               </svg>
             }
           />
@@ -758,8 +1083,18 @@ export function TrafficLogsPage() {
             value={filters.device}
             onChange={(value) => handleFilterChange('device', value)}
             icon={
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0V12a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 12V5.25" />
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0V12a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 12V5.25"
+                />
               </svg>
             }
           />
@@ -767,8 +1102,18 @@ export function TrafficLogsPage() {
           {/* Search Input */}
           <div className="flex-1 min-w-[240px] relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+              <svg
+                className="w-4 h-4 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+                />
               </svg>
             </div>
             <input
@@ -784,7 +1129,13 @@ export function TrafficLogsPage() {
                 onClick={clearSearch}
                 className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  strokeWidth={2}
+                >
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
@@ -798,13 +1149,19 @@ export function TrafficLogsPage() {
             <span className="text-xs text-gray-500">Active filters:</span>
             {filters.type && (
               <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium bg-blue-50 text-blue-700 rounded-full">
-                {eventTypeOptions.find(e => e.value === filters.type)?.label}
+                {eventTypeOptions.find((e) => e.value === filters.type)?.label}
                 <button
                   type="button"
                   onClick={() => handleFilterChange('type', '')}
                   className="hover:text-blue-900 transition-colors"
                 >
-                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                  <svg
+                    className="w-3 h-3"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    strokeWidth={2}
+                  >
                     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
@@ -812,13 +1169,19 @@ export function TrafficLogsPage() {
             )}
             {filters.device && (
               <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium bg-purple-50 text-purple-700 rounded-full">
-                {deviceTypeOptions.find(d => d.value === filters.device)?.label}
+                {deviceTypeOptions.find((d) => d.value === filters.device)?.label}
                 <button
                   type="button"
                   onClick={() => handleFilterChange('device', '')}
                   className="hover:text-purple-900 transition-colors"
                 >
-                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                  <svg
+                    className="w-3 h-3"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    strokeWidth={2}
+                  >
                     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
@@ -832,7 +1195,13 @@ export function TrafficLogsPage() {
                   onClick={clearSearch}
                   className="hover:text-gray-900 transition-colors"
                 >
-                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                  <svg
+                    className="w-3 h-3"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    strokeWidth={2}
+                  >
                     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
@@ -891,19 +1260,23 @@ export function TrafficLogsPage() {
                         <EventTypeBadge type={log.type} />
                       </td>
                       <td className="px-4 py-3">
-                        <span className="text-sm text-gray-900 truncate block max-w-[180px]" title={log.page.path}>
+                        <span
+                          className="text-sm text-gray-900 truncate block max-w-[180px]"
+                          title={log.page.path}
+                        >
                           {log.page.path}
                         </span>
                       </td>
                       <td className="px-4 py-3">
-                        <span className="text-sm text-gray-500 font-mono truncate block max-w-[100px]" title={log.visitorId}>
+                        <span
+                          className="text-sm text-gray-500 font-mono truncate block max-w-[100px]"
+                          title={log.visitorId}
+                        >
                           {log.visitorId.slice(0, 10)}...
                         </span>
                       </td>
                       <td className="px-4 py-3">
-                        <span className="text-sm text-gray-500 font-mono">
-                          {log.ip || '-'}
-                        </span>
+                        <span className="text-sm text-gray-500 font-mono">{log.ip || '-'}</span>
                       </td>
                       <td className="px-4 py-3">
                         <DeviceBadge type={log.device?.type} />
@@ -911,9 +1284,7 @@ export function TrafficLogsPage() {
                       <td className="px-4 py-3 text-sm text-gray-500">
                         {log.device?.browser || '-'}
                       </td>
-                      <td className="px-4 py-3 text-sm text-gray-500">
-                        {log.device?.os || '-'}
-                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-500">{log.device?.os || '-'}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -949,8 +1320,18 @@ export function TrafficLogsPage() {
         ) : (
           <div className="py-16 text-center">
             <div className="w-12 h-12 mx-auto mb-3 bg-gray-50 rounded-full flex items-center justify-center">
-              <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+              <svg
+                className="w-6 h-6 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z"
+                />
               </svg>
             </div>
             <p className="text-sm text-gray-500">No traffic logs found</p>
@@ -960,9 +1341,7 @@ export function TrafficLogsPage() {
       </div>
 
       {/* Detail Modal */}
-      {selectedLog && (
-        <TrafficDetailModal log={selectedLog} onClose={() => setSelectedLog(null)} />
-      )}
+      {selectedLog && <TrafficDetailModal log={selectedLog} onClose={() => setSelectedLog(null)} />}
     </div>
   );
 }

@@ -109,12 +109,7 @@ export function ProfilePage() {
       <Card>
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Personal Information</h2>
         <form onSubmit={handleSaveProfile} className="space-y-4">
-          <Input
-            label="Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-          />
+          <Input label="Name" value={name} onChange={(e) => setName(e.target.value)} required />
           <Input
             label="Email"
             type="email"
@@ -157,7 +152,11 @@ export function ProfilePage() {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
-              error={confirmPassword && newPassword !== confirmPassword ? 'Passwords do not match' : undefined}
+              error={
+                confirmPassword && newPassword !== confirmPassword
+                  ? 'Passwords do not match'
+                  : undefined
+              }
             />
             <div className="flex gap-3">
               <Button type="submit" loading={isChangingPassword}>

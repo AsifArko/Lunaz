@@ -6,103 +6,103 @@ Use this matrix to track coverage across Web, Manage, and Backend. **P** = Plann
 
 ### 1.1 Product and catalog
 
-| Feature | Web | Manage | Backend |
-|---------|-----|--------|---------|
-| List products by category | P | — | P |
-| Product detail (price, sizes, images) | P | — | P |
-| Sort/filter products | P | P | P |
-| Search products | P | P | P |
-| Product CRUD | — | P | P |
-| Product variants (sizes, SKU, price override) | P (display, add to cart) | P (edit) | P |
-| Product images (multiple, S3) | P (display) | P (upload/delete) | P |
-| Category CRUD | — | P | P |
-| Category list / tree | P | P | P |
-| Product status (draft/published) | P (only published) | P | P |
-| Stock per variant | P (display) | P (edit) | P |
-| Bulk product actions | — | O | O |
+| Feature                                       | Web                      | Manage            | Backend |
+| --------------------------------------------- | ------------------------ | ----------------- | ------- |
+| List products by category                     | P                        | —                 | P       |
+| Product detail (price, sizes, images)         | P                        | —                 | P       |
+| Sort/filter products                          | P                        | P                 | P       |
+| Search products                               | P                        | P                 | P       |
+| Product CRUD                                  | —                        | P                 | P       |
+| Product variants (sizes, SKU, price override) | P (display, add to cart) | P (edit)          | P       |
+| Product images (multiple, S3)                 | P (display)              | P (upload/delete) | P       |
+| Category CRUD                                 | —                        | P                 | P       |
+| Category list / tree                          | P                        | P                 | P       |
+| Product status (draft/published)              | P (only published)       | P                 | P       |
+| Stock per variant                             | P (display)              | P (edit)          | P       |
+| Bulk product actions                          | —                        | O                 | O       |
 
 ### 1.2 Cart and checkout
 
-| Feature | Web | Manage | Backend |
-|---------|-----|--------|---------|
-| Add to cart (with variant) | P | — | P |
-| Update/remove cart items | P | — | P |
-| Persist cart (guest + logged-in) | P | — | P |
-| Checkout (address, summary) | P | — | P |
-| Place order | P | — | P |
-| Order confirmation | P | — | P |
-| Payment integration (e.g. Stripe) | P | — | P (webhook) |
+| Feature                           | Web | Manage | Backend     |
+| --------------------------------- | --- | ------ | ----------- |
+| Add to cart (with variant)        | P   | —      | P           |
+| Update/remove cart items          | P   | —      | P           |
+| Persist cart (guest + logged-in)  | P   | —      | P           |
+| Checkout (address, summary)       | P   | —      | P           |
+| Place order                       | P   | —      | P           |
+| Order confirmation                | P   | —      | P           |
+| Payment integration (e.g. Stripe) | P   | —      | P (webhook) |
 
 ### 1.3 User and auth
 
-| Feature | Web | Manage | Backend |
-|---------|-----|--------|---------|
-| Register | P | — | P |
-| Login / Logout | P | P | P |
-| JWT, role (customer / admin) | P | P | P |
-| Forgot / reset password | O | O | P |
-| Profile (view/edit) | P | — | P |
-| Change password | P | — | P |
-| Addresses CRUD, default | P | — | P |
+| Feature                      | Web | Manage | Backend |
+| ---------------------------- | --- | ------ | ------- |
+| Register                     | P   | —      | P       |
+| Login / Logout               | P   | P      | P       |
+| JWT, role (customer / admin) | P   | P      | P       |
+| Forgot / reset password      | O   | O      | P       |
+| Profile (view/edit)          | P   | —      | P       |
+| Change password              | P   | —      | P       |
+| Addresses CRUD, default      | P   | —      | P       |
 
 ### 1.4 Orders
 
-| Feature | Web | Manage | Backend |
-|---------|-----|--------|---------|
-| Order history (customer) | P | — | P |
-| Order detail (customer) | P | — | P |
-| Order status display | P | — | P |
-| Order list (admin, all) | — | P | P |
-| Order detail (admin) | — | P | P |
-| Update order status (admin) | — | P | P |
-| Order number / human-readable id | P | P | P |
+| Feature                          | Web | Manage | Backend |
+| -------------------------------- | --- | ------ | ------- |
+| Order history (customer)         | P   | —      | P       |
+| Order detail (customer)          | P   | —      | P       |
+| Order status display             | P   | —      | P       |
+| Order list (admin, all)          | —   | P      | P       |
+| Order detail (admin)             | —   | P      | P       |
+| Update order status (admin)      | —   | P      | P       |
+| Order number / human-readable id | P   | P      | P       |
 
 ### 1.5 Sales and finance
 
-| Feature | Web | Manage | Backend |
-|---------|-----|--------|---------|
-| Transactions list | — | P | P |
-| Payouts / cash outs list | — | P | P |
-| Sales report (by period) | — | P | P |
-| Dashboard metrics | — | P | P |
-| Export (CSV/PDF) | — | O | O |
+| Feature                  | Web | Manage | Backend |
+| ------------------------ | --- | ------ | ------- |
+| Transactions list        | —   | P      | P       |
+| Payouts / cash outs list | —   | P      | P       |
+| Sales report (by period) | —   | P      | P       |
+| Dashboard metrics        | —   | P      | P       |
+| Export (CSV/PDF)         | —   | O      | O       |
 
 ### 1.6 Customers and content
 
-| Feature | Web | Manage | Backend |
-|---------|-----|--------|---------|
-| Customer list (admin) | — | P | P |
-| Customer detail (admin) | — | P | P |
-| Store settings | — | P | O |
-| Homepage content / banners | O | O | O |
+| Feature                    | Web | Manage | Backend |
+| -------------------------- | --- | ------ | ------- |
+| Customer list (admin)      | —   | P      | P       |
+| Customer detail (admin)    | —   | P      | P       |
+| Store settings             | —   | P      | O       |
+| Homepage content / banners | O   | O      | O       |
 
 ### 1.7 Infrastructure and quality
 
-| Feature | Web | Manage | Backend |
-|---------|-----|--------|---------|
-| Strict TypeScript | P | P | P |
-| Shared types (@lunaz/types) | P | P | P |
-| Shared UI (@lunaz/ui) | P | P | — |
-| Configurable (env) | P | P | P |
-| Dockerized | P | P | P |
-| Health check | — | — | P |
-| CORS, rate limit, security headers | — | — | P |
-| Validation (Zod) | O | O | P |
+| Feature                            | Web | Manage | Backend |
+| ---------------------------------- | --- | ------ | ------- |
+| Strict TypeScript                  | P   | P      | P       |
+| Shared types (@lunaz/types)        | P   | P      | P       |
+| Shared UI (@lunaz/ui)              | P   | P      | —       |
+| Configurable (env)                 | P   | P      | P       |
+| Dockerized                         | P   | P      | P       |
+| Health check                       | —   | —      | P       |
+| CORS, rate limit, security headers | —   | —      | P       |
+| Validation (Zod)                   | O   | O      | P       |
 
 ### 1.8 Optional / future
 
-| Feature | Web | Manage | Backend |
-|---------|-----|--------|---------|
-| Discounts / coupons | O | O | O |
-| Inventory alerts | — | O | O |
-| Reviews / ratings | O | O | O |
-| Wishlist | O | — | O |
-| Email (order confirmation, reset) | — | — | O |
-| Returns / refunds | O | O | O |
-| Multi-currency | O | O | O |
-| Audit log (admin) | — | O | O |
-| SEO (sitemap, structured data) | O | — | O |
-| i18n | O | O | O |
+| Feature                           | Web | Manage | Backend |
+| --------------------------------- | --- | ------ | ------- |
+| Discounts / coupons               | O   | O      | O       |
+| Inventory alerts                  | —   | O      | O       |
+| Reviews / ratings                 | O   | O      | O       |
+| Wishlist                          | O   | —      | O       |
+| Email (order confirmation, reset) | —   | —      | O       |
+| Returns / refunds                 | O   | O      | O       |
+| Multi-currency                    | O   | O      | O       |
+| Audit log (admin)                 | —   | O      | O       |
+| SEO (sitemap, structured data)    | O   | —      | O       |
+| i18n                              | O   | O      | O       |
 
 ---
 

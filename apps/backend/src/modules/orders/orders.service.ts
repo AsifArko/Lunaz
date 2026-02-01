@@ -116,7 +116,14 @@ export async function createOrder(userId: string, input: CreateOrderInput) {
 export async function listOrders(
   userId: string,
   isAdmin: boolean,
-  query: { status?: string; search?: string; startDate?: string; endDate?: string; page?: number; limit?: number }
+  query: {
+    status?: string;
+    search?: string;
+    startDate?: string;
+    endDate?: string;
+    page?: number;
+    limit?: number;
+  }
 ) {
   const filter: Record<string, unknown> = isAdmin ? {} : { userId };
   if (query.status) filter.status = query.status;

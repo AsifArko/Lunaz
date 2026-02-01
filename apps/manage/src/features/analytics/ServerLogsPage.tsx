@@ -84,11 +84,7 @@ function StatusBadge({ code }: { code: number }) {
     colorClass = 'bg-rose-50 text-rose-700';
   }
 
-  return (
-    <span className={`px-2 py-0.5 text-xs font-medium rounded ${colorClass}`}>
-      {code}
-    </span>
-  );
+  return <span className={`px-2 py-0.5 text-xs font-medium rounded ${colorClass}`}>{code}</span>;
 }
 
 function LevelBadge({ level }: { level: string }) {
@@ -100,7 +96,9 @@ function LevelBadge({ level }: { level: string }) {
   };
 
   return (
-    <span className={`px-2 py-0.5 text-xs font-medium rounded capitalize ${colors[level] || colors.info}`}>
+    <span
+      className={`px-2 py-0.5 text-xs font-medium rounded capitalize ${colors[level] || colors.info}`}
+    >
       {level}
     </span>
   );
@@ -116,21 +114,20 @@ function MethodBadge({ method }: { method: string }) {
   };
 
   return (
-    <span className={`px-2 py-0.5 text-xs font-medium rounded ${colors[method] || 'bg-gray-100 text-gray-600'}`}>
+    <span
+      className={`px-2 py-0.5 text-xs font-medium rounded ${colors[method] || 'bg-gray-100 text-gray-600'}`}
+    >
       {method}
     </span>
   );
 }
 
-function LogDetailModal({
-  log,
-  onClose,
-}: {
-  log: ServerLog;
-  onClose: () => void;
-}) {
+function LogDetailModal({ log, onClose }: { log: ServerLog; onClose: () => void }) {
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={onClose}>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+      onClick={onClose}
+    >
       <div
         className="bg-white rounded-xl shadow-xl w-full max-w-3xl max-h-[90vh] overflow-hidden"
         onClick={(e) => e.stopPropagation()}
@@ -141,11 +138,14 @@ function LogDetailModal({
             <h2 className="text-lg font-medium text-gray-900">Log Details</h2>
             <p className="text-xs text-gray-500 mt-0.5">Request ID: {log.requestId}</p>
           </div>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-          >
-            <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+          <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+            <svg
+              className="w-5 h-5 text-gray-500"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+            >
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
@@ -157,9 +157,7 @@ function LogDetailModal({
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
             <div>
               <p className="text-xs text-gray-500 mb-1">Timestamp</p>
-              <p className="text-sm text-gray-900">
-                {new Date(log.timestamp).toLocaleString()}
-              </p>
+              <p className="text-sm text-gray-900">{new Date(log.timestamp).toLocaleString()}</p>
             </div>
             <div>
               <p className="text-xs text-gray-500 mb-1">Duration</p>
@@ -205,7 +203,9 @@ function LogDetailModal({
               <div className="flex items-center gap-4">
                 <div>
                   <p className="text-xs text-gray-500">Status</p>
-                  <p className="text-sm text-gray-700">{log.statusCode} {log.statusText}</p>
+                  <p className="text-sm text-gray-700">
+                    {log.statusCode} {log.statusText}
+                  </p>
                 </div>
                 {log.response?.contentLength && (
                   <div>
@@ -283,7 +283,7 @@ function LogDetailModal({
                   <div>
                     <p className="text-xs text-gray-500">Memory Usage</p>
                     <p className="text-sm text-gray-700">
-                      {Math.round(log.server.memory.heapUsed / 1024 / 1024)}MB / 
+                      {Math.round(log.server.memory.heapUsed / 1024 / 1024)}MB /
                       {Math.round(log.server.memory.heapTotal / 1024 / 1024)}MB
                     </p>
                   </div>
@@ -357,54 +357,57 @@ export function ServerLogsPage() {
     { label: 'Last 7 days', value: '7d', minutes: 10080 },
   ];
 
-  const fetchLogs = useCallback(async (page: number = 1, isBackgroundRefresh: boolean = false) => {
-    if (!token) return;
-    
-    // Only show loading on initial load or explicit page changes, not background refresh
-    if (!isBackgroundRefresh && !hasLoadedRef.current) {
-      setIsInitialLoad(true);
-    } else if (!isBackgroundRefresh) {
-      setIsRefreshing(true);
-    }
+  const fetchLogs = useCallback(
+    async (page: number = 1, isBackgroundRefresh: boolean = false) => {
+      if (!token) return;
 
-    const range = timeRanges.find((r) => r.value === filters.timeRange) || timeRanges[0];
-    const to = new Date().toISOString();
-    const from = new Date(Date.now() - range.minutes * 60 * 1000).toISOString();
+      // Only show loading on initial load or explicit page changes, not background refresh
+      if (!isBackgroundRefresh && !hasLoadedRef.current) {
+        setIsInitialLoad(true);
+      } else if (!isBackgroundRefresh) {
+        setIsRefreshing(true);
+      }
 
-    const params = new URLSearchParams({
-      from,
-      to,
-      page: page.toString(),
-      limit: '10',
-    });
+      const range = timeRanges.find((r) => r.value === filters.timeRange) || timeRanges[0];
+      const to = new Date().toISOString();
+      const from = new Date(Date.now() - range.minutes * 60 * 1000).toISOString();
 
-    if (filters.level) params.set('level', filters.level);
-    if (filters.status) params.set('status', filters.status);
-    if (filters.method) params.set('method', filters.method);
-    if (filters.search) params.set('search', filters.search);
-
-    try {
-      const [logsRes, statsRes] = await Promise.all([
-        api<LogsResponse>(`/analytics/logs?${params}`, { token }),
-        api<LogStats>(`/analytics/logs/stats?from=${from}&to=${to}`, { token }),
-      ]);
-
-      // Smooth update - batch state changes
-      setLogs(logsRes.data);
-      setPagination({
-        page: logsRes.page,
-        totalPages: logsRes.totalPages,
-        total: logsRes.total,
+      const params = new URLSearchParams({
+        from,
+        to,
+        page: page.toString(),
+        limit: '10',
       });
-      setStats(statsRes);
-      hasLoadedRef.current = true;
-    } catch (err) {
-      console.error('Failed to fetch logs:', err);
-    } finally {
-      setIsInitialLoad(false);
-      setIsRefreshing(false);
-    }
-  }, [token, filters]);
+
+      if (filters.level) params.set('level', filters.level);
+      if (filters.status) params.set('status', filters.status);
+      if (filters.method) params.set('method', filters.method);
+      if (filters.search) params.set('search', filters.search);
+
+      try {
+        const [logsRes, statsRes] = await Promise.all([
+          api<LogsResponse>(`/analytics/logs?${params}`, { token }),
+          api<LogStats>(`/analytics/logs/stats?from=${from}&to=${to}`, { token }),
+        ]);
+
+        // Smooth update - batch state changes
+        setLogs(logsRes.data);
+        setPagination({
+          page: logsRes.page,
+          totalPages: logsRes.totalPages,
+          total: logsRes.total,
+        });
+        setStats(statsRes);
+        hasLoadedRef.current = true;
+      } catch (err) {
+        console.error('Failed to fetch logs:', err);
+      } finally {
+        setIsInitialLoad(false);
+        setIsRefreshing(false);
+      }
+    },
+    [token, filters]
+  );
 
   useEffect(() => {
     fetchLogs();
@@ -425,7 +428,7 @@ export function ServerLogsPage() {
     hasLoadedRef.current = false; // Reset to show loading on filter change
     setFilters((prev) => ({ ...prev, [key]: value }));
   };
-  
+
   const handlePageChange = (page: number) => {
     fetchLogs(page, false);
   };
@@ -443,8 +446,18 @@ export function ServerLogsPage() {
           disabled={isRefreshing}
           className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50"
         >
-          <svg className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+          <svg
+            className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"
+            />
           </svg>
           {isRefreshing ? 'Refreshing...' : 'Refresh'}
         </button>
@@ -457,7 +470,9 @@ export function ServerLogsPage() {
           {isInitialLoad ? (
             <div className="h-7 w-20 bg-gray-100 rounded animate-pulse mt-2" />
           ) : (
-            <p className="text-2xl font-light text-gray-900 mt-1 transition-all duration-300">{stats?.totalRequests.toLocaleString() || 0}</p>
+            <p className="text-2xl font-light text-gray-900 mt-1 transition-all duration-300">
+              {stats?.totalRequests.toLocaleString() || 0}
+            </p>
           )}
         </div>
         <div className="bg-white rounded-xl border border-gray-100 p-4">
@@ -465,7 +480,9 @@ export function ServerLogsPage() {
           {isInitialLoad ? (
             <div className="h-7 w-20 bg-gray-100 rounded animate-pulse mt-2" />
           ) : (
-            <p className="text-2xl font-light text-rose-600 mt-1 transition-all duration-300">{stats?.errorCount || 0}</p>
+            <p className="text-2xl font-light text-rose-600 mt-1 transition-all duration-300">
+              {stats?.errorCount || 0}
+            </p>
           )}
         </div>
         <div className="bg-white rounded-xl border border-gray-100 p-4">
@@ -473,7 +490,9 @@ export function ServerLogsPage() {
           {isInitialLoad ? (
             <div className="h-7 w-20 bg-gray-100 rounded animate-pulse mt-2" />
           ) : (
-            <p className="text-2xl font-light text-amber-600 mt-1 transition-all duration-300">{stats?.warnCount || 0}</p>
+            <p className="text-2xl font-light text-amber-600 mt-1 transition-all duration-300">
+              {stats?.warnCount || 0}
+            </p>
           )}
         </div>
         <div className="bg-white rounded-xl border border-gray-100 p-4">
@@ -481,7 +500,9 @@ export function ServerLogsPage() {
           {isInitialLoad ? (
             <div className="h-7 w-20 bg-gray-100 rounded animate-pulse mt-2" />
           ) : (
-            <p className="text-2xl font-light text-gray-900 mt-1 transition-all duration-300">{stats?.avgResponseTime || 0}ms</p>
+            <p className="text-2xl font-light text-gray-900 mt-1 transition-all duration-300">
+              {stats?.avgResponseTime || 0}ms
+            </p>
           )}
         </div>
       </div>
@@ -591,7 +612,10 @@ export function ServerLogsPage() {
                         <MethodBadge method={log.method} />
                       </td>
                       <td className="px-4 py-3">
-                        <span className="text-sm text-gray-900 truncate block max-w-[200px]" title={log.path}>
+                        <span
+                          className="text-sm text-gray-900 truncate block max-w-[200px]"
+                          title={log.path}
+                        >
                           {log.path}
                         </span>
                       </td>
@@ -601,13 +625,9 @@ export function ServerLogsPage() {
                         </span>
                       </td>
                       <td className="px-4 py-3">
-                        <span className="text-sm text-gray-500">
-                          {log.server?.host || '-'}
-                        </span>
+                        <span className="text-sm text-gray-500">{log.server?.host || '-'}</span>
                       </td>
-                      <td className="px-4 py-3 text-sm text-gray-500">
-                        {log.duration}ms
-                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-500">{log.duration}ms</td>
                       <td className="px-4 py-3">
                         <LevelBadge level={log.level} />
                       </td>
@@ -646,8 +666,18 @@ export function ServerLogsPage() {
         ) : (
           <div className="py-16 text-center">
             <div className="w-12 h-12 mx-auto mb-3 bg-gray-50 rounded-full flex items-center justify-center">
-              <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+              <svg
+                className="w-6 h-6 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
+                />
               </svg>
             </div>
             <p className="text-sm text-gray-500">No logs found</p>
@@ -657,9 +687,7 @@ export function ServerLogsPage() {
       </div>
 
       {/* Detail Modal */}
-      {selectedLog && (
-        <LogDetailModal log={selectedLog} onClose={() => setSelectedLog(null)} />
-      )}
+      {selectedLog && <LogDetailModal log={selectedLog} onClose={() => setSelectedLog(null)} />}
     </div>
   );
 }

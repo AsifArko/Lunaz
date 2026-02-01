@@ -1,10 +1,5 @@
 import mongoose from 'mongoose';
-import {
-  AnalyticsEventType,
-  ReferrerType,
-  DeviceType,
-  LogLevel,
-} from '@lunaz/types';
+import { AnalyticsEventType, ReferrerType, DeviceType, LogLevel } from '@lunaz/types';
 
 /* -------------------------------------------------------------------------- */
 /*                              Traffic Logs                                  */

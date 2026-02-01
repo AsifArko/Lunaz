@@ -104,7 +104,11 @@ export function RegisterPage() {
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
               autoComplete="new-password"
-              error={confirmPassword && password !== confirmPassword ? 'Passwords do not match' : undefined}
+              error={
+                confirmPassword && password !== confirmPassword
+                  ? 'Passwords do not match'
+                  : undefined
+              }
             />
 
             <Button type="submit" fullWidth loading={isLoading}>

@@ -13,34 +13,46 @@ const variantSchema = z.object({
 export const createProductSchema = z.object({
   body: z.object({
     name: z.string().min(1),
-    slug: z.string().min(1).regex(/^[a-z0-9-]+$/, 'Slug must be lowercase alphanumeric with dashes'),
+    slug: z
+      .string()
+      .min(1)
+      .regex(/^[a-z0-9-]+$/, 'Slug must be lowercase alphanumeric with dashes'),
     description: z.string().optional(),
     categoryId: z.string().min(1),
     status: z.enum([ProductStatus.DRAFT, ProductStatus.PUBLISHED]).default(ProductStatus.DRAFT),
     basePrice: z.number().min(0),
     currency: z.string().default('USD'),
     variants: z.array(variantSchema).default([]),
-    meta: z.object({
-      title: z.string().optional(),
-      description: z.string().optional(),
-    }).optional(),
+    meta: z
+      .object({
+        title: z.string().optional(),
+        description: z.string().optional(),
+      })
+      .optional(),
   }),
 });
 
 export const updateProductSchema = z.object({
   body: z.object({
     name: z.string().min(1).optional(),
-    slug: z.string().min(1).regex(/^[a-z0-9-]+$/).optional(),
+    slug: z
+      .string()
+      .min(1)
+      .regex(/^[a-z0-9-]+$/)
+      .optional(),
     description: z.string().optional().nullable(),
     categoryId: z.string().min(1).optional(),
     status: z.enum([ProductStatus.DRAFT, ProductStatus.PUBLISHED]).optional(),
     basePrice: z.number().min(0).optional(),
     currency: z.string().optional(),
     variants: z.array(variantSchema).optional(),
-    meta: z.object({
-      title: z.string().optional(),
-      description: z.string().optional(),
-    }).optional().nullable(),
+    meta: z
+      .object({
+        title: z.string().optional(),
+        description: z.string().optional(),
+      })
+      .optional()
+      .nullable(),
   }),
 });
 

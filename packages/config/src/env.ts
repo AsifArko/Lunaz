@@ -134,7 +134,10 @@ export function createConfigLoader<T extends z.ZodTypeAny>(schema: T) {
 /**
  * Check if all required env vars are present (for quick startup checks).
  */
-export function checkRequiredEnv(required: string[], env: Record<string, string | undefined>): void {
+export function checkRequiredEnv(
+  required: string[],
+  env: Record<string, string | undefined>
+): void {
   const missing = required.filter((key) => !env[key]);
 
   if (missing.length > 0) {

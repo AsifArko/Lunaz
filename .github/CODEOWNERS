@@ -1,0 +1,51 @@
+# ============================================================================
+# Lunaz — CODEOWNERS
+# ============================================================================
+# Define code owners for automatic review requests
+# See: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+# ============================================================================
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Default Owners
+# ─────────────────────────────────────────────────────────────────────────────
+# These owners will be requested for review when someone opens a pull request
+# Customize with your team's GitHub usernames or team names
+# Example: @your-org/lunaz-team or @username
+
+* @lunaz-team
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Backend
+# ─────────────────────────────────────────────────────────────────────────────
+/apps/backend/ @lunaz-team
+/packages/types/ @lunaz-team
+/packages/config/ @lunaz-team
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Frontend
+# ─────────────────────────────────────────────────────────────────────────────
+/apps/web/ @lunaz-team
+/apps/manage/ @lunaz-team
+/packages/ui/ @lunaz-team
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Infrastructure & DevOps
+# ─────────────────────────────────────────────────────────────────────────────
+/.github/ @lunaz-team
+/docker-compose*.yml @lunaz-team
+**/Dockerfile @lunaz-team
+/Makefile @lunaz-team
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Security-Sensitive Files
+# ─────────────────────────────────────────────────────────────────────────────
+# These files should have additional review from security-aware team members
+/apps/backend/src/middleware/auth.ts @lunaz-team
+/apps/backend/src/lib/jwt.ts @lunaz-team
+/.env.example @lunaz-team
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Documentation
+# ─────────────────────────────────────────────────────────────────────────────
+/docs/ @lunaz-team
+*.md @lunaz-team

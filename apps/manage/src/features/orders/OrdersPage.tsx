@@ -14,7 +14,14 @@ const statusColors: Record<string, { bg: string; text: string; dot: string }> = 
   cancelled: { bg: 'bg-red-50', text: 'text-red-700', dot: 'bg-red-500' },
 };
 
-const statusOptions: OrderStatus[] = ['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled'];
+const statusOptions: OrderStatus[] = [
+  'pending',
+  'confirmed',
+  'processing',
+  'shipped',
+  'delivered',
+  'cancelled',
+];
 
 // Filter Dropdown Component
 function FilterDropdown({
@@ -78,12 +85,20 @@ function FilterDropdown({
               setIsOpen(false);
             }}
             className={`w-full px-3 py-2 text-left text-xs transition-colors flex items-center justify-between ${
-              !value ? 'text-gray-900 bg-gray-50' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700'
+              !value
+                ? 'text-gray-900 bg-gray-50'
+                : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700'
             }`}
           >
             <span>{placeholder}</span>
             {!value && (
-              <svg className="w-3 h-3 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+              <svg
+                className="w-3 h-3 text-gray-900"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                strokeWidth={2}
+              >
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
               </svg>
             )}
@@ -104,7 +119,13 @@ function FilterDropdown({
             >
               <span>{option.label}</span>
               {value === option.value && (
-                <svg className="w-3 h-3 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                <svg
+                  className="w-3 h-3 text-gray-900"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  strokeWidth={2}
+                >
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                 </svg>
               )}
@@ -152,7 +173,7 @@ const datePresets = [
 function getDateRange(preset: string): { startDate: string; endDate: string } | null {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  
+
   switch (preset) {
     case 'today':
       return {
@@ -303,8 +324,10 @@ export function OrdersPage() {
   const endItem = Math.min(page * limit, total);
 
   // Count orders by status
-  const pendingCount = orders.filter(o => o.status === 'pending').length;
-  const processingCount = orders.filter(o => ['confirmed', 'processing'].includes(o.status)).length;
+  const pendingCount = orders.filter((o) => o.status === 'pending').length;
+  const processingCount = orders.filter((o) =>
+    ['confirmed', 'processing'].includes(o.status)
+  ).length;
 
   return (
     <div className="space-y-6">
@@ -372,7 +395,10 @@ export function OrdersPage() {
 
         {/* Status Filter */}
         <FilterDropdown
-          options={statusOptions.map((s) => ({ value: s, label: s.charAt(0).toUpperCase() + s.slice(1) }))}
+          options={statusOptions.map((s) => ({
+            value: s,
+            label: s.charAt(0).toUpperCase() + s.slice(1),
+          }))}
           value={status}
           onChange={(value) => updateParams({ status: value })}
           placeholder="All Status"
@@ -415,8 +441,19 @@ export function OrdersPage() {
           <div className="p-12 text-center">
             <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 mb-3">
               <svg className="w-5 h-5 text-gray-500 animate-spin" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                />
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                />
               </svg>
             </div>
             <p className="text-sm text-gray-500">Loading orders...</p>
@@ -424,13 +461,25 @@ export function OrdersPage() {
         ) : orders.length === 0 ? (
           <div className="p-12 text-center">
             <div className="w-12 h-12 mx-auto mb-3 bg-gray-100 rounded-full flex items-center justify-center">
-              <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+              <svg
+                className="w-6 h-6 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"
+                />
               </svg>
             </div>
             <p className="text-sm font-medium text-gray-700 mb-1">No orders found</p>
             <p className="text-xs text-gray-500">
-              {hasFilters ? 'Try adjusting your filters' : 'Orders will appear here when customers place them'}
+              {hasFilters
+                ? 'Try adjusting your filters'
+                : 'Orders will appear here when customers place them'}
             </p>
           </div>
         ) : (
@@ -469,7 +518,7 @@ export function OrdersPage() {
                   {orders.map((order) => {
                     const statusStyle = statusColors[order.status] || statusColors.pending;
                     const itemCount = order.items.reduce((sum, item) => sum + item.quantity, 0);
-                    
+
                     return (
                       <tr key={order.id} className="hover:bg-gray-50/50 transition-colors">
                         {/* Order Number */}
@@ -486,14 +535,18 @@ export function OrdersPage() {
                         <td className="px-4 py-2.5">
                           <div>
                             <p className="text-xs text-gray-600">{formatDate(order.createdAt)}</p>
-                            <p className="text-[10px] text-gray-400">{formatTime(order.createdAt)}</p>
+                            <p className="text-[10px] text-gray-400">
+                              {formatTime(order.createdAt)}
+                            </p>
                           </div>
                         </td>
 
                         {/* Customer */}
                         <td className="px-4 py-2.5">
                           <div>
-                            <p className="text-xs text-gray-700">{order.customerName || 'Customer'}</p>
+                            <p className="text-xs text-gray-700">
+                              {order.customerName || 'Customer'}
+                            </p>
                             <p className="text-[10px] text-gray-400 truncate max-w-[120px]">
                               #{order.userId.slice(-6)}
                             </p>
@@ -505,7 +558,9 @@ export function OrdersPage() {
                           <div className="flex items-center gap-1.5">
                             <span className="text-xs text-gray-600">{itemCount}</span>
                             <span className="text-[10px] text-gray-400">
-                              {order.items.length === 1 ? 'product' : `products (${order.items.length})`}
+                              {order.items.length === 1
+                                ? 'product'
+                                : `products (${order.items.length})`}
                             </span>
                           </div>
                         </td>
@@ -526,7 +581,9 @@ export function OrdersPage() {
 
                         {/* Status */}
                         <td className="px-4 py-2.5">
-                          <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded ${statusStyle.bg} ${statusStyle.text}`}>
+                          <span
+                            className={`inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded ${statusStyle.bg} ${statusStyle.text}`}
+                          >
                             <span className={`w-1 h-1 rounded-full ${statusStyle.dot}`} />
                             {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                           </span>
@@ -540,8 +597,18 @@ export function OrdersPage() {
                               className="p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors"
                               title="Edit Order"
                             >
-                              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                              <svg
+                                className="w-3.5 h-3.5"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                                strokeWidth={1.5}
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
+                                />
                               </svg>
                             </Link>
                           </div>
@@ -566,8 +633,18 @@ export function OrdersPage() {
                   onClick={() => updateParams({ page: String(page - 1) })}
                   className="p-1.5 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M15.75 19.5L8.25 12l7.5-7.5"
+                    />
                   </svg>
                 </button>
                 {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
@@ -600,8 +677,18 @@ export function OrdersPage() {
                   onClick={() => updateParams({ page: String(page + 1) })}
                   className="p-1.5 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M8.25 4.5l7.5 7.5-7.5 7.5"
+                    />
                   </svg>
                 </button>
               </div>

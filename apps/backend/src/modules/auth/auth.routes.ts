@@ -1,5 +1,11 @@
 import { Router } from 'express';
-import { register, login, forgotPassword, resetPassword, validateResetToken } from './auth.service.js';
+import {
+  register,
+  login,
+  forgotPassword,
+  resetPassword,
+  validateResetToken,
+} from './auth.service.js';
 import {
   registerSchema,
   loginSchema,

@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { Outlet, NavLink, useNavigate, useLocation } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { useState } from 'react';
+import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 interface NavItem {
   to: string;
@@ -15,11 +15,11 @@ interface NavSection {
 
 const navSections: NavSection[] = [
   {
-    title: "Overview",
+    title: 'Overview',
     items: [
       {
-        to: "/dashboard",
-        label: "Dashboard",
+        to: '/dashboard',
+        label: 'Dashboard',
         icon: (
           <svg
             className="w-[18px] h-[18px]"
@@ -39,11 +39,11 @@ const navSections: NavSection[] = [
     ],
   },
   {
-    title: "Catalog",
+    title: 'Catalog',
     items: [
       {
-        to: "/products",
-        label: "Products",
+        to: '/products',
+        label: 'Products',
         icon: (
           <svg
             className="w-[18px] h-[18px]"
@@ -61,8 +61,8 @@ const navSections: NavSection[] = [
         ),
       },
       {
-        to: "/categories",
-        label: "Categories",
+        to: '/categories',
+        label: 'Categories',
         icon: (
           <svg
             className="w-[18px] h-[18px]"
@@ -76,22 +76,18 @@ const navSections: NavSection[] = [
               strokeLinejoin="round"
               d="M9.568 3H5.25A2.25 2.25 0 003 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 005.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 009.568 3z"
             />
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M6 6h.008v.008H6V6z"
-            />
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6 6h.008v.008H6V6z" />
           </svg>
         ),
       },
     ],
   },
   {
-    title: "Sales",
+    title: 'Sales',
     items: [
       {
-        to: "/orders",
-        label: "Orders",
+        to: '/orders',
+        label: 'Orders',
         icon: (
           <svg
             className="w-[18px] h-[18px]"
@@ -109,8 +105,8 @@ const navSections: NavSection[] = [
         ),
       },
       {
-        to: "/customers",
-        label: "Customers",
+        to: '/customers',
+        label: 'Customers',
         icon: (
           <svg
             className="w-[18px] h-[18px]"
@@ -128,8 +124,8 @@ const navSections: NavSection[] = [
         ),
       },
       {
-        to: "/transactions",
-        label: "Transactions",
+        to: '/transactions',
+        label: 'Transactions',
         icon: (
           <svg
             className="w-[18px] h-[18px]"
@@ -147,8 +143,8 @@ const navSections: NavSection[] = [
         ),
       },
       {
-        to: "/reports",
-        label: "Reports",
+        to: '/reports',
+        label: 'Reports',
         icon: (
           <svg
             className="w-[18px] h-[18px]"
@@ -173,11 +169,11 @@ const navSections: NavSection[] = [
     ],
   },
   {
-    title: "Analytics",
+    title: 'Analytics',
     items: [
       {
-        to: "/analytics",
-        label: "Web Analytics",
+        to: '/analytics',
+        label: 'Web Analytics',
         icon: (
           <svg
             className="w-[18px] h-[18px]"
@@ -195,8 +191,8 @@ const navSections: NavSection[] = [
         ),
       },
       {
-        to: "/traffic-logs",
-        label: "Traffic Logs",
+        to: '/traffic-logs',
+        label: 'Traffic Logs',
         icon: (
           <svg
             className="w-[18px] h-[18px]"
@@ -214,8 +210,8 @@ const navSections: NavSection[] = [
         ),
       },
       {
-        to: "/server-logs",
-        label: "Server Logs",
+        to: '/server-logs',
+        label: 'Server Logs',
         icon: (
           <svg
             className="w-[18px] h-[18px]"
@@ -233,8 +229,8 @@ const navSections: NavSection[] = [
         ),
       },
       {
-        to: "/speed-insights",
-        label: "Speed Insights",
+        to: '/speed-insights',
+        label: 'Speed Insights',
         icon: (
           <svg
             className="w-[18px] h-[18px]"
@@ -254,11 +250,11 @@ const navSections: NavSection[] = [
     ],
   },
   {
-    title: "System",
+    title: 'System',
     items: [
       {
-        to: "/settings",
-        label: "Settings",
+        to: '/settings',
+        label: 'Settings',
         icon: (
           <svg
             className="w-[18px] h-[18px]"
@@ -292,14 +288,14 @@ export function Layout() {
 
   const handleLogout = () => {
     logout();
-    navigate("/login");
+    navigate('/login');
   };
 
   const navLinkClass = ({ isActive }: { isActive: boolean }) =>
     `group relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-200 ${
       isActive
-        ? "bg-gradient-to-r from-slate-900 to-slate-800 text-white shadow-sm"
-        : "text-slate-500 hover:text-slate-900 hover:bg-slate-100/80"
+        ? 'bg-gradient-to-r from-slate-900 to-slate-800 text-white shadow-sm'
+        : 'text-slate-500 hover:text-slate-900 hover:bg-slate-100/80'
     }`;
 
   return (
@@ -307,7 +303,7 @@ export function Layout() {
       {/* Sidebar */}
       <aside
         className={`${
-          sidebarCollapsed ? "w-[72px]" : "w-[260px]"
+          sidebarCollapsed ? 'w-[72px]' : 'w-[260px]'
         } bg-white border-r border-slate-200/60 shrink-0 transition-all duration-300 ease-out flex flex-col shadow-sm`}
       >
         {/* Logo Header */}
@@ -331,9 +327,7 @@ export function Layout() {
                   </svg>
                 </div>
                 <div>
-                  <span className="text-base font-bold text-slate-900 tracking-tight">
-                    Lunaz
-                  </span>
+                  <span className="text-base font-bold text-slate-900 tracking-tight">Lunaz</span>
                   <p className="text-[10px] text-slate-400 font-medium uppercase tracking-wider">
                     Admin
                   </p>
@@ -393,11 +387,7 @@ export function Layout() {
               viewBox="0 0 24 24"
               strokeWidth={2}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M13 5l7 7-7 7M5 5l7 7-7 7"
-              />
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
             </svg>
           </button>
         )}
@@ -405,7 +395,7 @@ export function Layout() {
         {/* Navigation */}
         <nav className="flex-1 px-3 py-4 overflow-y-auto">
           {navSections.map((section, sectionIndex) => (
-            <div key={section.title} className={sectionIndex > 0 ? "mt-6" : ""}>
+            <div key={section.title} className={sectionIndex > 0 ? 'mt-6' : ''}>
               {!sidebarCollapsed && (
                 <h3 className="px-3 mb-2 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">
                   {section.title}
@@ -424,9 +414,7 @@ export function Layout() {
                   >
                     <span
                       className={`shrink-0 transition-transform duration-200 ${
-                        location.pathname === to
-                          ? "scale-110"
-                          : "group-hover:scale-105"
+                        location.pathname === to ? 'scale-110' : 'group-hover:scale-105'
                       }`}
                     >
                       {icon}
@@ -449,7 +437,7 @@ export function Layout() {
               <div className="relative group">
                 <div className="w-9 h-9 bg-gradient-to-br from-slate-200 to-slate-100 rounded-xl flex items-center justify-center ring-2 ring-white shadow-sm">
                   <span className="text-sm font-semibold text-slate-600">
-                    {user?.name?.charAt(0).toUpperCase() || "A"}
+                    {user?.name?.charAt(0).toUpperCase() || 'A'}
                   </span>
                 </div>
                 <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full ring-2 ring-white" />
@@ -480,18 +468,14 @@ export function Layout() {
                 <div className="relative">
                   <div className="w-10 h-10 bg-gradient-to-br from-slate-300 to-slate-200 rounded-xl flex items-center justify-center ring-2 ring-white shadow-sm">
                     <span className="text-sm font-semibold text-slate-600">
-                      {user?.name?.charAt(0).toUpperCase() || "A"}
+                      {user?.name?.charAt(0).toUpperCase() || 'A'}
                     </span>
                   </div>
                   <div className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 rounded-full ring-2 ring-white" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-semibold text-slate-900 truncate">
-                    {user?.name}
-                  </p>
-                  <p className="text-xs text-slate-500 truncate">
-                    {user?.email}
-                  </p>
+                  <p className="text-sm font-semibold text-slate-900 truncate">{user?.name}</p>
+                  <p className="text-xs text-slate-500 truncate">{user?.email}</p>
                 </div>
               </div>
               <button

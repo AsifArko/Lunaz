@@ -1,16 +1,16 @@
-import { useState, useEffect } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
-import type { Category, Product, PaginatedResponse } from "@lunaz/types";
+import { useState, useEffect } from 'react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import type { Category, Product, PaginatedResponse } from '@lunaz/types';
 import {
   Container,
   Card,
   ProductCard,
   ProductCardSkeleton,
   type ProductCardProduct,
-} from "@lunaz/ui";
-import { api } from "../../api/client";
-import { useCart } from "../../context/CartContext";
-import { useToast } from "../../context/ToastContext";
+} from '@lunaz/ui';
+import { api } from '../../api/client';
+import { useCart } from '../../context/CartContext';
+import { useToast } from '../../context/ToastContext';
 
 export function CategoryPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -34,7 +34,7 @@ export function CategoryPage() {
         const cat = await api<Category>(`/categories/${slug}`);
 
         if (!cat) {
-          setError("Category not found");
+          setError('Category not found');
           setIsLoading(false);
           return;
         }
@@ -47,9 +47,7 @@ export function CategoryPage() {
         );
         setProducts(productsRes.data);
       } catch (err) {
-        setError(
-          err instanceof Error ? err.message : "Failed to load category"
-        );
+        setError(err instanceof Error ? err.message : 'Failed to load category');
       } finally {
         setIsLoading(false);
       }
@@ -57,29 +55,23 @@ export function CategoryPage() {
     fetchData();
   }, [slug]);
 
-  const handleAddToCart = (
-    e: React.MouseEvent,
-    cardProduct: ProductCardProduct
-  ) => {
+  const handleAddToCart = (e: React.MouseEvent, cardProduct: ProductCardProduct) => {
     e.preventDefault();
     e.stopPropagation();
     const product = products.find((p) => p.id === cardProduct.id);
     if (product && product.variants.length > 0) {
       addItem(product, product.variants[0], 1);
-      addToast(`Added ${product.name} to cart`, "success");
+      addToast(`Added ${product.name} to cart`, 'success');
     }
   };
 
-  const handleBuyNow = (
-    e: React.MouseEvent,
-    cardProduct: ProductCardProduct
-  ) => {
+  const handleBuyNow = (e: React.MouseEvent, cardProduct: ProductCardProduct) => {
     e.preventDefault();
     e.stopPropagation();
     const product = products.find((p) => p.id === cardProduct.id);
     if (product && product.variants.length > 0) {
       addItem(product, product.variants[0], 1);
-      navigate("/cart");
+      navigate('/cart');
     }
   };
 
@@ -119,15 +111,11 @@ export function CategoryPage() {
               </Link>
             </li>
             <li>/</li>
-            <li className="text-gray-900 font-medium">
-              {category?.name || "Loading..."}
-            </li>
+            <li className="text-gray-900 font-medium">{category?.name || 'Loading...'}</li>
           </ol>
         </nav>
 
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">
-          {category?.name || "Loading..."}
-        </h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-8">{category?.name || 'Loading...'}</h1>
 
         {isLoading && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -139,9 +127,7 @@ export function CategoryPage() {
 
         {!isLoading && products.length === 0 && (
           <Card className="text-center py-8">
-            <p className="text-slate-600">
-              No products found in this category.
-            </p>
+            <p className="text-slate-600">No products found in this category.</p>
             <Link
               to="/products"
               className="mt-4 inline-block text-slate-600 hover:text-slate-900 underline underline-offset-4"

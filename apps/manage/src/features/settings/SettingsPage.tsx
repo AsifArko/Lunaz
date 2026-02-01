@@ -103,7 +103,14 @@ const defaultSocialLinks: SocialLinks = {
   linkedin: '',
 };
 
-type SettingsTab = 'general' | 'shipping' | 'notifications' | 'business' | 'social' | 'account' | 'security';
+type SettingsTab =
+  | 'general'
+  | 'shipping'
+  | 'notifications'
+  | 'business'
+  | 'social'
+  | 'account'
+  | 'security';
 
 // Toggle Component
 function Toggle({ enabled, onChange }: { enabled: boolean; onChange: (v: boolean) => void }) {
@@ -141,7 +148,9 @@ function TextInput({
   return (
     <div className="relative">
       {prefix && (
-        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">{prefix}</span>
+        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">
+          {prefix}
+        </span>
       )}
       <input
         type={type}
@@ -170,10 +179,17 @@ function SelectInput({
       value={value}
       onChange={(e) => onChange(e.target.value)}
       className="w-full h-9 px-3 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:border-gray-400 focus:ring-0 transition-colors appearance-none cursor-pointer"
-      style={{ backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`, backgroundPosition: 'right 8px center', backgroundRepeat: 'no-repeat', backgroundSize: '16px' }}
+      style={{
+        backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
+        backgroundPosition: 'right 8px center',
+        backgroundRepeat: 'no-repeat',
+        backgroundSize: '16px',
+      }}
     >
       {options.map((opt) => (
-        <option key={opt.value} value={opt.value}>{opt.label}</option>
+        <option key={opt.value} value={opt.value}>
+          {opt.label}
+        </option>
       ))}
     </select>
   );
@@ -237,7 +253,11 @@ export function SettingsPage() {
     if (!token) return;
     setIsSaving(true);
     try {
-      await api('/users/me', { method: 'PATCH', body: JSON.stringify({ name: adminName, email: adminEmail }), token });
+      await api('/users/me', {
+        method: 'PATCH',
+        body: JSON.stringify({ name: adminName, email: adminEmail }),
+        token,
+      });
       addToast('Profile updated', 'success');
     } catch (err) {
       addToast(err instanceof Error ? err.message : 'Failed to update', 'error');
@@ -259,7 +279,11 @@ export function SettingsPage() {
     }
     setIsSaving(true);
     try {
-      await api('/users/me/password', { method: 'PUT', body: JSON.stringify({ currentPassword, newPassword }), token });
+      await api('/users/me/password', {
+        method: 'PUT',
+        body: JSON.stringify({ currentPassword, newPassword }),
+        token,
+      });
       addToast('Password changed', 'success');
       setCurrentPassword('');
       setNewPassword('');
@@ -325,7 +349,10 @@ export function SettingsPage() {
               <div className="grid grid-cols-3 gap-4 items-start">
                 <label className="text-sm text-gray-600 pt-2">Store Name</label>
                 <div className="col-span-2">
-                  <TextInput value={settings.storeName} onChange={(v) => setSettings({ ...settings, storeName: v })} />
+                  <TextInput
+                    value={settings.storeName}
+                    onChange={(v) => setSettings({ ...settings, storeName: v })}
+                  />
                 </div>
               </div>
               <div className="grid grid-cols-3 gap-4 items-start">
@@ -343,19 +370,31 @@ export function SettingsPage() {
               <div className="grid grid-cols-3 gap-4 items-start">
                 <label className="text-sm text-gray-600 pt-2">Contact Email</label>
                 <div className="col-span-2">
-                  <TextInput type="email" value={settings.contactEmail} onChange={(v) => setSettings({ ...settings, contactEmail: v })} />
+                  <TextInput
+                    type="email"
+                    value={settings.contactEmail}
+                    onChange={(v) => setSettings({ ...settings, contactEmail: v })}
+                  />
                 </div>
               </div>
               <div className="grid grid-cols-3 gap-4 items-start">
                 <label className="text-sm text-gray-600 pt-2">Support Email</label>
                 <div className="col-span-2">
-                  <TextInput type="email" value={settings.supportEmail} onChange={(v) => setSettings({ ...settings, supportEmail: v })} />
+                  <TextInput
+                    type="email"
+                    value={settings.supportEmail}
+                    onChange={(v) => setSettings({ ...settings, supportEmail: v })}
+                  />
                 </div>
               </div>
               <div className="grid grid-cols-3 gap-4 items-start">
                 <label className="text-sm text-gray-600 pt-2">Phone</label>
                 <div className="col-span-2">
-                  <TextInput type="tel" value={settings.phone} onChange={(v) => setSettings({ ...settings, phone: v })} />
+                  <TextInput
+                    type="tel"
+                    value={settings.phone}
+                    onChange={(v) => setSettings({ ...settings, phone: v })}
+                  />
                 </div>
               </div>
             </div>
@@ -410,21 +449,30 @@ export function SettingsPage() {
                   <p className="text-sm text-gray-900">Product Reviews</p>
                   <p className="text-xs text-gray-500">Allow customers to review products</p>
                 </div>
-                <Toggle enabled={settings.enableReviews} onChange={(v) => setSettings({ ...settings, enableReviews: v })} />
+                <Toggle
+                  enabled={settings.enableReviews}
+                  onChange={(v) => setSettings({ ...settings, enableReviews: v })}
+                />
               </div>
               <div className="flex items-center justify-between py-1">
                 <div>
                   <p className="text-sm text-gray-900">Wishlist</p>
                   <p className="text-xs text-gray-500">Enable wishlist for customers</p>
                 </div>
-                <Toggle enabled={settings.enableWishlist} onChange={(v) => setSettings({ ...settings, enableWishlist: v })} />
+                <Toggle
+                  enabled={settings.enableWishlist}
+                  onChange={(v) => setSettings({ ...settings, enableWishlist: v })}
+                />
               </div>
               <div className="flex items-center justify-between py-1">
                 <div>
                   <p className="text-sm text-gray-900">Maintenance Mode</p>
                   <p className="text-xs text-gray-500">Temporarily disable storefront</p>
                 </div>
-                <Toggle enabled={settings.maintenanceMode} onChange={(v) => setSettings({ ...settings, maintenanceMode: v })} />
+                <Toggle
+                  enabled={settings.maintenanceMode}
+                  onChange={(v) => setSettings({ ...settings, maintenanceMode: v })}
+                />
               </div>
             </div>
           </section>
@@ -450,19 +498,37 @@ export function SettingsPage() {
               <div className="grid grid-cols-3 gap-4 items-start">
                 <label className="text-sm text-gray-600 pt-2">Free Shipping Above</label>
                 <div className="col-span-2 max-w-xs">
-                  <TextInput prefix="৳" value={settings.freeShippingThreshold.toString()} onChange={(v) => setSettings({ ...settings, freeShippingThreshold: parseFloat(v) || 0 })} />
+                  <TextInput
+                    prefix="৳"
+                    value={settings.freeShippingThreshold.toString()}
+                    onChange={(v) =>
+                      setSettings({ ...settings, freeShippingThreshold: parseFloat(v) || 0 })
+                    }
+                  />
                 </div>
               </div>
               <div className="grid grid-cols-3 gap-4 items-start">
                 <label className="text-sm text-gray-600 pt-2">Standard Shipping</label>
                 <div className="col-span-2 max-w-xs">
-                  <TextInput prefix="৳" value={settings.standardShippingRate.toString()} onChange={(v) => setSettings({ ...settings, standardShippingRate: parseFloat(v) || 0 })} />
+                  <TextInput
+                    prefix="৳"
+                    value={settings.standardShippingRate.toString()}
+                    onChange={(v) =>
+                      setSettings({ ...settings, standardShippingRate: parseFloat(v) || 0 })
+                    }
+                  />
                 </div>
               </div>
               <div className="grid grid-cols-3 gap-4 items-start">
                 <label className="text-sm text-gray-600 pt-2">Express Shipping</label>
                 <div className="col-span-2 max-w-xs">
-                  <TextInput prefix="৳" value={settings.expressShippingRate.toString()} onChange={(v) => setSettings({ ...settings, expressShippingRate: parseFloat(v) || 0 })} />
+                  <TextInput
+                    prefix="৳"
+                    value={settings.expressShippingRate.toString()}
+                    onChange={(v) =>
+                      setSettings({ ...settings, expressShippingRate: parseFloat(v) || 0 })
+                    }
+                  />
                 </div>
               </div>
             </div>
@@ -480,10 +546,14 @@ export function SettingsPage() {
                     type="number"
                     step="0.01"
                     value={settings.taxRate}
-                    onChange={(e) => setSettings({ ...settings, taxRate: parseFloat(e.target.value) || 0 })}
+                    onChange={(e) =>
+                      setSettings({ ...settings, taxRate: parseFloat(e.target.value) || 0 })
+                    }
                     className="w-full h-9 pl-3 pr-8 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:border-gray-400"
                   />
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">%</span>
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">
+                    %
+                  </span>
                 </div>
               </div>
             </div>
@@ -497,14 +567,24 @@ export function SettingsPage() {
               <div className="grid grid-cols-3 gap-4 items-start">
                 <label className="text-sm text-gray-600 pt-2">Order Prefix</label>
                 <div className="col-span-2 max-w-xs">
-                  <TextInput value={settings.orderPrefix} onChange={(v) => setSettings({ ...settings, orderPrefix: v })} placeholder="ORD" />
+                  <TextInput
+                    value={settings.orderPrefix}
+                    onChange={(v) => setSettings({ ...settings, orderPrefix: v })}
+                    placeholder="ORD"
+                  />
                   <p className="text-xs text-gray-400 mt-1">e.g., ORD-0001</p>
                 </div>
               </div>
               <div className="grid grid-cols-3 gap-4 items-start">
                 <label className="text-sm text-gray-600 pt-2">Low Stock Alert</label>
                 <div className="col-span-2 max-w-xs">
-                  <TextInput type="number" value={settings.lowStockThreshold.toString()} onChange={(v) => setSettings({ ...settings, lowStockThreshold: parseInt(v) || 0 })} />
+                  <TextInput
+                    type="number"
+                    value={settings.lowStockThreshold.toString()}
+                    onChange={(v) =>
+                      setSettings({ ...settings, lowStockThreshold: parseInt(v) || 0 })
+                    }
+                  />
                   <p className="text-xs text-gray-400 mt-1">Alert when stock falls below</p>
                 </div>
               </div>
@@ -513,13 +593,20 @@ export function SettingsPage() {
                   <p className="text-sm text-gray-900">Auto-confirm Orders</p>
                   <p className="text-xs text-gray-500">Automatically confirm after payment</p>
                 </div>
-                <Toggle enabled={settings.autoConfirmOrders} onChange={(v) => setSettings({ ...settings, autoConfirmOrders: v })} />
+                <Toggle
+                  enabled={settings.autoConfirmOrders}
+                  onChange={(v) => setSettings({ ...settings, autoConfirmOrders: v })}
+                />
               </div>
             </div>
           </section>
 
           <div className="pt-4">
-            <button type="submit" disabled={isSaving} className="h-9 px-4 text-sm font-medium text-white bg-gray-900 rounded-md hover:bg-gray-800 disabled:opacity-50 transition-colors">
+            <button
+              type="submit"
+              disabled={isSaving}
+              className="h-9 px-4 text-sm font-medium text-white bg-gray-900 rounded-md hover:bg-gray-800 disabled:opacity-50 transition-colors"
+            >
               {isSaving ? 'Saving...' : 'Save changes'}
             </button>
           </div>
@@ -534,7 +621,11 @@ export function SettingsPage() {
             <div className="space-y-4">
               {[
                 { key: 'emailNewOrder', label: 'New Orders', desc: 'When a new order is placed' },
-                { key: 'emailOrderStatus', label: 'Order Updates', desc: 'When order status changes' },
+                {
+                  key: 'emailOrderStatus',
+                  label: 'Order Updates',
+                  desc: 'When order status changes',
+                },
                 { key: 'emailLowStock', label: 'Low Stock', desc: 'When products run low' },
                 { key: 'emailNewCustomer', label: 'New Customers', desc: 'When someone signs up' },
               ].map((item) => (
@@ -562,14 +653,20 @@ export function SettingsPage() {
                   <p className="text-sm text-gray-900">Daily Summary</p>
                   <p className="text-xs text-gray-500">Receive daily activity report</p>
                 </div>
-                <Toggle enabled={notifications.dailyReport} onChange={(v) => setNotifications({ ...notifications, dailyReport: v })} />
+                <Toggle
+                  enabled={notifications.dailyReport}
+                  onChange={(v) => setNotifications({ ...notifications, dailyReport: v })}
+                />
               </div>
               <div className="flex items-center justify-between py-1">
                 <div>
                   <p className="text-sm text-gray-900">Weekly Report</p>
                   <p className="text-xs text-gray-500">Comprehensive weekly analytics</p>
                 </div>
-                <Toggle enabled={notifications.weeklyReport} onChange={(v) => setNotifications({ ...notifications, weeklyReport: v })} />
+                <Toggle
+                  enabled={notifications.weeklyReport}
+                  onChange={(v) => setNotifications({ ...notifications, weeklyReport: v })}
+                />
               </div>
             </div>
           </section>
@@ -583,12 +680,18 @@ export function SettingsPage() {
                 <p className="text-sm text-gray-900">Push Notifications</p>
                 <p className="text-xs text-gray-500">Browser notifications for orders</p>
               </div>
-              <Toggle enabled={notifications.browserNotifications} onChange={(v) => setNotifications({ ...notifications, browserNotifications: v })} />
+              <Toggle
+                enabled={notifications.browserNotifications}
+                onChange={(v) => setNotifications({ ...notifications, browserNotifications: v })}
+              />
             </div>
           </section>
 
           <div className="pt-4">
-            <button onClick={() => addToast('Preferences saved', 'success')} className="h-9 px-4 text-sm font-medium text-white bg-gray-900 rounded-md hover:bg-gray-800 transition-colors">
+            <button
+              onClick={() => addToast('Preferences saved', 'success')}
+              className="h-9 px-4 text-sm font-medium text-white bg-gray-900 rounded-md hover:bg-gray-800 transition-colors"
+            >
               Save preferences
             </button>
           </div>
@@ -605,7 +708,11 @@ export function SettingsPage() {
               <div className="grid grid-cols-3 gap-4 items-start">
                 <label className="text-sm text-gray-600 pt-2">Legal Name</label>
                 <div className="col-span-2">
-                  <TextInput value={businessInfo.businessName} onChange={(v) => setBusinessInfo({ ...businessInfo, businessName: v })} placeholder="Your Company Ltd." />
+                  <TextInput
+                    value={businessInfo.businessName}
+                    onChange={(v) => setBusinessInfo({ ...businessInfo, businessName: v })}
+                    placeholder="Your Company Ltd."
+                  />
                 </div>
               </div>
               <div className="grid grid-cols-3 gap-4 items-start">
@@ -613,7 +720,9 @@ export function SettingsPage() {
                 <div className="col-span-2">
                   <textarea
                     value={businessInfo.businessAddress}
-                    onChange={(e) => setBusinessInfo({ ...businessInfo, businessAddress: e.target.value })}
+                    onChange={(e) =>
+                      setBusinessInfo({ ...businessInfo, businessAddress: e.target.value })
+                    }
                     rows={2}
                     className="w-full px-3 py-2 text-sm bg-white border border-gray-200 rounded-md focus:outline-none focus:border-gray-400 resize-none"
                     placeholder="Street address"
@@ -623,14 +732,26 @@ export function SettingsPage() {
               <div className="grid grid-cols-3 gap-4 items-start">
                 <label className="text-sm text-gray-600 pt-2">City</label>
                 <div className="col-span-2 grid grid-cols-2 gap-3">
-                  <TextInput value={businessInfo.city} onChange={(v) => setBusinessInfo({ ...businessInfo, city: v })} placeholder="City" />
-                  <TextInput value={businessInfo.state} onChange={(v) => setBusinessInfo({ ...businessInfo, state: v })} placeholder="State / Division" />
+                  <TextInput
+                    value={businessInfo.city}
+                    onChange={(v) => setBusinessInfo({ ...businessInfo, city: v })}
+                    placeholder="City"
+                  />
+                  <TextInput
+                    value={businessInfo.state}
+                    onChange={(v) => setBusinessInfo({ ...businessInfo, state: v })}
+                    placeholder="State / Division"
+                  />
                 </div>
               </div>
               <div className="grid grid-cols-3 gap-4 items-start">
                 <label className="text-sm text-gray-600 pt-2">Postal / Country</label>
                 <div className="col-span-2 grid grid-cols-2 gap-3">
-                  <TextInput value={businessInfo.postalCode} onChange={(v) => setBusinessInfo({ ...businessInfo, postalCode: v })} placeholder="Postal code" />
+                  <TextInput
+                    value={businessInfo.postalCode}
+                    onChange={(v) => setBusinessInfo({ ...businessInfo, postalCode: v })}
+                    placeholder="Postal code"
+                  />
                   <SelectInput
                     value={businessInfo.country}
                     onChange={(v) => setBusinessInfo({ ...businessInfo, country: v })}
@@ -654,20 +775,32 @@ export function SettingsPage() {
               <div className="grid grid-cols-3 gap-4 items-start">
                 <label className="text-sm text-gray-600 pt-2">VAT / Tax ID</label>
                 <div className="col-span-2 max-w-xs">
-                  <TextInput value={businessInfo.vatNumber} onChange={(v) => setBusinessInfo({ ...businessInfo, vatNumber: v })} placeholder="Optional" />
+                  <TextInput
+                    value={businessInfo.vatNumber}
+                    onChange={(v) => setBusinessInfo({ ...businessInfo, vatNumber: v })}
+                    placeholder="Optional"
+                  />
                 </div>
               </div>
               <div className="grid grid-cols-3 gap-4 items-start">
                 <label className="text-sm text-gray-600 pt-2">Registration No.</label>
                 <div className="col-span-2 max-w-xs">
-                  <TextInput value={businessInfo.registrationNumber} onChange={(v) => setBusinessInfo({ ...businessInfo, registrationNumber: v })} placeholder="Optional" />
+                  <TextInput
+                    value={businessInfo.registrationNumber}
+                    onChange={(v) => setBusinessInfo({ ...businessInfo, registrationNumber: v })}
+                    placeholder="Optional"
+                  />
                 </div>
               </div>
             </div>
           </section>
 
           <div className="pt-4">
-            <button type="submit" disabled={isSaving} className="h-9 px-4 text-sm font-medium text-white bg-gray-900 rounded-md hover:bg-gray-800 disabled:opacity-50 transition-colors">
+            <button
+              type="submit"
+              disabled={isSaving}
+              className="h-9 px-4 text-sm font-medium text-white bg-gray-900 rounded-md hover:bg-gray-800 disabled:opacity-50 transition-colors"
+            >
               Save changes
             </button>
           </div>
@@ -705,7 +838,11 @@ export function SettingsPage() {
           </section>
 
           <div className="pt-4">
-            <button type="submit" disabled={isSaving} className="h-9 px-4 text-sm font-medium text-white bg-gray-900 rounded-md hover:bg-gray-800 disabled:opacity-50 transition-colors">
+            <button
+              type="submit"
+              disabled={isSaving}
+              className="h-9 px-4 text-sm font-medium text-white bg-gray-900 rounded-md hover:bg-gray-800 disabled:opacity-50 transition-colors"
+            >
               Save changes
             </button>
           </div>
@@ -725,7 +862,9 @@ export function SettingsPage() {
                 <p className="text-sm font-medium text-gray-900">{adminName}</p>
                 <p className="text-xs text-gray-500">{adminEmail}</p>
               </div>
-              <span className="ml-auto px-2 py-0.5 text-[10px] font-medium text-gray-600 bg-gray-200 rounded">Admin</span>
+              <span className="ml-auto px-2 py-0.5 text-[10px] font-medium text-gray-600 bg-gray-200 rounded">
+                Admin
+              </span>
             </div>
             <form onSubmit={handleSaveProfile}>
               <div className="grid gap-4">
@@ -743,7 +882,11 @@ export function SettingsPage() {
                 </div>
               </div>
               <div className="pt-6">
-                <button type="submit" disabled={isSaving} className="h-9 px-4 text-sm font-medium text-white bg-gray-900 rounded-md hover:bg-gray-800 disabled:opacity-50 transition-colors">
+                <button
+                  type="submit"
+                  disabled={isSaving}
+                  className="h-9 px-4 text-sm font-medium text-white bg-gray-900 rounded-md hover:bg-gray-800 disabled:opacity-50 transition-colors"
+                >
                   Update profile
                 </button>
               </div>
@@ -758,8 +901,18 @@ export function SettingsPage() {
             <div className="p-3 bg-gray-50 rounded-lg flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 bg-green-100 rounded flex items-center justify-center">
-                  <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0V12a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 12V5.25" />
+                  <svg
+                    className="w-4 h-4 text-green-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0V12a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 12V5.25"
+                    />
                   </svg>
                 </div>
                 <div>
@@ -782,7 +935,11 @@ export function SettingsPage() {
               <div className="grid gap-4">
                 <div>
                   <label className="block text-sm text-gray-600 mb-1.5">Current password</label>
-                  <TextInput type="password" value={currentPassword} onChange={setCurrentPassword} />
+                  <TextInput
+                    type="password"
+                    value={currentPassword}
+                    onChange={setCurrentPassword}
+                  />
                 </div>
                 <div>
                   <label className="block text-sm text-gray-600 mb-1.5">New password</label>
@@ -791,14 +948,22 @@ export function SettingsPage() {
                 </div>
                 <div>
                   <label className="block text-sm text-gray-600 mb-1.5">Confirm password</label>
-                  <TextInput type="password" value={confirmPassword} onChange={setConfirmPassword} />
+                  <TextInput
+                    type="password"
+                    value={confirmPassword}
+                    onChange={setConfirmPassword}
+                  />
                   {confirmPassword && newPassword !== confirmPassword && (
                     <p className="text-xs text-red-500 mt-1">Passwords do not match</p>
                   )}
                 </div>
               </div>
               <div className="pt-6">
-                <button type="submit" disabled={isSaving} className="h-9 px-4 text-sm font-medium text-white bg-gray-900 rounded-md hover:bg-gray-800 disabled:opacity-50 transition-colors">
+                <button
+                  type="submit"
+                  disabled={isSaving}
+                  className="h-9 px-4 text-sm font-medium text-white bg-gray-900 rounded-md hover:bg-gray-800 disabled:opacity-50 transition-colors"
+                >
                   Update password
                 </button>
               </div>
@@ -813,7 +978,9 @@ export function SettingsPage() {
                 <h2 className="text-sm font-medium text-gray-900">Two-Factor Authentication</h2>
                 <p className="text-xs text-gray-500 mt-0.5">Extra security for your account</p>
               </div>
-              <span className="px-2 py-0.5 text-[10px] font-medium text-gray-500 bg-gray-100 rounded">Off</span>
+              <span className="px-2 py-0.5 text-[10px] font-medium text-gray-500 bg-gray-100 rounded">
+                Off
+              </span>
             </div>
             <button className="mt-3 h-8 px-3 text-xs font-medium text-gray-700 bg-white border border-gray-200 rounded-md hover:bg-gray-50 transition-colors">
               Enable 2FA

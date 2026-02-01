@@ -87,7 +87,13 @@ export function CheckoutPage() {
 
       if (useNewAddress) {
         // Validate new address
-        if (!addressForm.name || !addressForm.line1 || !addressForm.city || !addressForm.postalCode || !addressForm.country) {
+        if (
+          !addressForm.name ||
+          !addressForm.line1 ||
+          !addressForm.city ||
+          !addressForm.postalCode ||
+          !addressForm.country
+        ) {
           addToast('Please fill in all required address fields', 'error');
           setIsPlacingOrder(false);
           return;
@@ -191,7 +197,9 @@ export function CheckoutPage() {
                         <div className="flex items-start justify-between">
                           <div>
                             {address.label && (
-                              <span className="text-sm font-medium text-gray-500">{address.label}</span>
+                              <span className="text-sm font-medium text-gray-500">
+                                {address.label}
+                              </span>
                             )}
                             <p className="text-gray-900">{address.line1}</p>
                             {address.line2 && <p className="text-gray-900">{address.line2}</p>}
@@ -267,13 +275,17 @@ export function CheckoutPage() {
                       <Input
                         label="Postal Code"
                         value={addressForm.postalCode}
-                        onChange={(e) => setAddressForm({ ...addressForm, postalCode: e.target.value })}
+                        onChange={(e) =>
+                          setAddressForm({ ...addressForm, postalCode: e.target.value })
+                        }
                         required
                       />
                       <Input
                         label="Country"
                         value={addressForm.country}
-                        onChange={(e) => setAddressForm({ ...addressForm, country: e.target.value })}
+                        onChange={(e) =>
+                          setAddressForm({ ...addressForm, country: e.target.value })
+                        }
                         required
                       />
                     </div>

@@ -77,8 +77,18 @@ export function OrderDetailPage() {
         <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-              <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              <svg
+                className="w-6 h-6 text-green-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 13l4 4L19 7"
+                />
               </svg>
             </div>
             <div>
@@ -97,9 +107,7 @@ export function OrderDetailPage() {
           <Link to="/account/orders" className="text-sm text-indigo-600 hover:text-indigo-700">
             ← Back to Orders
           </Link>
-          <h1 className="text-2xl font-bold text-gray-900 mt-2">
-            Order #{order.orderNumber}
-          </h1>
+          <h1 className="text-2xl font-bold text-gray-900 mt-2">Order #{order.orderNumber}</h1>
           <p className="text-gray-500">
             Placed on{' '}
             {new Date(order.createdAt).toLocaleDateString('en-US', {
@@ -109,7 +117,9 @@ export function OrderDetailPage() {
             })}
           </p>
         </div>
-        <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${statusColors[order.status] || 'bg-gray-100 text-gray-800'}`}>
+        <span
+          className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${statusColors[order.status] || 'bg-gray-100 text-gray-800'}`}
+        >
           {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
         </span>
       </div>
@@ -127,25 +137,37 @@ export function OrderDetailPage() {
                   <div className="flex flex-col items-center">
                     <div
                       className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                        isCompleted
-                          ? 'bg-indigo-600 text-white'
-                          : 'bg-gray-200 text-gray-500'
+                        isCompleted ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-500'
                       }`}
                     >
                       {isCompleted && index < currentStatusIndex ? (
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        <svg
+                          className="w-5 h-5"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M5 13l4 4L19 7"
+                          />
                         </svg>
                       ) : (
                         index + 1
                       )}
                     </div>
-                    <span className={`text-xs mt-1 ${isCurrent ? 'font-medium text-indigo-600' : 'text-gray-500'}`}>
+                    <span
+                      className={`text-xs mt-1 ${isCurrent ? 'font-medium text-indigo-600' : 'text-gray-500'}`}
+                    >
                       {status.charAt(0).toUpperCase() + status.slice(1)}
                     </span>
                   </div>
                   {index < statusTimeline.length - 1 && (
-                    <div className={`flex-1 h-1 mx-2 ${index < currentStatusIndex ? 'bg-indigo-600' : 'bg-gray-200'}`} />
+                    <div
+                      className={`flex-1 h-1 mx-2 ${index < currentStatusIndex ? 'bg-indigo-600' : 'bg-gray-200'}`}
+                    />
                   )}
                 </div>
               );
@@ -156,15 +178,17 @@ export function OrderDetailPage() {
 
       {/* Items */}
       <Card>
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">
-          Items ({order.items.length})
-        </h2>
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">Items ({order.items.length})</h2>
         <div className="divide-y divide-gray-200">
           {order.items.map((item, index) => (
             <div key={index} className="py-4 first:pt-0 last:pb-0 flex gap-4">
               <div className="w-16 h-16 bg-gray-100 rounded-lg overflow-hidden shrink-0">
                 {item.imageUrl ? (
-                  <img src={item.imageUrl} alt={item.productName} className="w-full h-full object-cover" />
+                  <img
+                    src={item.imageUrl}
+                    alt={item.productName}
+                    className="w-full h-full object-cover"
+                  />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">
                     No image

@@ -8,7 +8,12 @@ function createError(message: string, statusCode: number): Error & { statusCode:
   return err;
 }
 
-function formatCart(cart: { _id: mongoose.Types.ObjectId; userId: mongoose.Types.ObjectId; items: unknown[]; updatedAt: Date }) {
+function formatCart(cart: {
+  _id: mongoose.Types.ObjectId;
+  userId: mongoose.Types.ObjectId;
+  items: unknown[];
+  updatedAt: Date;
+}) {
   const items = (cart.items as Array<Record<string, unknown>>).map((item) => ({
     id: (item._id as mongoose.Types.ObjectId).toString(),
     productId: (item.productId as mongoose.Types.ObjectId).toString(),

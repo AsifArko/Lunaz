@@ -9,7 +9,11 @@ const transactionSchema = new mongoose.Schema(
     currency: { type: String, default: 'BDT' },
     paymentMethod: { type: String, required: true },
     externalId: String,
-    status: { type: String, enum: Object.values(TransactionStatus), default: TransactionStatus.PENDING },
+    status: {
+      type: String,
+      enum: Object.values(TransactionStatus),
+      default: TransactionStatus.PENDING,
+    },
     metadata: mongoose.Schema.Types.Mixed,
   },
   { timestamps: true }
@@ -26,7 +30,11 @@ const payoutSchema = new mongoose.Schema(
   {
     amount: { type: Number, required: true },
     currency: { type: String, default: 'BDT' },
-    status: { type: String, enum: Object.values(TransactionStatus), default: TransactionStatus.PENDING },
+    status: {
+      type: String,
+      enum: Object.values(TransactionStatus),
+      default: TransactionStatus.PENDING,
+    },
     reference: String,
     completedAt: Date,
   },
