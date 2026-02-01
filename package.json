@@ -38,7 +38,7 @@
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",
     "eslint-plugin-react": "^7.34.0",
-    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-hooks": "^7.0.1",
     "husky": "^9.0.0",
     "prettier": "^3.2.0",
     "@secretlint/secretlint-rule-preset-recommend": "^8.0.0",
