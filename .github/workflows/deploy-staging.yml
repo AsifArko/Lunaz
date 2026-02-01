@@ -121,7 +121,7 @@ jobs:
     steps:
       - name: Notify on success
         if: needs.deploy.result == 'success'
-        uses: slackapi/slack-github-action@v1
+        uses: slackapi/slack-github-action@v2
         with:
           payload: |
             {
@@ -142,7 +142,7 @@ jobs:
 
       - name: Notify on failure
         if: needs.deploy.result == 'failure'
-        uses: slackapi/slack-github-action@v1
+        uses: slackapi/slack-github-action@v2
         with:
           payload: |
             {

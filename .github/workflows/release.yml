@@ -240,7 +240,7 @@ jobs:
     steps:
       - name: Notify on success
         if: needs.docker.result == 'success'
-        uses: slackapi/slack-github-action@v1
+        uses: slackapi/slack-github-action@v2
         with:
           payload: |
             {
@@ -261,7 +261,7 @@ jobs:
 
       - name: Notify on failure
         if: needs.docker.result == 'failure' || needs.release.result == 'failure'
-        uses: slackapi/slack-github-action@v1
+        uses: slackapi/slack-github-action@v2
         with:
           payload: |
             {

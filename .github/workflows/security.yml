@@ -178,7 +178,7 @@ jobs:
 
       - name: Notify on critical findings (scheduled only)
         if: github.event_name == 'schedule' && (needs.dependency-audit.result == 'failure' || needs.secret-scan.result == 'failure' || needs.container-scan.result == 'failure')
-        uses: slackapi/slack-github-action@v1
+        uses: slackapi/slack-github-action@v2
         with:
           payload: |
             {
