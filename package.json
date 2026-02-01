@@ -50,6 +50,6 @@
     "@secretlint/secretlint-rule-github": "^8.0.0",
     "@secretlint/secretlint-rule-slack": "^8.0.0",
     "@secretlint/secretlint-rule-sendgrid": "^8.0.0",
-    "secretlint": "^8.0.0"
+    "secretlint": "^11.3.1"
   }
 }
