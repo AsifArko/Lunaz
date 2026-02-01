@@ -8,7 +8,7 @@
 # ─────────────────────────────────────────────────────────────────────────────
 # Stage 1: Dependencies
 # ─────────────────────────────────────────────────────────────────────────────
-FROM node:20-alpine AS deps
+FROM node:25-alpine AS deps
 WORKDIR /app
 
 # Copy package files for better layer caching
@@ -23,7 +23,7 @@ RUN npm ci
 # ─────────────────────────────────────────────────────────────────────────────
 # Stage 2: Builder
 # ─────────────────────────────────────────────────────────────────────────────
-FROM node:20-alpine AS builder
+FROM node:25-alpine AS builder
 WORKDIR /app
 
 # Copy dependencies from deps stage
@@ -45,7 +45,7 @@ RUN npm run build --workspace=@lunaz/types && \
 # ─────────────────────────────────────────────────────────────────────────────
 # Stage 3: Production
 # ─────────────────────────────────────────────────────────────────────────────
-FROM node:20-alpine AS production
+FROM node:25-alpine AS production
 WORKDIR /app
 
 # Add non-root user for security
