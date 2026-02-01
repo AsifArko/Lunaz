@@ -16,6 +16,7 @@ import { customersRoutes } from './modules/customers/customers.routes.js';
 import { dashboardRoutes } from './modules/dashboard/dashboard.routes.js';
 import { settingsRoutes } from './modules/settings/settings.routes.js';
 import { analyticsRoutes } from './modules/analytics/analytics.routes.js';
+import { paymentsRoutes } from './modules/payments/payments.routes.js';
 
 export function createApp() {
   const config = getConfig();
@@ -51,6 +52,7 @@ export function createApp() {
   // Shopping
   api.use('/cart', cartRoutes);
   api.use('/orders', ordersRoutes);
+  api.use('/payments', paymentsRoutes);
 
   // Admin
   api.use('/customers', customersRoutes);

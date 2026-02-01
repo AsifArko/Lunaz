@@ -1,5 +1,5 @@
 import type { Id } from './user.js';
-import type { OrderStatus, PaymentStatus } from './enums.js';
+import type { OrderStatus, PaymentStatus, PaymentMethod } from './enums.js';
 
 /** Snapshot of shipping/billing address on order. */
 export interface OrderAddress {
@@ -39,8 +39,11 @@ export interface Order {
   currency: string;
   shippingAddress: OrderAddress;
   billingAddress?: OrderAddress;
+  paymentMethod?: PaymentMethod;
+  paymentId?: Id;
   paymentIntentId?: string;
   paymentStatus: PaymentStatus;
+  paidAt?: string;
   notes?: string | null;
   createdAt: string;
   updatedAt: string;

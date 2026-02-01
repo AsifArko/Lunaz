@@ -70,12 +70,28 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setIsLoading(false);
   }, []);
 
-  // Persist cart to localStorage whenever it changes
+  // Persist cart to localStorage and sync to backend whenever it changes
   useEffect(() => {
     if (!isLoading) {
       localStorage.setItem(CART_KEY, JSON.stringify(items));
+
+      // Sync to backend if authenticated
+      if (isAuthenticated && token && hasSyncedRef.current) {
+        const cartItems = items.map((item) => ({
+          productId: item.productId,
+          variantId: item.variantId,
+          quantity: item.quantity,
+        }));
+        api('/cart', {
+          method: 'PUT',
+          body: JSON.stringify({ items: cartItems }),
+          token,
+        }).catch(() => {
+          // Silently fail - local cart is still saved
+        });
+      }
     }
-  }, [items, isLoading]);
+  }, [items, isLoading, isAuthenticated, token]);
 
   // Sync cart with backend when user logs in
   useEffect(() => {

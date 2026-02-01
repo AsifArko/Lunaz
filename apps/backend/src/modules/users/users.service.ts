@@ -21,6 +21,7 @@ export async function getProfile(userId: string) {
     id: user._id.toString(),
     email: user.email,
     name: user.name,
+    phone: (user as unknown as { phone?: string }).phone || '',
     role: user.role,
     emailVerified: user.emailVerified,
     addresses: (user.addresses ?? []).map((a) => {
@@ -45,6 +46,7 @@ export async function getProfile(userId: string) {
 export async function updateProfile(userId: string, input: UpdateProfileInput) {
   const update: Record<string, unknown> = {};
   if (input.name) update.name = input.name;
+  if (input.phone) update.phone = input.phone;
   if (input.email) {
     const existing = await UserModel.findOne({
       email: input.email.toLowerCase(),

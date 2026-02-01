@@ -1,11 +1,21 @@
 import { useState, useEffect, type FormEvent } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import type { Address, User, OrderAddress, Order } from '@lunaz/types';
+import type {
+  Address,
+  User,
+  OrderAddress,
+  Order,
+  PaymentMethod,
+  BankAccount,
+  InitiatePaymentResponse,
+} from '@lunaz/types';
 import { Container, Card, Button, Input, Price } from '@lunaz/ui';
 import { api } from '../../api/client';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import { useToast } from '../../context/ToastContext';
+import { PaymentMethodSelector } from './components/PaymentMethodSelector';
+import { BankTransferDetails } from './components/BankTransferDetails';
 
 interface AddressFormData {
   name: string;
@@ -27,6 +37,16 @@ const emptyAddress: AddressFormData = {
   country: '',
 };
 
+// Bank transfer response type
+interface BankTransferResponse extends InitiatePaymentResponse {
+  bankDetails?: BankAccount[];
+  orderReference?: string;
+  amount?: number;
+  currency?: string;
+  expiresAt?: string;
+  instructions?: string;
+}
+
 export function CheckoutPage() {
   const navigate = useNavigate();
   const { token } = useAuth();
@@ -39,6 +59,15 @@ export function CheckoutPage() {
   const [addressForm, setAddressForm] = useState<AddressFormData>(emptyAddress);
   const [isLoading, setIsLoading] = useState(true);
   const [isPlacingOrder, setIsPlacingOrder] = useState(false);
+  const [userName, setUserName] = useState<string>('Customer');
+
+  // Payment state
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethod | null>(null);
+  const [checkoutStep, setCheckoutStep] = useState<
+    'details' | 'processing' | 'bank_transfer' | 'complete'
+  >('details');
+  const [bankTransferInfo, setBankTransferInfo] = useState<BankTransferResponse | null>(null);
+  const [orderId, setOrderId] = useState<string | null>(null);
 
   // Fixed shipping for simplicity
   const shippingAmount = subtotal >= 100 ? 0 : 9.99;
@@ -50,6 +79,7 @@ export function CheckoutPage() {
       try {
         const user = await api<User>('/users/me', { token });
         setSavedAddresses(user.addresses || []);
+        setUserName(user.name || 'Customer');
 
         // Select default address if available
         const defaultAddr = user.addresses?.find((a) => a.isDefault);
@@ -80,7 +110,14 @@ export function CheckoutPage() {
     e.preventDefault();
     if (!token) return;
 
+    // Validate payment method
+    if (!selectedPaymentMethod) {
+      addToast('Please select a payment method', 'error');
+      return;
+    }
+
     setIsPlacingOrder(true);
+    setCheckoutStep('processing');
 
     try {
       let shippingAddress: OrderAddress;
@@ -96,6 +133,7 @@ export function CheckoutPage() {
         ) {
           addToast('Please fill in all required address fields', 'error');
           setIsPlacingOrder(false);
+          setCheckoutStep('details');
           return;
         }
         shippingAddress = {
@@ -113,10 +151,11 @@ export function CheckoutPage() {
         if (!selected) {
           addToast('Please select a shipping address', 'error');
           setIsPlacingOrder(false);
+          setCheckoutStep('details');
           return;
         }
         shippingAddress = {
-          name: selected.label || 'Customer',
+          name: userName, // Use user's name for shipping
           line1: selected.line1,
           line2: selected.line2,
           city: selected.city,
@@ -126,19 +165,49 @@ export function CheckoutPage() {
         };
       }
 
-      // Place order
+      // Step 1: Create order
       const order = await api<Order>('/orders', {
         method: 'POST',
         body: JSON.stringify({ shippingAddress }),
         token,
       });
 
-      // Clear cart and redirect to order confirmation
+      setOrderId(order.id);
+
+      // Step 2: Initiate payment
+      const paymentResponse = await api<BankTransferResponse>('/payments/initiate', {
+        method: 'POST',
+        body: JSON.stringify({
+          orderId: order.id,
+          method: selectedPaymentMethod,
+        }),
+        token,
+      });
+
+      // Clear cart
       clearCart();
-      addToast('Order placed successfully!', 'success');
-      navigate(`/account/orders/${order.id}?confirmed=1`);
+
+      // Handle payment response based on method
+      if (paymentResponse.redirectUrl) {
+        // Redirect to payment gateway (bKash, Nagad, Card)
+        addToast('Redirecting to payment gateway...', 'info');
+        window.location.href = paymentResponse.redirectUrl;
+      } else if (selectedPaymentMethod === 'bank_transfer' && paymentResponse.bankDetails) {
+        // Show bank transfer details
+        setBankTransferInfo(paymentResponse);
+        setCheckoutStep('bank_transfer');
+      } else if (selectedPaymentMethod === 'cod') {
+        // Cash on delivery - redirect to confirmation
+        addToast('Order placed successfully! Pay on delivery.', 'success');
+        navigate(`/account/orders/${order.id}?confirmed=1`);
+      } else {
+        // Default: redirect to order page
+        addToast('Order placed successfully!', 'success');
+        navigate(`/account/orders/${order.id}?confirmed=1`);
+      }
     } catch (err) {
       addToast(err instanceof Error ? err.message : 'Failed to place order', 'error');
+      setCheckoutStep('details');
     } finally {
       setIsPlacingOrder(false);
     }
@@ -158,8 +227,82 @@ export function CheckoutPage() {
     );
   }
 
-  if (items.length === 0) {
+  if (items.length === 0 && checkoutStep === 'details') {
     return null; // Will redirect
+  }
+
+  // Bank transfer details page
+  if (checkoutStep === 'bank_transfer' && bankTransferInfo) {
+    return (
+      <div className="py-8">
+        <Container maxWidth="md">
+          <div className="text-center mb-8">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
+              <svg
+                className="w-8 h-8 text-green-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+            </div>
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+              Order Placed Successfully!
+            </h1>
+            <p className="text-gray-600 mt-2">
+              Please complete your bank transfer to confirm your order.
+            </p>
+          </div>
+
+          <BankTransferDetails
+            bankDetails={bankTransferInfo.bankDetails || []}
+            orderReference={bankTransferInfo.orderReference || orderId || ''}
+            amount={bankTransferInfo.amount || total}
+            currency={bankTransferInfo.currency || currency}
+            expiresAt={bankTransferInfo.expiresAt}
+            instructions={bankTransferInfo.instructions}
+          />
+
+          <div className="mt-6 text-center">
+            <Link
+              to={`/account/orders/${orderId}`}
+              className="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-700"
+            >
+              View Order Details
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+            </Link>
+          </div>
+        </Container>
+      </div>
+    );
+  }
+
+  // Processing state
+  if (checkoutStep === 'processing') {
+    return (
+      <div className="py-8">
+        <Container>
+          <div className="flex flex-col items-center justify-center min-h-[400px]">
+            <div className="animate-spin w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full mb-4" />
+            <h2 className="text-xl font-semibold text-gray-900">Processing your order...</h2>
+            <p className="text-gray-600 mt-2">Please wait while we set up your payment.</p>
+          </div>
+        </Container>
+      </div>
+    );
   }
 
   return (
@@ -169,7 +312,7 @@ export function CheckoutPage() {
 
         <form onSubmit={handlePlaceOrder}>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Shipping Address */}
+            {/* Shipping Address & Payment Method */}
             <div className="lg:col-span-2 space-y-6">
               <Card>
                 <h2 className="text-lg font-semibold text-gray-900 mb-4">Shipping Address</h2>
@@ -291,6 +434,16 @@ export function CheckoutPage() {
                     </div>
                   </div>
                 )}
+              </Card>
+
+              {/* Payment Method */}
+              <Card>
+                <h2 className="text-lg font-semibold text-gray-900 mb-4">Payment Method</h2>
+                <PaymentMethodSelector
+                  selected={selectedPaymentMethod}
+                  onSelect={setSelectedPaymentMethod}
+                  disabled={isPlacingOrder}
+                />
               </Card>
             </div>
 

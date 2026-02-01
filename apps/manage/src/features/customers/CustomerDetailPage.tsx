@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import type { User, Order, PaginatedResponse, OrderStatus } from '@lunaz/types';
-import { Price } from '@lunaz/ui';
 import { api } from '../../api/client';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
@@ -537,22 +536,22 @@ export function CustomerDetailPage() {
                   <table className="w-full">
                     <thead>
                       <tr className="border-t border-b border-gray-100 bg-gray-50/50">
-                        <th className="px-4 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">
                           Order
                         </th>
-                        <th className="px-4 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">
                           Date
                         </th>
-                        <th className="px-4 py-2 text-center text-[10px] font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-3 py-2 text-center text-[10px] font-medium text-gray-500 uppercase tracking-wider">
                           Items
                         </th>
-                        <th className="px-4 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">
                           Status
                         </th>
-                        <th className="px-4 py-2 text-right text-[10px] font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-3 py-2 text-right text-[10px] font-medium text-gray-500 uppercase tracking-wider">
                           Total
                         </th>
-                        <th className="px-4 py-2 text-right text-[10px] font-medium text-gray-500 uppercase tracking-wider">
+                        <th className="px-3 py-2 text-right text-[10px] font-medium text-gray-500 uppercase tracking-wider">
                           Action
                         </th>
                       </tr>
@@ -562,16 +561,29 @@ export function CustomerDetailPage() {
                         const status = statusConfig[order.status] || statusConfig.pending;
                         return (
                           <tr key={order.id} className="hover:bg-gray-50/50 transition-colors">
-                            <td className="px-4 py-2">
+                            <td className="px-3 py-2">
                               <Link
                                 to={`/orders/${order.id}`}
-                                className="text-xs font-medium text-gray-700 hover:text-gray-900 transition-colors"
+                                className="inline-flex px-1.5 py-0.5 text-[10px] font-mono font-medium text-blue-700 bg-blue-50 rounded hover:bg-blue-100 transition-colors"
                               >
                                 #{order.orderNumber}
                               </Link>
                             </td>
-                            <td className="px-4 py-2">
-                              <span className="text-xs text-gray-500">
+                            <td className="px-3 py-2">
+                              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] text-gray-600 bg-gray-100 rounded">
+                                <svg
+                                  className="w-2.5 h-2.5 text-gray-400"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                  strokeWidth={2}
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"
+                                  />
+                                </svg>
                                 {new Date(order.createdAt).toLocaleDateString('en-US', {
                                   month: 'short',
                                   day: 'numeric',
@@ -579,10 +591,12 @@ export function CustomerDetailPage() {
                                 })}
                               </span>
                             </td>
-                            <td className="px-4 py-2 text-center">
-                              <span className="text-xs text-gray-600">{order.items.length}</span>
+                            <td className="px-3 py-2 text-center">
+                              <span className="inline-flex px-1.5 py-0.5 text-[10px] font-medium text-gray-600 bg-gray-50 rounded">
+                                {order.items.length}
+                              </span>
                             </td>
-                            <td className="px-4 py-2">
+                            <td className="px-3 py-2">
                               <span
                                 className={`inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded ${status.bgColor} ${status.textColor}`}
                               >
@@ -590,14 +604,13 @@ export function CustomerDetailPage() {
                                 {status.label}
                               </span>
                             </td>
-                            <td className="px-4 py-2 text-right">
-                              <Price
-                                amount={order.total}
-                                currency={order.currency}
-                                className="text-xs font-medium text-gray-900"
-                              />
+                            <td className="px-3 py-2 text-right">
+                              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700 bg-emerald-50 rounded">
+                                <span className="text-emerald-500">৳</span>
+                                {order.total.toLocaleString()}
+                              </span>
                             </td>
-                            <td className="px-4 py-2">
+                            <td className="px-3 py-2">
                               <div className="flex items-center justify-end">
                                 <Link
                                   to={`/orders/${order.id}`}
@@ -806,19 +819,104 @@ export function CustomerDetailPage() {
                 <p className="text-[10px] font-medium text-gray-500 uppercase tracking-wide mb-1">
                   Email Address
                 </p>
-                <p className="text-sm text-gray-700">{customer.email}</p>
+                <div className="flex items-center gap-1.5">
+                  <span
+                    className="inline-flex px-1.5 py-0.5 text-[10px] font-mono text-gray-700 bg-gray-100 rounded truncate max-w-[160px]"
+                    title={customer.email}
+                  >
+                    {customer.email}
+                  </span>
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(customer.email);
+                      addToast('Email copied to clipboard', 'success');
+                    }}
+                    className="p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors"
+                    title="Copy email"
+                  >
+                    <svg
+                      className="w-3 h-3"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      strokeWidth={2}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M15.666 3.888A2.25 2.25 0 0013.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 01-.75.75H9a.75.75 0 01-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 01-2.25 2.25H6.75A2.25 2.25 0 014.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 011.927-.184"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              <div>
+                <p className="text-[10px] font-medium text-gray-500 uppercase tracking-wide mb-1">
+                  Phone Number
+                </p>
+                <div className="flex items-center gap-1.5">
+                  {customer.phone ? (
+                    <>
+                      <a
+                        href={`tel:${customer.phone}`}
+                        className="inline-flex px-1.5 py-0.5 text-[10px] font-mono text-blue-700 bg-blue-50 rounded hover:bg-blue-100 transition-colors"
+                      >
+                        {customer.phone}
+                      </a>
+                      <button
+                        onClick={() => {
+                          navigator.clipboard.writeText(customer.phone);
+                          addToast('Phone copied to clipboard', 'success');
+                        }}
+                        className="p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors"
+                        title="Copy phone"
+                      >
+                        <svg
+                          className="w-3 h-3"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                          strokeWidth={2}
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M15.666 3.888A2.25 2.25 0 0013.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 01-.75.75H9a.75.75 0 01-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 01-2.25 2.25H6.75A2.25 2.25 0 014.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 011.927-.184"
+                          />
+                        </svg>
+                      </button>
+                    </>
+                  ) : (
+                    <span className="inline-flex px-1.5 py-0.5 text-[10px] text-gray-400 bg-gray-50 rounded">
+                      Not provided
+                    </span>
+                  )}
+                </div>
               </div>
               <div>
                 <p className="text-[10px] font-medium text-gray-500 uppercase tracking-wide mb-1">
                   Member Since
                 </p>
-                <p className="text-sm text-gray-700">
+                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium text-purple-700 bg-purple-50 rounded">
+                  <svg
+                    className="w-2.5 h-2.5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    strokeWidth={2}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"
+                    />
+                  </svg>
                   {new Date(customer.createdAt).toLocaleDateString('en-US', {
                     year: 'numeric',
-                    month: 'long',
+                    month: 'short',
                     day: 'numeric',
                   })}
-                </p>
+                </span>
               </div>
               <div>
                 <p className="text-[10px] font-medium text-gray-500 uppercase tracking-wide mb-1">
@@ -863,15 +961,18 @@ export function CustomerDetailPage() {
               <div className="border-t border-gray-100 pt-4">
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-gray-500">Total Spent</span>
-                  <Price amount={totalSpent} className="text-sm font-semibold text-gray-900" />
+                  <span className="text-sm font-semibold text-gray-900">
+                    <span className="text-gray-500">৳</span>
+                    {totalSpent.toLocaleString()}
+                  </span>
                 </div>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-xs text-gray-500">Avg. Order Value</span>
-                <Price
-                  amount={orders.length > 0 ? totalSpent / orders.length : 0}
-                  className="text-sm font-medium text-gray-700"
-                />
+                <span className="text-sm font-medium text-gray-700">
+                  <span className="text-gray-400">৳</span>
+                  {orders.length > 0 ? Math.round(totalSpent / orders.length).toLocaleString() : 0}
+                </span>
               </div>
             </div>
           </SidebarCard>

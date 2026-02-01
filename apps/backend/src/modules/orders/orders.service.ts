@@ -100,7 +100,7 @@ export async function createOrder(userId: string, input: CreateOrderInput) {
     shippingAmount,
     taxAmount,
     total: totalAmount,
-    currency: 'USD',
+    currency: 'BDT', // Bangladeshi Taka
     shippingAddress: input.shippingAddress,
     billingAddress: input.billingAddress,
     paymentStatus: PaymentStatus.PENDING,
@@ -110,7 +110,11 @@ export async function createOrder(userId: string, input: CreateOrderInput) {
   // Clear cart after successful order creation
   await CartModel.findOneAndUpdate({ userId }, { $set: { items: [] } });
 
-  return formatOrder(order.toObject());
+  // Fetch customer name for the response
+  const user = await UserModel.findById(userId, { name: 1 }).lean();
+  const customerName = user?.name as string | undefined;
+
+  return formatOrder(order.toObject(), customerName);
 }
 
 export async function listOrders(
@@ -195,7 +199,11 @@ export async function getOrder(userId: string, orderId: string, isAdmin: boolean
     throw createError('Access denied', 403);
   }
 
-  return formatOrder(order);
+  // Fetch customer name
+  const user = await UserModel.findById(order.userId, { name: 1 }).lean();
+  const customerName = user?.name as string | undefined;
+
+  return formatOrder(order, customerName);
 }
 
 export async function updateOrderStatus(orderId: string, input: UpdateOrderStatusInput) {
@@ -211,5 +219,10 @@ export async function updateOrderStatus(orderId: string, input: UpdateOrderStatu
   );
 
   if (!order) throw createError('Order not found', 404);
-  return formatOrder(order.toObject());
+
+  // Fetch customer name
+  const user = await UserModel.findById(order.userId, { name: 1 }).lean();
+  const customerName = user?.name as string | undefined;
+
+  return formatOrder(order.toObject(), customerName);
 }

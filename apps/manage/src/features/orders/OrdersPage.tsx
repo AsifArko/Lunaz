@@ -137,12 +137,12 @@ function FilterDropdown({
   );
 }
 
-function formatCurrency(amount: number, currency: string = 'USD'): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency,
-    minimumFractionDigits: 2,
-  }).format(amount / 100);
+function formatCurrency(amount: number): string {
+  const formatted = new Intl.NumberFormat('en-IN', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
+  }).format(amount);
+  return `৳${formatted}`;
 }
 
 function formatDate(date: string): string {
@@ -575,7 +575,7 @@ export function OrdersPage() {
                         {/* Total */}
                         <td className="px-4 py-2.5 text-right">
                           <span className="text-xs text-gray-600">
-                            {formatCurrency(order.total, order.currency)}
+                            {formatCurrency(order.total)}
                           </span>
                         </td>
 

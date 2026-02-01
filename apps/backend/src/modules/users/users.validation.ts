@@ -4,6 +4,11 @@ export const updateProfileSchema = z.object({
   body: z.object({
     name: z.string().min(1).optional(),
     email: z.string().email().optional(),
+    phone: z
+      .string()
+      .min(11, 'Phone number must be at least 11 digits')
+      .regex(/^(\+?88)?01[3-9]\d{8}$/, 'Please enter a valid Bangladeshi phone number')
+      .optional(),
   }),
 });
 

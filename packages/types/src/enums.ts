@@ -26,11 +26,26 @@ export type ProductStatus = (typeof ProductStatus)[keyof typeof ProductStatus];
 
 export const PaymentStatus = {
   PENDING: 'pending',
+  INITIATED: 'initiated',
+  PROCESSING: 'processing',
+  COMPLETED: 'completed',
   PAID: 'paid',
   FAILED: 'failed',
+  CANCELLED: 'cancelled',
   REFUNDED: 'refunded',
+  PARTIALLY_REFUNDED: 'partially_refunded',
+  EXPIRED: 'expired',
 } as const;
 export type PaymentStatus = (typeof PaymentStatus)[keyof typeof PaymentStatus];
+
+export const PaymentMethod = {
+  BKASH: 'bkash',
+  NAGAD: 'nagad',
+  BANK_TRANSFER: 'bank_transfer',
+  CARD: 'card',
+  CASH_ON_DELIVERY: 'cod',
+} as const;
+export type PaymentMethod = (typeof PaymentMethod)[keyof typeof PaymentMethod];
 
 export const TransactionType = {
   SALE: 'sale',
