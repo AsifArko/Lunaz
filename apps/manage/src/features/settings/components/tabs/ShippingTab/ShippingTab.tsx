@@ -2,7 +2,6 @@ import type { FormEvent } from 'react';
 import { ShippingRatesSection } from './ShippingRatesSection';
 import { TaxSection } from './TaxSection';
 import { OrderSettingsSection } from './OrderSettingsSection';
-import { SettingsDivider } from '../../shared/SettingsDivider';
 import { SettingsSaveButton } from '../../shared/SettingsSaveButton';
 import type { StoreSettings } from '../../../types';
 
@@ -20,18 +19,12 @@ export function ShippingTab({ settings, onChange, onSave, isSaving }: ShippingTa
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8">
+    <form onSubmit={handleSubmit} className="space-y-6">
       <ShippingRatesSection settings={settings} onChange={onChange} />
-
-      <SettingsDivider />
-
       <TaxSection settings={settings} onChange={onChange} />
-
-      <SettingsDivider />
-
       <OrderSettingsSection settings={settings} onChange={onChange} />
 
-      <div className="pt-4">
+      <div className="flex justify-end pt-4">
         <SettingsSaveButton isLoading={isSaving} />
       </div>
     </form>

@@ -7,7 +7,10 @@ import {
 } from './models/business-authenticity.model.js';
 import { CertificateModel } from './models/certificate.model.js';
 import { LegalDocumentModel } from './models/legal-document.model.js';
-import { ComplianceActivityModel, logComplianceActivity } from './models/compliance-activity.model.js';
+import {
+  ComplianceActivityModel,
+  logComplianceActivity,
+} from './models/compliance-activity.model.js';
 
 // ============================================
 // TAX RECORDS

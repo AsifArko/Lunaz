@@ -15,11 +15,11 @@ export function Toggle({ checked, onChange, disabled = false, size = 'md' }: Tog
       onClick={() => !disabled && onChange(!checked)}
       disabled={disabled}
       className={`relative ${sizes.track} rounded-full transition-colors ${
-        checked ? 'bg-gray-900' : 'bg-gray-200'
+        checked ? 'bg-gray-600' : 'bg-gray-200'
       } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
     >
       <span
-        className={`absolute top-0.5 left-0.5 ${sizes.thumb} bg-white rounded-full shadow transition-transform ${
+        className={`absolute top-0.5 left-0.5 ${sizes.thumb} bg-white rounded-full shadow-sm transition-transform ${
           checked ? sizes.translate : 'translate-x-0'
         }`}
       />

@@ -45,9 +45,11 @@ export function NumberInput({
         step={step}
         className={`w-full ${sizeClasses[size]} ${prefix ? 'pl-7' : 'pl-3'} ${
           suffix ? 'pr-8' : 'pr-3'
-        } bg-white border rounded-md focus:outline-none transition-colors ${
-          error ? 'border-red-300 focus:border-red-400' : 'border-gray-200 focus:border-gray-400'
-        } ${disabled ? 'bg-gray-50 text-gray-500 cursor-not-allowed' : ''}`}
+        } bg-white border rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-100 transition-all placeholder:text-gray-400 text-gray-700 ${
+          error
+            ? 'border-red-300 focus:border-red-400 focus:ring-red-50'
+            : 'border-gray-200 hover:border-gray-300 focus:border-gray-400'
+        } ${disabled ? 'bg-gray-50 text-gray-400 cursor-not-allowed' : ''}`}
       />
       {suffix && (
         <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none">

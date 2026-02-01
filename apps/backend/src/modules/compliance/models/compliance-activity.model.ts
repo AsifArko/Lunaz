@@ -52,7 +52,10 @@ complianceActivitySchema.index({ activityType: 1 });
 complianceActivitySchema.index({ performedBy: 1 });
 complianceActivitySchema.index({ createdAt: -1 });
 
-export const ComplianceActivityModel = mongoose.model('ComplianceActivity', complianceActivitySchema);
+export const ComplianceActivityModel = mongoose.model(
+  'ComplianceActivity',
+  complianceActivitySchema
+);
 
 // Helper function to log activity
 export async function logComplianceActivity(data: {

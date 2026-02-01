@@ -202,7 +202,8 @@ export const SETTINGS_TABS: SettingsTab[] = [
   { id: 'account', label: 'Account' },
   { id: 'security', label: 'Security' },
   { id: 'payment', label: 'Payment', badge: 'New', badgeVariant: 'new' },
-  { id: 'advanced', label: 'Advanced', badge: 'New', badgeVariant: 'new' },
+  { id: 'seo', label: 'SEO' },
+  { id: 'advanced', label: 'Advanced' },
 ];
 
 // Webhook event types

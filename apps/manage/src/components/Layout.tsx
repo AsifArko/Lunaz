@@ -1,6 +1,179 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+
+// Futuristic handcraft-themed canvas animation component
+function HandcraftLogo({ size = 32 }: { size?: number }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = size * dpr;
+    canvas.height = size * dpr;
+    ctx.scale(dpr, dpr);
+
+    let animationId: number;
+    let time = 0;
+
+    // Orbital particles for futuristic effect
+    const orbitals: Array<{
+      angle: number;
+      radius: number;
+      speed: number;
+      size: number;
+      phase: number;
+    }> = [];
+
+    for (let i = 0; i < 6; i++) {
+      orbitals.push({
+        angle: (i * Math.PI * 2) / 6,
+        radius: 8 + (i % 2) * 3,
+        speed: 0.8 + Math.random() * 0.4,
+        size: 1.2 + Math.random() * 0.8,
+        phase: Math.random() * Math.PI * 2,
+      });
+    }
+
+    // Thread lines radiating from center
+    const threads: Array<{
+      angle: number;
+      length: number;
+      speed: number;
+      opacity: number;
+    }> = [];
+
+    for (let i = 0; i < 8; i++) {
+      threads.push({
+        angle: (i * Math.PI) / 4,
+        length: 5 + Math.random() * 3,
+        speed: 0.5 + Math.random() * 0.5,
+        opacity: 0.3 + Math.random() * 0.4,
+      });
+    }
+
+    const animate = () => {
+      time += 0.016;
+      ctx.clearRect(0, 0, size, size);
+
+      const centerX = size / 2;
+      const centerY = size / 2;
+
+      // Outer pulsing ring
+      const outerPulse = Math.sin(time * 1.5) * 0.5;
+      ctx.beginPath();
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+      ctx.lineWidth = 1;
+      ctx.arc(centerX, centerY, 12 + outerPulse, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Middle rotating dashed ring
+      ctx.save();
+      ctx.translate(centerX, centerY);
+      ctx.rotate(time * 0.3);
+      ctx.beginPath();
+      ctx.strokeStyle = 'rgba(200, 220, 255, 0.2)';
+      ctx.lineWidth = 0.8;
+      ctx.setLineDash([3, 4]);
+      ctx.arc(0, 0, 9, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.restore();
+
+      // Animated thread lines (craft element)
+      threads.forEach((thread, i) => {
+        const wobble = Math.sin(time * thread.speed + i) * 0.15;
+        const currentAngle = thread.angle + wobble;
+        const pulseLength = thread.length + Math.sin(time * 2 + i * 0.5) * 1.5;
+
+        const startX = centerX + Math.cos(currentAngle) * 3;
+        const startY = centerY + Math.sin(currentAngle) * 3;
+        const endX = centerX + Math.cos(currentAngle) * pulseLength;
+        const endY = centerY + Math.sin(currentAngle) * pulseLength;
+
+        // Create gradient for thread
+        const gradient = ctx.createLinearGradient(startX, startY, endX, endY);
+        gradient.addColorStop(0, `rgba(255, 255, 255, ${thread.opacity})`);
+        gradient.addColorStop(1, `rgba(180, 200, 255, ${thread.opacity * 0.3})`);
+
+        ctx.beginPath();
+        ctx.strokeStyle = gradient;
+        ctx.lineWidth = 1.2;
+        ctx.lineCap = 'round';
+        ctx.moveTo(startX, startY);
+        ctx.lineTo(endX, endY);
+        ctx.stroke();
+
+        // Endpoint dot
+        const dotPulse = Math.sin(time * 3 + i) * 0.3;
+        ctx.beginPath();
+        ctx.fillStyle = `rgba(220, 230, 255, ${0.5 + dotPulse})`;
+        ctx.arc(endX, endY, 1 + dotPulse * 0.5, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      // Orbiting particles
+      orbitals.forEach((orbital, i) => {
+        const currentAngle = orbital.angle + time * orbital.speed;
+        const breathe = Math.sin(time * 2 + orbital.phase) * 1;
+        const x = centerX + Math.cos(currentAngle) * (orbital.radius + breathe);
+        const y = centerY + Math.sin(currentAngle) * (orbital.radius + breathe);
+
+        // Particle glow
+        const glowGradient = ctx.createRadialGradient(x, y, 0, x, y, orbital.size * 2);
+        glowGradient.addColorStop(0, 'rgba(200, 220, 255, 0.6)');
+        glowGradient.addColorStop(0.5, 'rgba(180, 200, 255, 0.2)');
+        glowGradient.addColorStop(1, 'rgba(150, 180, 255, 0)');
+
+        ctx.beginPath();
+        ctx.fillStyle = glowGradient;
+        ctx.arc(x, y, orbital.size * 2, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Core particle
+        ctx.beginPath();
+        ctx.fillStyle = `rgba(255, 255, 255, ${0.7 + Math.sin(time * 2 + i) * 0.2})`;
+        ctx.arc(x, y, orbital.size, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      // Center core with pulse
+      const corePulse = Math.sin(time * 2) * 0.4;
+
+      // Core glow
+      const coreGlow = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, 4);
+      coreGlow.addColorStop(0, 'rgba(255, 255, 255, 0.9)');
+      coreGlow.addColorStop(0.6, 'rgba(200, 220, 255, 0.3)');
+      coreGlow.addColorStop(1, 'rgba(150, 180, 255, 0)');
+
+      ctx.beginPath();
+      ctx.fillStyle = coreGlow;
+      ctx.arc(centerX, centerY, 4 + corePulse, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Solid center
+      ctx.beginPath();
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+      ctx.arc(centerX, centerY, 2 + corePulse * 0.5, 0, Math.PI * 2);
+      ctx.fill();
+
+      animationId = requestAnimationFrame(animate);
+    };
+
+    animate();
+
+    return () => {
+      cancelAnimationFrame(animationId);
+    };
+  }, [size]);
+
+  return <canvas ref={canvasRef} style={{ width: size, height: size }} className="block" />;
+}
 
 interface NavItem {
   to: string;
@@ -168,7 +341,7 @@ const navSections: NavSection[] = [
       },
     ],
   },
-  
+
   {
     title: 'Compliance',
     items: [
@@ -412,44 +585,32 @@ export function Layout() {
           <div className="flex items-center gap-3">
             {!sidebarCollapsed && (
               <>
-                <div className="w-8 h-8 bg-gradient-to-br from-slate-900 to-slate-700 rounded-lg flex items-center justify-center shadow-sm">
-                  <svg
-                    className="w-4 h-4 text-white"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    strokeWidth={2}
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M13 10V3L4 14h7v7l9-11h-7z"
-                    />
-                  </svg>
+                <div className="relative group">
+                  <div className="w-10 h-10 bg-gradient-to-br from-[#0a0f1a] via-[#0d1424] to-[#080c14] rounded-xl flex items-center justify-center shadow-lg ring-1 ring-blue-900/20 transition-all duration-300 group-hover:shadow-xl group-hover:scale-105 group-hover:ring-blue-800/30">
+                    <HandcraftLogo size={28} />
+                  </div>
+                  <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-gradient-to-br from-emerald-400 to-emerald-500 rounded-full ring-2 ring-white shadow-sm" />
                 </div>
-                <div>
-                  <span className="text-base font-bold text-slate-900 tracking-tight">Lunaz</span>
-                  <p className="text-[10px] text-slate-400 font-medium uppercase tracking-wider">
-                    Admin
-                  </p>
+                <div className="flex flex-col">
+                  <span className="text-lg font-bold bg-gradient-to-r from-slate-900 via-slate-700 to-slate-800 bg-clip-text text-transparent tracking-tight">
+                    Lunaz
+                  </span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[9px] text-slate-400 font-semibold uppercase tracking-[0.15em]">
+                      Admin Panel
+                    </span>
+                    <div className="w-1 h-1 rounded-full bg-slate-300" />
+                    <span className="text-[9px] text-emerald-500 font-medium">Pro</span>
+                  </div>
                 </div>
               </>
             )}
             {sidebarCollapsed && (
-              <div className="w-8 h-8 bg-gradient-to-br from-slate-900 to-slate-700 rounded-lg flex items-center justify-center shadow-sm mx-auto">
-                <svg
-                  className="w-4 h-4 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  strokeWidth={2}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M13 10V3L4 14h7v7l9-11h-7z"
-                  />
-                </svg>
+              <div className="relative mx-auto group">
+                <div className="w-10 h-10 bg-gradient-to-br from-[#0a0f1a] via-[#0d1424] to-[#080c14] rounded-xl flex items-center justify-center shadow-lg ring-1 ring-blue-900/20 transition-all duration-300 group-hover:shadow-xl group-hover:scale-105 group-hover:ring-blue-800/30">
+                  <HandcraftLogo size={28} />
+                </div>
+                <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-gradient-to-br from-emerald-400 to-emerald-500 rounded-full ring-2 ring-white shadow-sm" />
               </div>
             )}
           </div>
@@ -531,8 +692,8 @@ export function Layout() {
           ))}
         </nav>
 
-        {/* User Profile Section */}
-        <div className="p-3 border-t border-slate-100">
+        {/* User Profile Section - Sticky at bottom */}
+        <div className="sticky bottom-0 p-3 border-t border-slate-100 bg-white shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.03)]">
           {sidebarCollapsed ? (
             <div className="flex flex-col items-center gap-2">
               <div className="relative group">
@@ -543,6 +704,30 @@ export function Layout() {
                 </div>
                 <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full ring-2 ring-white" />
               </div>
+              <NavLink
+                to="/settings"
+                className="p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all duration-200"
+                title="Settings"
+              >
+                <svg
+                  className="w-[18px] h-[18px]"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
+                </svg>
+              </NavLink>
               <button
                 onClick={handleLogout}
                 className="p-2 rounded-lg text-slate-400 hover:text-red-500 hover:bg-red-50 transition-all duration-200"
@@ -578,6 +763,30 @@ export function Layout() {
                   <p className="text-sm font-semibold text-slate-900 truncate">{user?.name}</p>
                   <p className="text-xs text-slate-500 truncate">{user?.email}</p>
                 </div>
+                <NavLink
+                  to="/settings"
+                  className="p-2 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-white/80 transition-all duration-200 shrink-0"
+                  title="Settings"
+                >
+                  <svg
+                    className="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    strokeWidth={1.5}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                  </svg>
+                </NavLink>
               </div>
               <button
                 onClick={handleLogout}
