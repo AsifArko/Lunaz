@@ -60,3 +60,21 @@ export function validateQuery(schema: z.ZodTypeAny) {
     next();
   };
 }
+
+export function validateParams(schema: z.ZodTypeAny) {
+  return (req: Request, res: Response, next: NextFunction): void => {
+    const parsed = schema.safeParse(req.params);
+    if (!parsed.success) {
+      res.status(400).json({
+        error: {
+          code: 'VALIDATION_ERROR',
+          message: 'Params validation failed',
+          details: parsed.error.flatten(),
+        },
+      });
+      return;
+    }
+    req.params = parsed.data;
+    next();
+  };
+}
