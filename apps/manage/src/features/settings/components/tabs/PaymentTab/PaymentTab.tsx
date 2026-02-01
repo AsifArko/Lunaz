@@ -1,20 +1,64 @@
 import { useState, type FormEvent } from 'react';
 import { SettingsSection } from '../../shared/SettingsSection';
-import { SettingsField } from '../../shared/SettingsField';
 import { SettingsToggle } from '../../shared/SettingsToggle';
-import { SettingsDivider } from '../../shared/SettingsDivider';
 import { SettingsSaveButton } from '../../shared/SettingsSaveButton';
-import { SettingsCard } from '../../shared/SettingsCard';
 import { TextInput } from '../../form/TextInput';
 import { TextArea } from '../../form/TextArea';
 import { Toggle } from '../../form/Toggle';
 import type { PaymentSettings, PaymentGateways } from '../../../types';
 import { DEFAULT_PAYMENT_SETTINGS, DEFAULT_PAYMENT_GATEWAYS } from '../../../utils/defaults';
 
+// Section Icons
+const PaymentMethodsIcon = (
+  <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={1.5}
+      d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"
+    />
+  </svg>
+);
+
+const MobilePaymentIcon = (
+  <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={1.5}
+      d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"
+    />
+  </svg>
+);
+
+const GatewayIcon = (
+  <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={1.5}
+      d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
+    />
+  </svg>
+);
+
+const CheckoutIcon = (
+  <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={1.5}
+      d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
+    />
+  </svg>
+);
+
 export function PaymentTab() {
   const [payments, setPayments] = useState<PaymentSettings>(DEFAULT_PAYMENT_SETTINGS);
   const [gateways, setGateways] = useState<PaymentGateways>(DEFAULT_PAYMENT_GATEWAYS);
   const [isSaving, setIsSaving] = useState(false);
+  const [requirePaymentOnOrder, setRequirePaymentOnOrder] = useState(false);
+  const [allowPartialPayment, setAllowPartialPayment] = useState(false);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -27,16 +71,136 @@ export function PaymentTab() {
     setPayments((prev) => ({ ...prev, [key]: value }));
   };
 
+  // Count active payment methods
+  const activeMethodsCount = [
+    payments.cashOnDelivery,
+    payments.bankTransfer,
+    payments.bkash,
+    payments.nagad,
+    gateways.sslcommerz.enabled,
+    gateways.stripe.enabled,
+    gateways.paypal.enabled,
+  ].filter(Boolean).length;
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-8">
-      <SettingsSection title="Payment Methods" description="Configure accepted payment methods">
+    <form onSubmit={handleSubmit} className="space-y-6">
+      {/* Payment Overview */}
+      <div className="bg-white border border-gray-200 rounded-xl p-5">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-sm font-semibold text-gray-900">Payment Overview</h2>
+          <span
+            className={`px-2.5 py-1 text-xs font-medium rounded-full flex items-center gap-1.5 ${
+              activeMethodsCount > 0 ? 'text-green-700 bg-green-100' : 'text-gray-600 bg-gray-100'
+            }`}
+          >
+            <span
+              className={`w-1.5 h-1.5 rounded-full ${activeMethodsCount > 0 ? 'bg-green-500' : 'bg-gray-400'}`}
+            />
+            {activeMethodsCount} active
+          </span>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div className="p-3 bg-gray-50 rounded-lg">
+            <div className="flex items-center gap-2 mb-1">
+              <svg
+                className={`w-4 h-4 ${payments.cashOnDelivery ? 'text-green-500' : 'text-gray-300'}`}
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              <span className="text-xs font-medium text-gray-700">COD</span>
+            </div>
+            <p className="text-xs text-gray-500">
+              {payments.cashOnDelivery ? 'Enabled' : 'Disabled'}
+            </p>
+          </div>
+          <div className="p-3 bg-gray-50 rounded-lg">
+            <div className="flex items-center gap-2 mb-1">
+              <svg
+                className={`w-4 h-4 ${payments.bankTransfer ? 'text-green-500' : 'text-gray-300'}`}
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              <span className="text-xs font-medium text-gray-700">Bank</span>
+            </div>
+            <p className="text-xs text-gray-500">
+              {payments.bankTransfer ? 'Enabled' : 'Disabled'}
+            </p>
+          </div>
+          <div className="p-3 bg-gray-50 rounded-lg">
+            <div className="flex items-center gap-2 mb-1">
+              <svg
+                className={`w-4 h-4 ${payments.bkash || payments.nagad ? 'text-green-500' : 'text-gray-300'}`}
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              <span className="text-xs font-medium text-gray-700">Mobile</span>
+            </div>
+            <p className="text-xs text-gray-500">
+              {payments.bkash || payments.nagad ? 'Enabled' : 'Disabled'}
+            </p>
+          </div>
+          <div className="p-3 bg-gray-50 rounded-lg">
+            <div className="flex items-center gap-2 mb-1">
+              <svg
+                className={`w-4 h-4 ${gateways.stripe.enabled || gateways.sslcommerz.enabled ? 'text-green-500' : 'text-gray-300'}`}
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              <span className="text-xs font-medium text-gray-700">Cards</span>
+            </div>
+            <p className="text-xs text-gray-500">
+              {gateways.stripe.enabled || gateways.sslcommerz.enabled ? 'Enabled' : 'Disabled'}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Manual Payment Methods */}
+      <SettingsSection
+        title="Manual Payment Methods"
+        description="Payment methods that require manual verification"
+        icon={PaymentMethodsIcon}
+        iconBg="gray"
+        variant="card"
+      >
         <div className="space-y-4">
-          <SettingsCard variant="muted">
-            <div className="flex items-center justify-between mb-3">
+          {/* Cash on Delivery */}
+          <div
+            className={`p-4 rounded-xl border transition-all ${
+              payments.cashOnDelivery
+                ? 'border-gray-200 bg-white'
+                : 'border-dashed border-gray-200 bg-gray-50/50'
+            }`}
+          >
+            <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
                   <svg
-                    className="w-5 h-5 text-green-600"
+                    className="w-5 h-5 text-gray-500"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -50,8 +214,15 @@ export function PaymentTab() {
                   </svg>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-900">Cash on Delivery</p>
-                  <p className="text-xs text-gray-500">Accept cash when order is delivered</p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-medium text-gray-900">Cash on Delivery</p>
+                    {payments.cashOnDelivery && (
+                      <span className="px-1.5 py-0.5 text-[10px] font-medium text-green-700 bg-green-100 rounded">
+                        Active
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs text-gray-500">Collect payment when order is delivered</p>
                 </div>
               </div>
               <Toggle
@@ -60,21 +231,33 @@ export function PaymentTab() {
               />
             </div>
             {payments.cashOnDelivery && (
-              <TextArea
-                value={payments.codInstructions}
-                onChange={(v) => updatePayment('codInstructions', v)}
-                placeholder="Instructions for cash on delivery..."
-                rows={2}
-              />
+              <div className="mt-4 pt-4 border-t border-gray-100">
+                <label className="block text-xs font-medium text-gray-600 mb-1.5">
+                  Instructions for customers
+                </label>
+                <TextArea
+                  value={payments.codInstructions}
+                  onChange={(v) => updatePayment('codInstructions', v)}
+                  placeholder="Please have exact change ready for the delivery person..."
+                  rows={2}
+                />
+              </div>
             )}
-          </SettingsCard>
+          </div>
 
-          <SettingsCard variant="muted">
-            <div className="flex items-center justify-between mb-3">
+          {/* Bank Transfer */}
+          <div
+            className={`p-4 rounded-xl border transition-all ${
+              payments.bankTransfer
+                ? 'border-gray-200 bg-white'
+                : 'border-dashed border-gray-200 bg-gray-50/50'
+            }`}
+          >
+            <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
                   <svg
-                    className="w-5 h-5 text-blue-600"
+                    className="w-5 h-5 text-gray-500"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -83,13 +266,20 @@ export function PaymentTab() {
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth={1.5}
-                      d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
+                      d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
                     />
                   </svg>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-900">Bank Transfer</p>
-                  <p className="text-xs text-gray-500">Direct bank transfer payment</p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-medium text-gray-900">Bank Transfer</p>
+                    {payments.bankTransfer && (
+                      <span className="px-1.5 py-0.5 text-[10px] font-medium text-green-700 bg-green-100 rounded">
+                        Active
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs text-gray-500">Direct bank transfer to your account</p>
                 </div>
               </div>
               <Toggle
@@ -98,82 +288,173 @@ export function PaymentTab() {
               />
             </div>
             {payments.bankTransfer && (
-              <TextArea
-                value={payments.bankTransferInstructions}
-                onChange={(v) => updatePayment('bankTransferInstructions', v)}
-                placeholder="Bank transfer instructions and details..."
-                rows={2}
-              />
+              <div className="mt-4 pt-4 border-t border-gray-100">
+                <label className="block text-xs font-medium text-gray-600 mb-1.5">
+                  Bank account details
+                </label>
+                <TextArea
+                  value={payments.bankTransferInstructions}
+                  onChange={(v) => updatePayment('bankTransferInstructions', v)}
+                  placeholder="Bank Name: ABC Bank&#10;Account Name: Your Store&#10;Account Number: 1234567890&#10;Routing Number: 123456789"
+                  rows={4}
+                />
+              </div>
             )}
-          </SettingsCard>
+          </div>
+        </div>
+      </SettingsSection>
 
-          <SettingsCard variant="muted">
-            <div className="flex items-center justify-between">
+      {/* Mobile Payments */}
+      <SettingsSection
+        title="Mobile Payment Methods"
+        description="Accept payments via mobile financial services"
+        icon={MobilePaymentIcon}
+        iconBg="gray"
+        variant="card"
+      >
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* bKash */}
+          <div
+            className={`p-4 rounded-xl border transition-all ${
+              payments.bkash
+                ? 'border-gray-200 bg-white'
+                : 'border-dashed border-gray-200 bg-gray-50/50'
+            }`}
+          >
+            <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-pink-100 rounded-lg flex items-center justify-center">
-                  <span className="text-pink-600 font-bold text-xs">bKash</span>
+                <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                  <svg
+                    className="w-5 h-5 text-gray-500"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"
+                    />
+                  </svg>
                 </div>
                 <div>
                   <p className="text-sm font-medium text-gray-900">bKash</p>
-                  <p className="text-xs text-gray-500">Mobile payment via bKash</p>
+                  <p className="text-xs text-gray-500">Mobile wallet</p>
                 </div>
               </div>
               <Toggle checked={payments.bkash} onChange={(v) => updatePayment('bkash', v)} />
             </div>
             {payments.bkash && (
-              <div className="mt-3">
+              <div className="pt-3 border-t border-gray-100">
+                <label className="block text-xs font-medium text-gray-600 mb-1.5">
+                  Merchant number
+                </label>
                 <TextInput
                   value={payments.bkashMerchantNumber}
                   onChange={(v) => updatePayment('bkashMerchantNumber', v)}
-                  placeholder="Merchant number"
+                  placeholder="01XXXXXXXXX"
                 />
               </div>
             )}
-          </SettingsCard>
+          </div>
 
-          <SettingsCard variant="muted">
-            <div className="flex items-center justify-between">
+          {/* Nagad */}
+          <div
+            className={`p-4 rounded-xl border transition-all ${
+              payments.nagad
+                ? 'border-gray-200 bg-white'
+                : 'border-dashed border-gray-200 bg-gray-50/50'
+            }`}
+          >
+            <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-                  <span className="text-orange-600 font-bold text-xs">Nagad</span>
+                <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                  <svg
+                    className="w-5 h-5 text-gray-500"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"
+                    />
+                  </svg>
                 </div>
                 <div>
                   <p className="text-sm font-medium text-gray-900">Nagad</p>
-                  <p className="text-xs text-gray-500">Mobile payment via Nagad</p>
+                  <p className="text-xs text-gray-500">Mobile wallet</p>
                 </div>
               </div>
               <Toggle checked={payments.nagad} onChange={(v) => updatePayment('nagad', v)} />
             </div>
             {payments.nagad && (
-              <div className="mt-3">
+              <div className="pt-3 border-t border-gray-100">
+                <label className="block text-xs font-medium text-gray-600 mb-1.5">
+                  Merchant number
+                </label>
                 <TextInput
                   value={payments.nagadMerchantNumber}
                   onChange={(v) => updatePayment('nagadMerchantNumber', v)}
-                  placeholder="Merchant number"
+                  placeholder="01XXXXXXXXX"
                 />
               </div>
             )}
-          </SettingsCard>
+          </div>
         </div>
       </SettingsSection>
 
-      <SettingsDivider />
-
+      {/* Payment Gateways */}
       <SettingsSection
         title="Payment Gateways"
-        description="Configure payment gateway integrations"
-        badge="Pro"
-        badgeVariant="beta"
+        description="Accept online card payments securely"
+        icon={GatewayIcon}
+        iconBg="gray"
+        variant="card"
       >
         <div className="space-y-4">
-          <SettingsCard>
-            <div className="flex items-center justify-between mb-4">
+          {/* SSLCommerz */}
+          <div
+            className={`p-4 rounded-xl border transition-all ${
+              gateways.sslcommerz.enabled
+                ? 'border-gray-200 bg-white'
+                : 'border-dashed border-gray-200 bg-gray-50/50'
+            }`}
+          >
+            <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                  <span className="text-gray-600 font-bold text-[10px]">SSL</span>
+                  <svg
+                    className="w-5 h-5 text-gray-500"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                    />
+                  </svg>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-900">SSLCommerz</p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-medium text-gray-900">SSLCommerz</p>
+                    {gateways.sslcommerz.enabled && (
+                      <span className="px-1.5 py-0.5 text-[10px] font-medium text-green-700 bg-green-100 rounded">
+                        Active
+                      </span>
+                    )}
+                    {gateways.sslcommerz.sandbox && gateways.sslcommerz.enabled && (
+                      <span className="px-1.5 py-0.5 text-[10px] font-medium text-yellow-700 bg-yellow-100 rounded">
+                        Sandbox
+                      </span>
+                    )}
+                  </div>
                   <p className="text-xs text-gray-500">Bangladesh's leading payment gateway</p>
                 </div>
               </div>
@@ -188,35 +469,43 @@ export function PaymentTab() {
               />
             </div>
             {gateways.sslcommerz.enabled && (
-              <div className="grid gap-3 pt-3 border-t border-gray-100">
-                <SettingsField label="Store ID" horizontal={false}>
-                  <TextInput
-                    value={gateways.sslcommerz.storeId}
-                    onChange={(v) =>
-                      setGateways((prev) => ({
-                        ...prev,
-                        sslcommerz: { ...prev.sslcommerz, storeId: v },
-                      }))
-                    }
-                    placeholder="Your store ID"
-                  />
-                </SettingsField>
-                <SettingsField label="Store Password" horizontal={false}>
-                  <TextInput
-                    type="password"
-                    value={gateways.sslcommerz.storePassword}
-                    onChange={(v) =>
-                      setGateways((prev) => ({
-                        ...prev,
-                        sslcommerz: { ...prev.sslcommerz, storePassword: v },
-                      }))
-                    }
-                    placeholder="Your store password"
-                  />
-                </SettingsField>
+              <div className="mt-4 pt-4 border-t border-gray-100 space-y-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1.5">
+                      Store ID
+                    </label>
+                    <TextInput
+                      value={gateways.sslcommerz.storeId}
+                      onChange={(v) =>
+                        setGateways((prev) => ({
+                          ...prev,
+                          sslcommerz: { ...prev.sslcommerz, storeId: v },
+                        }))
+                      }
+                      placeholder="Your store ID"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1.5">
+                      Store Password
+                    </label>
+                    <TextInput
+                      type="password"
+                      value={gateways.sslcommerz.storePassword}
+                      onChange={(v) =>
+                        setGateways((prev) => ({
+                          ...prev,
+                          sslcommerz: { ...prev.sslcommerz, storePassword: v },
+                        }))
+                      }
+                      placeholder="••••••••"
+                    />
+                  </div>
+                </div>
                 <SettingsToggle
-                  label="Sandbox Mode"
-                  description="Use test environment"
+                  label="Sandbox mode"
+                  description="Use test environment for development"
                   checked={gateways.sslcommerz.sandbox}
                   onChange={(v) =>
                     setGateways((prev) => ({
@@ -227,19 +516,43 @@ export function PaymentTab() {
                 />
               </div>
             )}
-          </SettingsCard>
+          </div>
 
-          <SettingsCard>
-            <div className="flex items-center justify-between mb-4">
+          {/* Stripe */}
+          <div
+            className={`p-4 rounded-xl border transition-all ${
+              gateways.stripe.enabled
+                ? 'border-gray-200 bg-white'
+                : 'border-dashed border-gray-200 bg-gray-50/50'
+            }`}
+          >
+            <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                  <svg className="w-5 h-5 text-purple-600" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M13.976 9.15c-2.172-.806-3.356-1.426-3.356-2.409 0-.831.683-1.305 1.901-1.305 2.227 0 4.515.858 6.09 1.631l.89-5.494C18.252.975 15.697 0 12.165 0 9.667 0 7.589.654 6.104 1.872 4.56 3.147 3.757 4.992 3.757 7.218c0 4.039 2.467 5.76 6.476 7.219 2.585.92 3.445 1.574 3.445 2.583 0 .98-.84 1.545-2.354 1.545-1.875 0-4.965-.921-6.99-2.109l-.9 5.555C5.175 22.99 8.385 24 11.714 24c2.641 0 4.843-.624 6.328-1.813 1.664-1.305 2.525-3.236 2.525-5.732 0-4.128-2.524-5.851-6.591-7.305z" />
+                <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                  <svg
+                    className="w-5 h-5 text-gray-500"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
+                    />
                   </svg>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-900">Stripe</p>
-                  <p className="text-xs text-gray-500">Accept cards worldwide</p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-medium text-gray-900">Stripe</p>
+                    {gateways.stripe.enabled && (
+                      <span className="px-1.5 py-0.5 text-[10px] font-medium text-green-700 bg-green-100 rounded">
+                        Active
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs text-gray-500">Accept cards from customers worldwide</p>
                 </div>
               </div>
               <Toggle
@@ -253,40 +566,198 @@ export function PaymentTab() {
               />
             </div>
             {gateways.stripe.enabled && (
-              <div className="grid gap-3 pt-3 border-t border-gray-100">
-                <SettingsField label="Publishable Key" horizontal={false}>
-                  <TextInput
-                    value={gateways.stripe.publishableKey}
-                    onChange={(v) =>
-                      setGateways((prev) => ({
-                        ...prev,
-                        stripe: { ...prev.stripe, publishableKey: v },
-                      }))
-                    }
-                    placeholder="pk_..."
-                  />
-                </SettingsField>
-                <SettingsField label="Secret Key" horizontal={false}>
-                  <TextInput
-                    type="password"
-                    value={gateways.stripe.secretKey}
-                    onChange={(v) =>
-                      setGateways((prev) => ({
-                        ...prev,
-                        stripe: { ...prev.stripe, secretKey: v },
-                      }))
-                    }
-                    placeholder="sk_..."
-                  />
-                </SettingsField>
+              <div className="mt-4 pt-4 border-t border-gray-100">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1.5">
+                      Publishable Key
+                    </label>
+                    <TextInput
+                      value={gateways.stripe.publishableKey}
+                      onChange={(v) =>
+                        setGateways((prev) => ({
+                          ...prev,
+                          stripe: { ...prev.stripe, publishableKey: v },
+                        }))
+                      }
+                      placeholder="pk_live_..."
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1.5">
+                      Secret Key
+                    </label>
+                    <TextInput
+                      type="password"
+                      value={gateways.stripe.secretKey}
+                      onChange={(v) =>
+                        setGateways((prev) => ({
+                          ...prev,
+                          stripe: { ...prev.stripe, secretKey: v },
+                        }))
+                      }
+                      placeholder="sk_live_..."
+                    />
+                  </div>
+                </div>
               </div>
             )}
-          </SettingsCard>
+          </div>
+
+          {/* PayPal */}
+          <div
+            className={`p-4 rounded-xl border transition-all ${
+              gateways.paypal.enabled
+                ? 'border-gray-200 bg-white'
+                : 'border-dashed border-gray-200 bg-gray-50/50'
+            }`}
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                  <svg
+                    className="w-5 h-5 text-gray-500"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
+                    />
+                  </svg>
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-medium text-gray-900">PayPal</p>
+                    {gateways.paypal.enabled && (
+                      <span className="px-1.5 py-0.5 text-[10px] font-medium text-green-700 bg-green-100 rounded">
+                        Active
+                      </span>
+                    )}
+                    {gateways.paypal.sandbox && gateways.paypal.enabled && (
+                      <span className="px-1.5 py-0.5 text-[10px] font-medium text-yellow-700 bg-yellow-100 rounded">
+                        Sandbox
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs text-gray-500">Accept PayPal payments globally</p>
+                </div>
+              </div>
+              <Toggle
+                checked={gateways.paypal.enabled}
+                onChange={(v) =>
+                  setGateways((prev) => ({
+                    ...prev,
+                    paypal: { ...prev.paypal, enabled: v },
+                  }))
+                }
+              />
+            </div>
+            {gateways.paypal.enabled && (
+              <div className="mt-4 pt-4 border-t border-gray-100 space-y-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1.5">
+                      Client ID
+                    </label>
+                    <TextInput
+                      value={gateways.paypal.clientId}
+                      onChange={(v) =>
+                        setGateways((prev) => ({
+                          ...prev,
+                          paypal: { ...prev.paypal, clientId: v },
+                        }))
+                      }
+                      placeholder="Your client ID"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 mb-1.5">
+                      Client Secret
+                    </label>
+                    <TextInput
+                      type="password"
+                      value={gateways.paypal.clientSecret}
+                      onChange={(v) =>
+                        setGateways((prev) => ({
+                          ...prev,
+                          paypal: { ...prev.paypal, clientSecret: v },
+                        }))
+                      }
+                      placeholder="••••••••"
+                    />
+                  </div>
+                </div>
+                <SettingsToggle
+                  label="Sandbox mode"
+                  description="Use PayPal sandbox for testing"
+                  checked={gateways.paypal.sandbox}
+                  onChange={(v) =>
+                    setGateways((prev) => ({
+                      ...prev,
+                      paypal: { ...prev.paypal, sandbox: v },
+                    }))
+                  }
+                />
+              </div>
+            )}
+          </div>
         </div>
       </SettingsSection>
 
-      <div className="pt-4">
-        <SettingsSaveButton isLoading={isSaving} />
+      {/* Checkout Settings */}
+      <SettingsSection
+        title="Checkout Settings"
+        description="Configure payment behavior at checkout"
+        icon={CheckoutIcon}
+        iconBg="gray"
+        variant="card"
+      >
+        <div className="space-y-3">
+          <SettingsToggle
+            label="Require payment on order"
+            description="Customers must pay before order is confirmed"
+            checked={requirePaymentOnOrder}
+            onChange={setRequirePaymentOnOrder}
+          />
+          <SettingsToggle
+            label="Allow partial payments"
+            description="Accept deposits or partial payments"
+            checked={allowPartialPayment}
+            onChange={setAllowPartialPayment}
+          />
+        </div>
+
+        <div className="mt-4 pt-4 border-t border-gray-100">
+          <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
+            <svg
+              className="w-5 h-5 text-gray-400 flex-shrink-0 mt-0.5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            <div>
+              <p className="text-xs text-gray-600">
+                <span className="font-medium">Security tip:</span> Always use HTTPS for your store
+                and keep your API keys secure. Never share your secret keys publicly.
+              </p>
+            </div>
+          </div>
+        </div>
+      </SettingsSection>
+
+      <div className="flex justify-end pt-2">
+        <SettingsSaveButton isLoading={isSaving} label="Save payment settings" />
       </div>
     </form>
   );

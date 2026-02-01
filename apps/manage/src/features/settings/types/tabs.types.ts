@@ -9,6 +9,7 @@ export type SettingsTabId =
   | 'account'
   | 'security'
   | 'payment'
+  | 'seo'
   | 'advanced';
 
 export interface SettingsTab {

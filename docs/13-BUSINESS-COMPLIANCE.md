@@ -105,159 +105,169 @@ Add a new `Compliance` section to the sidebar navigation in `Layout.tsx`:
 
 Central overview of all compliance-related information:
 
-| Widget | Description |
-|--------|-------------|
+| Widget           | Description                                            |
+| ---------------- | ------------------------------------------------------ |
 | Compliance Score | Visual indicator (0-100%) of overall compliance status |
-| Expiring Soon | List of documents/certificates expiring within 30 days |
-| Pending Actions | Tasks requiring immediate attention |
-| Recent Activity | Timeline of recent compliance updates |
-| Tax Summary | Current tax year overview |
-| Quick Actions | Shortcuts to common tasks |
+| Expiring Soon    | List of documents/certificates expiring within 30 days |
+| Pending Actions  | Tasks requiring immediate attention                    |
+| Recent Activity  | Timeline of recent compliance updates                  |
+| Tax Summary      | Current tax year overview                              |
+| Quick Actions    | Shortcuts to common tasks                              |
 
 ### 3.2 Income Tax Management
 
 #### 3.2.1 Tax Records
-| Field | Type | Description |
-|-------|------|-------------|
-| Fiscal Year | select | Tax year (e.g., 2024-2025) |
-| Tax Type | enum | VAT, Income Tax, Corporate Tax, etc. |
-| Gross Income | number | Total business income |
-| Taxable Income | number | Income after deductions |
-| Tax Amount | number | Calculated tax liability |
-| Deductions | array | List of applicable deductions |
-| Payment Status | enum | Pending, Partial, Paid, Overdue |
-| Due Date | date | Tax payment deadline |
-| Payment Date | date | Actual payment date |
-| Payment Reference | string | Transaction/receipt number |
-| Attachments | files | Supporting documents |
-| Notes | text | Additional notes |
+
+| Field             | Type   | Description                          |
+| ----------------- | ------ | ------------------------------------ |
+| Fiscal Year       | select | Tax year (e.g., 2024-2025)           |
+| Tax Type          | enum   | VAT, Income Tax, Corporate Tax, etc. |
+| Gross Income      | number | Total business income                |
+| Taxable Income    | number | Income after deductions              |
+| Tax Amount        | number | Calculated tax liability             |
+| Deductions        | array  | List of applicable deductions        |
+| Payment Status    | enum   | Pending, Partial, Paid, Overdue      |
+| Due Date          | date   | Tax payment deadline                 |
+| Payment Date      | date   | Actual payment date                  |
+| Payment Reference | string | Transaction/receipt number           |
+| Attachments       | files  | Supporting documents                 |
+| Notes             | text   | Additional notes                     |
 
 #### 3.2.2 Tax Filing Tracking
-| Field | Type | Description |
-|-------|------|-------------|
-| Filing Type | enum | Monthly, Quarterly, Annual |
-| Filing Period | string | Period covered |
-| Filing Date | date | Submission date |
-| Acknowledgment Number | string | Government receipt number |
-| Status | enum | Draft, Submitted, Accepted, Rejected |
-| Filed By | string | Person who filed |
-| Attachments | files | Filing documents |
+
+| Field                 | Type   | Description                          |
+| --------------------- | ------ | ------------------------------------ |
+| Filing Type           | enum   | Monthly, Quarterly, Annual           |
+| Filing Period         | string | Period covered                       |
+| Filing Date           | date   | Submission date                      |
+| Acknowledgment Number | string | Government receipt number            |
+| Status                | enum   | Draft, Submitted, Accepted, Rejected |
+| Filed By              | string | Person who filed                     |
+| Attachments           | files  | Filing documents                     |
 
 #### 3.2.3 Tax Deductions
-| Category | Examples |
-|----------|----------|
-| Operating Expenses | Rent, utilities, salaries |
-| Depreciation | Equipment, vehicles, furniture |
-| Business Development | Marketing, advertising |
-| Professional Services | Legal, accounting, consulting |
-| Insurance | Business insurance premiums |
-| Interest | Loan interest payments |
-| Charitable Donations | Approved donations |
+
+| Category              | Examples                       |
+| --------------------- | ------------------------------ |
+| Operating Expenses    | Rent, utilities, salaries      |
+| Depreciation          | Equipment, vehicles, furniture |
+| Business Development  | Marketing, advertising         |
+| Professional Services | Legal, accounting, consulting  |
+| Insurance             | Business insurance premiums    |
+| Interest              | Loan interest payments         |
+| Charitable Donations  | Approved donations             |
 
 ### 3.3 Business Authenticity
 
 #### 3.3.1 Business Registration
-| Field | Type | Description |
-|-------|------|-------------|
-| Registration Type | enum | Sole Proprietorship, Partnership, LLC, Corporation |
-| Business Name | string | Registered legal name |
-| Trading Name | string | DBA / Trade name |
-| Registration Number | string | Government registration ID |
-| Registration Date | date | Date of incorporation |
-| Registration Authority | string | Issuing government body |
-| Registered Address | object | Official business address |
-| Status | enum | Active, Suspended, Cancelled |
-| Expiry Date | date | Registration expiry (if applicable) |
-| Certificate | file | Registration certificate |
+
+| Field                  | Type   | Description                                        |
+| ---------------------- | ------ | -------------------------------------------------- |
+| Registration Type      | enum   | Sole Proprietorship, Partnership, LLC, Corporation |
+| Business Name          | string | Registered legal name                              |
+| Trading Name           | string | DBA / Trade name                                   |
+| Registration Number    | string | Government registration ID                         |
+| Registration Date      | date   | Date of incorporation                              |
+| Registration Authority | string | Issuing government body                            |
+| Registered Address     | object | Official business address                          |
+| Status                 | enum   | Active, Suspended, Cancelled                       |
+| Expiry Date            | date   | Registration expiry (if applicable)                |
+| Certificate            | file   | Registration certificate                           |
 
 #### 3.3.2 Tax Identifiers
-| Identifier | Description |
-|------------|-------------|
-| TIN | Tax Identification Number |
-| BIN | Business Identification Number |
-| VAT Registration | VAT registration number |
-| Import/Export Code | IEC for international trade |
-| GST/HST Number | Goods & Services Tax number |
+
+| Identifier         | Description                    |
+| ------------------ | ------------------------------ |
+| TIN                | Tax Identification Number      |
+| BIN                | Business Identification Number |
+| VAT Registration   | VAT registration number        |
+| Import/Export Code | IEC for international trade    |
+| GST/HST Number     | Goods & Services Tax number    |
 
 #### 3.3.3 Ownership & Directors
-| Field | Type | Description |
-|-------|------|-------------|
-| Name | string | Full legal name |
-| Role | enum | Owner, Director, Partner, Shareholder |
-| Ownership Percentage | number | Stake percentage |
-| NID/Passport | string | Identity document number |
-| Address | object | Residential address |
-| Contact | object | Phone, email |
-| Appointment Date | date | Date appointed |
-| Documents | files | Supporting documents |
+
+| Field                | Type   | Description                           |
+| -------------------- | ------ | ------------------------------------- |
+| Name                 | string | Full legal name                       |
+| Role                 | enum   | Owner, Director, Partner, Shareholder |
+| Ownership Percentage | number | Stake percentage                      |
+| NID/Passport         | string | Identity document number              |
+| Address              | object | Residential address                   |
+| Contact              | object | Phone, email                          |
+| Appointment Date     | date   | Date appointed                        |
+| Documents            | files  | Supporting documents                  |
 
 ### 3.4 Certificates & Licenses
 
 #### 3.4.1 Certificate Types
-| Type | Description | Typical Validity |
-|------|-------------|------------------|
-| Trade License | Permission to conduct business | Annual |
-| Fire Safety | Fire department clearance | Annual |
-| Health & Safety | Occupational safety compliance | Annual |
-| Environmental | Environmental clearance | 1-5 years |
-| Import License | Authorization for imports | Variable |
-| Export License | Authorization for exports | Variable |
-| Industry Specific | Sector-specific permits | Variable |
-| Quality Certification | ISO, CE, etc. | 1-3 years |
-| Insurance Certificate | Business insurance proof | Annual |
-| Professional License | Trade/profession license | Variable |
+
+| Type                  | Description                    | Typical Validity |
+| --------------------- | ------------------------------ | ---------------- |
+| Trade License         | Permission to conduct business | Annual           |
+| Fire Safety           | Fire department clearance      | Annual           |
+| Health & Safety       | Occupational safety compliance | Annual           |
+| Environmental         | Environmental clearance        | 1-5 years        |
+| Import License        | Authorization for imports      | Variable         |
+| Export License        | Authorization for exports      | Variable         |
+| Industry Specific     | Sector-specific permits        | Variable         |
+| Quality Certification | ISO, CE, etc.                  | 1-3 years        |
+| Insurance Certificate | Business insurance proof       | Annual           |
+| Professional License  | Trade/profession license       | Variable         |
 
 #### 3.4.2 Certificate Record
-| Field | Type | Description |
-|-------|------|-------------|
-| Certificate Type | enum | Type of certificate |
-| Certificate Number | string | Unique identifier |
-| Issuing Authority | string | Government/agency name |
-| Issue Date | date | Date of issue |
-| Expiry Date | date | Expiration date |
-| Status | enum | Active, Expired, Suspended, Revoked |
-| Renewal Date | date | Next renewal date |
-| Renewal Fee | number | Renewal cost |
-| Category | string | Classification category |
-| Certificate File | file | Uploaded certificate |
-| Supporting Docs | files | Additional documents |
-| Notes | text | Additional information |
-| Reminder | object | Notification settings |
+
+| Field              | Type   | Description                         |
+| ------------------ | ------ | ----------------------------------- |
+| Certificate Type   | enum   | Type of certificate                 |
+| Certificate Number | string | Unique identifier                   |
+| Issuing Authority  | string | Government/agency name              |
+| Issue Date         | date   | Date of issue                       |
+| Expiry Date        | date   | Expiration date                     |
+| Status             | enum   | Active, Expired, Suspended, Revoked |
+| Renewal Date       | date   | Next renewal date                   |
+| Renewal Fee        | number | Renewal cost                        |
+| Category           | string | Classification category             |
+| Certificate File   | file   | Uploaded certificate                |
+| Supporting Docs    | files  | Additional documents                |
+| Notes              | text   | Additional information              |
+| Reminder           | object | Notification settings               |
 
 ### 3.5 Legal Documents
 
 #### 3.5.1 Document Categories
-| Category | Examples |
-|----------|----------|
-| Incorporation | MOA, AOA, Bylaws |
-| Contracts | Vendor, supplier, customer agreements |
-| Employment | Employment contracts, policies |
-| Intellectual Property | Trademarks, patents, copyrights |
-| Real Estate | Lease agreements, property documents |
-| Financial | Bank documents, loan agreements |
-| Legal Proceedings | Court documents, legal notices |
-| Compliance | Policy documents, audit reports |
-| Insurance | Insurance policies, claims |
-| Miscellaneous | Other important documents |
+
+| Category              | Examples                              |
+| --------------------- | ------------------------------------- |
+| Incorporation         | MOA, AOA, Bylaws                      |
+| Contracts             | Vendor, supplier, customer agreements |
+| Employment            | Employment contracts, policies        |
+| Intellectual Property | Trademarks, patents, copyrights       |
+| Real Estate           | Lease agreements, property documents  |
+| Financial             | Bank documents, loan agreements       |
+| Legal Proceedings     | Court documents, legal notices        |
+| Compliance            | Policy documents, audit reports       |
+| Insurance             | Insurance policies, claims            |
+| Miscellaneous         | Other important documents             |
 
 #### 3.5.2 Document Record
-| Field | Type | Description |
-|-------|------|-------------|
-| Title | string | Document name |
-| Category | enum | Document category |
-| Document Number | string | Reference number |
-| Description | text | Document description |
-| Parties Involved | array | Related parties |
-| Effective Date | date | Start date |
-| Expiry Date | date | End date (if applicable) |
-| Status | enum | Active, Expired, Terminated |
-| File | file | Uploaded document |
-| Version | number | Document version |
-| Previous Versions | files | Version history |
-| Tags | array | Searchable tags |
-| Access Level | enum | Public, Restricted, Confidential |
-| Created By | user | Document creator |
-| Last Modified | datetime | Last update time |
+
+| Field             | Type     | Description                      |
+| ----------------- | -------- | -------------------------------- |
+| Title             | string   | Document name                    |
+| Category          | enum     | Document category                |
+| Document Number   | string   | Reference number                 |
+| Description       | text     | Document description             |
+| Parties Involved  | array    | Related parties                  |
+| Effective Date    | date     | Start date                       |
+| Expiry Date       | date     | End date (if applicable)         |
+| Status            | enum     | Active, Expired, Terminated      |
+| File              | file     | Uploaded document                |
+| Version           | number   | Document version                 |
+| Previous Versions | files    | Version history                  |
+| Tags              | array    | Searchable tags                  |
+| Access Level      | enum     | Public, Restricted, Confidential |
+| Created By        | user     | Document creator                 |
+| Last Modified     | datetime | Last update time                 |
 
 ---
 
@@ -270,105 +280,124 @@ Central overview of all compliance-related information:
 
 import mongoose from 'mongoose';
 
-const taxDeductionSchema = new mongoose.Schema({
-  category: {
-    type: String,
-    enum: ['operating_expenses', 'depreciation', 'business_development', 
-           'professional_services', 'insurance', 'interest', 'donations', 'other'],
-    required: true
+const taxDeductionSchema = new mongoose.Schema(
+  {
+    category: {
+      type: String,
+      enum: [
+        'operating_expenses',
+        'depreciation',
+        'business_development',
+        'professional_services',
+        'insurance',
+        'interest',
+        'donations',
+        'other',
+      ],
+      required: true,
+    },
+    description: { type: String, required: true },
+    amount: { type: Number, required: true, min: 0 },
+    supportingDocument: { type: String }, // S3 URL
   },
-  description: { type: String, required: true },
-  amount: { type: Number, required: true, min: 0 },
-  supportingDocument: { type: String }, // S3 URL
-}, { _id: true });
+  { _id: true }
+);
 
-const taxPaymentSchema = new mongoose.Schema({
-  amount: { type: Number, required: true },
-  paymentDate: { type: Date, required: true },
-  paymentMethod: { 
-    type: String, 
-    enum: ['bank_transfer', 'online', 'cheque', 'cash'],
-    required: true 
+const taxPaymentSchema = new mongoose.Schema(
+  {
+    amount: { type: Number, required: true },
+    paymentDate: { type: Date, required: true },
+    paymentMethod: {
+      type: String,
+      enum: ['bank_transfer', 'online', 'cheque', 'cash'],
+      required: true,
+    },
+    referenceNumber: { type: String, required: true },
+    receipt: { type: String }, // S3 URL
+    notes: String,
   },
-  referenceNumber: { type: String, required: true },
-  receipt: { type: String }, // S3 URL
-  notes: String,
-}, { _id: true, timestamps: true });
+  { _id: true, timestamps: true }
+);
 
-const taxRecordSchema = new mongoose.Schema({
-  fiscalYear: { 
-    type: String, 
-    required: true,
-    match: /^\d{4}-\d{4}$/ // Format: 2024-2025
+const taxRecordSchema = new mongoose.Schema(
+  {
+    fiscalYear: {
+      type: String,
+      required: true,
+      match: /^\d{4}-\d{4}$/, // Format: 2024-2025
+    },
+    taxType: {
+      type: String,
+      enum: ['income_tax', 'corporate_tax', 'vat', 'sales_tax', 'withholding_tax', 'other'],
+      required: true,
+    },
+    period: {
+      type: String,
+      enum: ['monthly', 'quarterly', 'half_yearly', 'annual'],
+      required: true,
+    },
+    periodMonth: Number, // 1-12 for monthly
+    periodQuarter: Number, // 1-4 for quarterly
+
+    // Income details
+    grossIncome: { type: Number, required: true, min: 0 },
+    deductions: [taxDeductionSchema],
+    totalDeductions: { type: Number, default: 0 },
+    taxableIncome: { type: Number, required: true, min: 0 },
+    taxRate: { type: Number, required: true, min: 0, max: 100 },
+    taxAmount: { type: Number, required: true, min: 0 },
+
+    // Payment tracking
+    dueDate: { type: Date, required: true },
+    payments: [taxPaymentSchema],
+    totalPaid: { type: Number, default: 0 },
+    paymentStatus: {
+      type: String,
+      enum: ['pending', 'partial', 'paid', 'overdue'],
+      default: 'pending',
+    },
+
+    // Filing details
+    filingStatus: {
+      type: String,
+      enum: ['not_filed', 'draft', 'submitted', 'accepted', 'rejected'],
+      default: 'not_filed',
+    },
+    filingDate: Date,
+    acknowledgmentNumber: String,
+    filedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+
+    // Documents
+    attachments: [
+      {
+        name: String,
+        url: String,
+        uploadedAt: { type: Date, default: Date.now },
+      },
+    ],
+
+    // Audit
+    notes: String,
+    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    lastModifiedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   },
-  taxType: {
-    type: String,
-    enum: ['income_tax', 'corporate_tax', 'vat', 'sales_tax', 'withholding_tax', 'other'],
-    required: true
-  },
-  period: {
-    type: String,
-    enum: ['monthly', 'quarterly', 'half_yearly', 'annual'],
-    required: true
-  },
-  periodMonth: Number, // 1-12 for monthly
-  periodQuarter: Number, // 1-4 for quarterly
-  
-  // Income details
-  grossIncome: { type: Number, required: true, min: 0 },
-  deductions: [taxDeductionSchema],
-  totalDeductions: { type: Number, default: 0 },
-  taxableIncome: { type: Number, required: true, min: 0 },
-  taxRate: { type: Number, required: true, min: 0, max: 100 },
-  taxAmount: { type: Number, required: true, min: 0 },
-  
-  // Payment tracking
-  dueDate: { type: Date, required: true },
-  payments: [taxPaymentSchema],
-  totalPaid: { type: Number, default: 0 },
-  paymentStatus: {
-    type: String,
-    enum: ['pending', 'partial', 'paid', 'overdue'],
-    default: 'pending'
-  },
-  
-  // Filing details
-  filingStatus: {
-    type: String,
-    enum: ['not_filed', 'draft', 'submitted', 'accepted', 'rejected'],
-    default: 'not_filed'
-  },
-  filingDate: Date,
-  acknowledgmentNumber: String,
-  filedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  
-  // Documents
-  attachments: [{
-    name: String,
-    url: String,
-    uploadedAt: { type: Date, default: Date.now }
-  }],
-  
-  // Audit
-  notes: String,
-  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  lastModifiedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-}, { 
-  timestamps: true,
-  toJSON: { virtuals: true },
-  toObject: { virtuals: true }
-});
+  {
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+  }
+);
 
 // Virtual for balance due
-taxRecordSchema.virtual('balanceDue').get(function() {
+taxRecordSchema.virtual('balanceDue').get(function () {
   return this.taxAmount - this.totalPaid;
 });
 
 // Pre-save middleware to calculate totals
-taxRecordSchema.pre('save', function(next) {
+taxRecordSchema.pre('save', function (next) {
   this.totalDeductions = this.deductions.reduce((sum, d) => sum + d.amount, 0);
   this.totalPaid = this.payments.reduce((sum, p) => sum + p.amount, 0);
-  
+
   // Update payment status
   if (this.totalPaid >= this.taxAmount) {
     this.paymentStatus = 'paid';
@@ -379,7 +408,7 @@ taxRecordSchema.pre('save', function(next) {
   } else {
     this.paymentStatus = 'pending';
   }
-  
+
   next();
 });
 
@@ -398,119 +427,138 @@ export const TaxRecordModel = mongoose.model('TaxRecord', taxRecordSchema);
 
 import mongoose from 'mongoose';
 
-const addressSchema = new mongoose.Schema({
-  street: String,
-  city: { type: String, required: true },
-  state: String,
-  postalCode: String,
-  country: { type: String, required: true, default: 'Bangladesh' },
-}, { _id: false });
+const addressSchema = new mongoose.Schema(
+  {
+    street: String,
+    city: { type: String, required: true },
+    state: String,
+    postalCode: String,
+    country: { type: String, required: true, default: 'Bangladesh' },
+  },
+  { _id: false }
+);
 
-const directorSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  role: {
-    type: String,
-    enum: ['owner', 'director', 'partner', 'shareholder', 'authorized_signatory'],
-    required: true
+const directorSchema = new mongoose.Schema(
+  {
+    name: { type: String, required: true },
+    role: {
+      type: String,
+      enum: ['owner', 'director', 'partner', 'shareholder', 'authorized_signatory'],
+      required: true,
+    },
+    ownershipPercentage: { type: Number, min: 0, max: 100 },
+    identityType: {
+      type: String,
+      enum: ['nid', 'passport', 'driving_license'],
+      required: true,
+    },
+    identityNumber: { type: String, required: true },
+    address: addressSchema,
+    phone: String,
+    email: String,
+    appointmentDate: Date,
+    resignationDate: Date,
+    isActive: { type: Boolean, default: true },
+    documents: [
+      {
+        name: String,
+        url: String,
+        uploadedAt: { type: Date, default: Date.now },
+      },
+    ],
   },
-  ownershipPercentage: { type: Number, min: 0, max: 100 },
-  identityType: {
-    type: String,
-    enum: ['nid', 'passport', 'driving_license'],
-    required: true
-  },
-  identityNumber: { type: String, required: true },
-  address: addressSchema,
-  phone: String,
-  email: String,
-  appointmentDate: Date,
-  resignationDate: Date,
-  isActive: { type: Boolean, default: true },
-  documents: [{
-    name: String,
-    url: String,
-    uploadedAt: { type: Date, default: Date.now }
-  }],
-}, { _id: true, timestamps: true });
+  { _id: true, timestamps: true }
+);
 
-const taxIdentifierSchema = new mongoose.Schema({
-  type: {
-    type: String,
-    enum: ['tin', 'bin', 'vat', 'iec', 'gst', 'other'],
-    required: true
+const taxIdentifierSchema = new mongoose.Schema(
+  {
+    type: {
+      type: String,
+      enum: ['tin', 'bin', 'vat', 'iec', 'gst', 'other'],
+      required: true,
+    },
+    number: { type: String, required: true },
+    issueDate: Date,
+    expiryDate: Date,
+    issuingAuthority: String,
+    certificate: String, // S3 URL
+    status: {
+      type: String,
+      enum: ['active', 'expired', 'suspended', 'cancelled'],
+      default: 'active',
+    },
   },
-  number: { type: String, required: true },
-  issueDate: Date,
-  expiryDate: Date,
-  issuingAuthority: String,
-  certificate: String, // S3 URL
-  status: {
-    type: String,
-    enum: ['active', 'expired', 'suspended', 'cancelled'],
-    default: 'active'
-  },
-}, { _id: true });
+  { _id: true }
+);
 
-const businessAuthenticitySchema = new mongoose.Schema({
-  // Business Registration
-  registrationType: {
-    type: String,
-    enum: ['sole_proprietorship', 'partnership', 'llc', 'corporation', 'cooperative', 'ngo'],
-    required: true
+const businessAuthenticitySchema = new mongoose.Schema(
+  {
+    // Business Registration
+    registrationType: {
+      type: String,
+      enum: ['sole_proprietorship', 'partnership', 'llc', 'corporation', 'cooperative', 'ngo'],
+      required: true,
+    },
+    legalName: { type: String, required: true },
+    tradingName: String,
+    registrationNumber: { type: String, required: true, unique: true },
+    registrationDate: { type: Date, required: true },
+    registrationAuthority: { type: String, required: true },
+    registeredAddress: { type: addressSchema, required: true },
+
+    // Registration Status
+    status: {
+      type: String,
+      enum: ['active', 'suspended', 'cancelled', 'dissolved'],
+      default: 'active',
+    },
+    expiryDate: Date,
+    lastRenewalDate: Date,
+    nextRenewalDate: Date,
+
+    // Tax Identifiers
+    taxIdentifiers: [taxIdentifierSchema],
+
+    // Ownership & Directors
+    directors: [directorSchema],
+
+    // Capital Information
+    authorizedCapital: Number,
+    paidUpCapital: Number,
+    capitalCurrency: { type: String, default: 'BDT' },
+
+    // Documents
+    registrationCertificate: String, // S3 URL
+    memorandumOfAssociation: String,
+    articlesOfAssociation: String,
+    additionalDocuments: [
+      {
+        name: String,
+        description: String,
+        url: String,
+        uploadedAt: { type: Date, default: Date.now },
+      },
+    ],
+
+    // Audit Trail
+    notes: String,
+    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    lastModifiedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    verifiedAt: Date,
+    verifiedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   },
-  legalName: { type: String, required: true },
-  tradingName: String,
-  registrationNumber: { type: String, required: true, unique: true },
-  registrationDate: { type: Date, required: true },
-  registrationAuthority: { type: String, required: true },
-  registeredAddress: { type: addressSchema, required: true },
-  
-  // Registration Status
-  status: {
-    type: String,
-    enum: ['active', 'suspended', 'cancelled', 'dissolved'],
-    default: 'active'
-  },
-  expiryDate: Date,
-  lastRenewalDate: Date,
-  nextRenewalDate: Date,
-  
-  // Tax Identifiers
-  taxIdentifiers: [taxIdentifierSchema],
-  
-  // Ownership & Directors
-  directors: [directorSchema],
-  
-  // Capital Information
-  authorizedCapital: Number,
-  paidUpCapital: Number,
-  capitalCurrency: { type: String, default: 'BDT' },
-  
-  // Documents
-  registrationCertificate: String, // S3 URL
-  memorandumOfAssociation: String,
-  articlesOfAssociation: String,
-  additionalDocuments: [{
-    name: String,
-    description: String,
-    url: String,
-    uploadedAt: { type: Date, default: Date.now }
-  }],
-  
-  // Audit Trail
-  notes: String,
-  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  lastModifiedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  verifiedAt: Date,
-  verifiedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-}, { timestamps: true });
+  { timestamps: true }
+);
 
 // Indexes
 businessAuthenticitySchema.index({ registrationNumber: 1 }, { unique: true });
 businessAuthenticitySchema.index({ status: 1 });
 businessAuthenticitySchema.index({ 'taxIdentifiers.type': 1, 'taxIdentifiers.number': 1 });
 
-export const BusinessAuthenticityModel = mongoose.model('BusinessAuthenticity', businessAuthenticitySchema);
+export const BusinessAuthenticityModel = mongoose.model(
+  'BusinessAuthenticity',
+  businessAuthenticitySchema
+);
 
 // Singleton pattern - only one business record
 export async function getBusinessAuthenticity() {
@@ -526,98 +574,111 @@ export async function getBusinessAuthenticity() {
 
 import mongoose from 'mongoose';
 
-const reminderSchema = new mongoose.Schema({
-  enabled: { type: Boolean, default: true },
-  daysBefore: [{ type: Number }], // e.g., [30, 14, 7, 1]
-  notifyEmail: [String],
-  lastNotified: Date,
-}, { _id: false });
+const reminderSchema = new mongoose.Schema(
+  {
+    enabled: { type: Boolean, default: true },
+    daysBefore: [{ type: Number }], // e.g., [30, 14, 7, 1]
+    notifyEmail: [String],
+    lastNotified: Date,
+  },
+  { _id: false }
+);
 
-const certificateSchema = new mongoose.Schema({
-  // Basic Information
-  certificateType: {
-    type: String,
-    enum: [
-      'trade_license',
-      'fire_safety',
-      'health_safety',
-      'environmental',
-      'import_license',
-      'export_license',
-      'quality_certification',
-      'insurance',
-      'professional_license',
-      'tax_clearance',
-      'other'
-    ],
-    required: true
-  },
-  certificateNumber: { type: String, required: true },
-  name: { type: String, required: true },
-  description: String,
-  category: String,
-  
-  // Issuing Details
-  issuingAuthority: { type: String, required: true },
-  issueDate: { type: Date, required: true },
-  expiryDate: Date,
-  
-  // Status
-  status: {
-    type: String,
-    enum: ['active', 'expired', 'suspended', 'revoked', 'pending_renewal'],
-    default: 'active'
-  },
-  
-  // Renewal Information
-  renewalRequired: { type: Boolean, default: true },
-  renewalDate: Date,
-  renewalFee: Number,
-  renewalCurrency: { type: String, default: 'BDT' },
-  renewalProcess: String, // Description of renewal process
-  
-  // Documents
-  certificateFile: { type: String, required: true }, // S3 URL
-  supportingDocuments: [{
-    name: String,
+const certificateSchema = new mongoose.Schema(
+  {
+    // Basic Information
+    certificateType: {
+      type: String,
+      enum: [
+        'trade_license',
+        'fire_safety',
+        'health_safety',
+        'environmental',
+        'import_license',
+        'export_license',
+        'quality_certification',
+        'insurance',
+        'professional_license',
+        'tax_clearance',
+        'other',
+      ],
+      required: true,
+    },
+    certificateNumber: { type: String, required: true },
+    name: { type: String, required: true },
     description: String,
-    url: String,
-    uploadedAt: { type: Date, default: Date.now }
-  }],
-  
-  // Renewal History
-  renewalHistory: [{
+    category: String,
+
+    // Issuing Details
+    issuingAuthority: { type: String, required: true },
+    issueDate: { type: Date, required: true },
+    expiryDate: Date,
+
+    // Status
+    status: {
+      type: String,
+      enum: ['active', 'expired', 'suspended', 'revoked', 'pending_renewal'],
+      default: 'active',
+    },
+
+    // Renewal Information
+    renewalRequired: { type: Boolean, default: true },
     renewalDate: Date,
-    previousExpiryDate: Date,
-    newExpiryDate: Date,
-    fee: Number,
-    certificateFile: String,
-    processedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    renewalFee: Number,
+    renewalCurrency: { type: String, default: 'BDT' },
+    renewalProcess: String, // Description of renewal process
+
+    // Documents
+    certificateFile: { type: String, required: true }, // S3 URL
+    supportingDocuments: [
+      {
+        name: String,
+        description: String,
+        url: String,
+        uploadedAt: { type: Date, default: Date.now },
+      },
+    ],
+
+    // Renewal History
+    renewalHistory: [
+      {
+        renewalDate: Date,
+        previousExpiryDate: Date,
+        newExpiryDate: Date,
+        fee: Number,
+        certificateFile: String,
+        processedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+        notes: String,
+      },
+    ],
+
+    // Reminders
+    reminder: {
+      type: reminderSchema,
+      default: () => ({
+        enabled: true,
+        daysBefore: [30, 14, 7, 1],
+        notifyEmail: [],
+      }),
+    },
+
+    // Tags for searchability
+    tags: [String],
+
+    // Audit
     notes: String,
-  }],
-  
-  // Reminders
-  reminder: { type: reminderSchema, default: () => ({
-    enabled: true,
-    daysBefore: [30, 14, 7, 1],
-    notifyEmail: []
-  })},
-  
-  // Tags for searchability
-  tags: [String],
-  
-  // Audit
-  notes: String,
-  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  lastModifiedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-}, { 
-  timestamps: true,
-  toJSON: { virtuals: true },
-  toObject: { virtuals: true }
-});
+    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    lastModifiedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+  },
+  {
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+  }
+);
 
 // Virtual for days until expiry
-certificateSchema.virtual('daysUntilExpiry').get(function() {
+certificateSchema.virtual('daysUntilExpiry').get(function () {
   if (!this.expiryDate) return null;
   const now = new Date();
   const expiry = new Date(this.expiryDate);
@@ -626,7 +687,7 @@ certificateSchema.virtual('daysUntilExpiry').get(function() {
 });
 
 // Virtual for expiry status
-certificateSchema.virtual('expiryStatus').get(function() {
+certificateSchema.virtual('expiryStatus').get(function () {
   const days = this.daysUntilExpiry;
   if (days === null) return 'no_expiry';
   if (days < 0) return 'expired';
@@ -636,7 +697,7 @@ certificateSchema.virtual('expiryStatus').get(function() {
 });
 
 // Pre-save to update status based on expiry
-certificateSchema.pre('save', function(next) {
+certificateSchema.pre('save', function (next) {
   if (this.expiryDate && new Date() > this.expiryDate) {
     this.status = 'expired';
   }
@@ -660,104 +721,115 @@ export const CertificateModel = mongoose.model('Certificate', certificateSchema)
 
 import mongoose from 'mongoose';
 
-const partySchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  role: String, // e.g., "Lessor", "Lessee", "Vendor"
-  contact: String,
-  address: String,
-}, { _id: true });
-
-const versionSchema = new mongoose.Schema({
-  versionNumber: { type: Number, required: true },
-  file: { type: String, required: true }, // S3 URL
-  uploadedAt: { type: Date, default: Date.now },
-  uploadedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  changeDescription: String,
-}, { _id: true });
-
-const legalDocumentSchema = new mongoose.Schema({
-  // Basic Information
-  title: { type: String, required: true },
-  documentNumber: String,
-  category: {
-    type: String,
-    enum: [
-      'incorporation',
-      'contracts',
-      'employment',
-      'intellectual_property',
-      'real_estate',
-      'financial',
-      'legal_proceedings',
-      'compliance',
-      'insurance',
-      'miscellaneous'
-    ],
-    required: true
+const partySchema = new mongoose.Schema(
+  {
+    name: { type: String, required: true },
+    role: String, // e.g., "Lessor", "Lessee", "Vendor"
+    contact: String,
+    address: String,
   },
-  subCategory: String,
-  description: String,
-  
-  // Parties
-  parties: [partySchema],
-  
-  // Dates
-  effectiveDate: Date,
-  expiryDate: Date,
-  executionDate: Date, // Date document was signed
-  
-  // Status
-  status: {
-    type: String,
-    enum: ['draft', 'active', 'expired', 'terminated', 'superseded', 'archived'],
-    default: 'draft'
+  { _id: true }
+);
+
+const versionSchema = new mongoose.Schema(
+  {
+    versionNumber: { type: Number, required: true },
+    file: { type: String, required: true }, // S3 URL
+    uploadedAt: { type: Date, default: Date.now },
+    uploadedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    changeDescription: String,
   },
-  
-  // Document Files
-  currentVersion: { type: Number, default: 1 },
-  currentFile: { type: String, required: true }, // S3 URL
-  versions: [versionSchema],
-  
-  // Supporting Documents
-  attachments: [{
-    name: String,
+  { _id: true }
+);
+
+const legalDocumentSchema = new mongoose.Schema(
+  {
+    // Basic Information
+    title: { type: String, required: true },
+    documentNumber: String,
+    category: {
+      type: String,
+      enum: [
+        'incorporation',
+        'contracts',
+        'employment',
+        'intellectual_property',
+        'real_estate',
+        'financial',
+        'legal_proceedings',
+        'compliance',
+        'insurance',
+        'miscellaneous',
+      ],
+      required: true,
+    },
+    subCategory: String,
     description: String,
-    url: String,
-    uploadedAt: { type: Date, default: Date.now }
-  }],
-  
-  // Access Control
-  accessLevel: {
-    type: String,
-    enum: ['public', 'internal', 'restricted', 'confidential'],
-    default: 'internal'
+
+    // Parties
+    parties: [partySchema],
+
+    // Dates
+    effectiveDate: Date,
+    expiryDate: Date,
+    executionDate: Date, // Date document was signed
+
+    // Status
+    status: {
+      type: String,
+      enum: ['draft', 'active', 'expired', 'terminated', 'superseded', 'archived'],
+      default: 'draft',
+    },
+
+    // Document Files
+    currentVersion: { type: Number, default: 1 },
+    currentFile: { type: String, required: true }, // S3 URL
+    versions: [versionSchema],
+
+    // Supporting Documents
+    attachments: [
+      {
+        name: String,
+        description: String,
+        url: String,
+        uploadedAt: { type: Date, default: Date.now },
+      },
+    ],
+
+    // Access Control
+    accessLevel: {
+      type: String,
+      enum: ['public', 'internal', 'restricted', 'confidential'],
+      default: 'internal',
+    },
+    allowedUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+
+    // Searchability
+    tags: [String],
+    keywords: [String],
+
+    // Related Documents
+    relatedDocuments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'LegalDocument' }],
+
+    // Reminders
+    reminderEnabled: { type: Boolean, default: false },
+    reminderDate: Date,
+    reminderRecipients: [String],
+
+    // Audit
+    notes: String,
+    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    lastModifiedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   },
-  allowedUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-  
-  // Searchability
-  tags: [String],
-  keywords: [String],
-  
-  // Related Documents
-  relatedDocuments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'LegalDocument' }],
-  
-  // Reminders
-  reminderEnabled: { type: Boolean, default: false },
-  reminderDate: Date,
-  reminderRecipients: [String],
-  
-  // Audit
-  notes: String,
-  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  lastModifiedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-}, { 
-  timestamps: true,
-  toJSON: { virtuals: true },
-  toObject: { virtuals: true }
-});
+  {
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+  }
+);
 
 // Virtual for days until expiry
-legalDocumentSchema.virtual('daysUntilExpiry').get(function() {
+legalDocumentSchema.virtual('daysUntilExpiry').get(function () {
   if (!this.expiryDate) return null;
   const now = new Date();
   const expiry = new Date(this.expiryDate);
@@ -766,11 +838,11 @@ legalDocumentSchema.virtual('daysUntilExpiry').get(function() {
 });
 
 // Text index for search
-legalDocumentSchema.index({ 
-  title: 'text', 
-  description: 'text', 
+legalDocumentSchema.index({
+  title: 'text',
+  description: 'text',
   tags: 'text',
-  keywords: 'text'
+  keywords: 'text',
 });
 
 // Regular indexes
@@ -790,47 +862,50 @@ export const LegalDocumentModel = mongoose.model('LegalDocument', legalDocumentS
 
 import mongoose from 'mongoose';
 
-const complianceActivitySchema = new mongoose.Schema({
-  activityType: {
-    type: String,
-    enum: [
-      'tax_record_created',
-      'tax_record_updated',
-      'tax_payment_made',
-      'tax_filed',
-      'certificate_added',
-      'certificate_renewed',
-      'certificate_expired',
-      'document_uploaded',
-      'document_updated',
-      'director_added',
-      'director_removed',
-      'reminder_sent',
-      'compliance_verified',
-      'other'
-    ],
-    required: true
+const complianceActivitySchema = new mongoose.Schema(
+  {
+    activityType: {
+      type: String,
+      enum: [
+        'tax_record_created',
+        'tax_record_updated',
+        'tax_payment_made',
+        'tax_filed',
+        'certificate_added',
+        'certificate_renewed',
+        'certificate_expired',
+        'document_uploaded',
+        'document_updated',
+        'director_added',
+        'director_removed',
+        'reminder_sent',
+        'compliance_verified',
+        'other',
+      ],
+      required: true,
+    },
+    description: { type: String, required: true },
+    entityType: {
+      type: String,
+      enum: ['tax_record', 'certificate', 'document', 'authenticity', 'other'],
+      required: true,
+    },
+    entityId: { type: mongoose.Schema.Types.ObjectId, required: true },
+    entityName: String, // For quick reference without lookup
+
+    // Change details
+    previousValue: mongoose.Schema.Types.Mixed,
+    newValue: mongoose.Schema.Types.Mixed,
+
+    // Metadata
+    ipAddress: String,
+    userAgent: String,
+
+    // Actor
+    performedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   },
-  description: { type: String, required: true },
-  entityType: {
-    type: String,
-    enum: ['tax_record', 'certificate', 'document', 'authenticity', 'other'],
-    required: true
-  },
-  entityId: { type: mongoose.Schema.Types.ObjectId, required: true },
-  entityName: String, // For quick reference without lookup
-  
-  // Change details
-  previousValue: mongoose.Schema.Types.Mixed,
-  newValue: mongoose.Schema.Types.Mixed,
-  
-  // Metadata
-  ipAddress: String,
-  userAgent: String,
-  
-  // Actor
-  performedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-}, { timestamps: true });
+  { timestamps: true }
+);
 
 // Indexes
 complianceActivitySchema.index({ entityType: 1, entityId: 1 });
@@ -838,7 +913,10 @@ complianceActivitySchema.index({ activityType: 1 });
 complianceActivitySchema.index({ performedBy: 1 });
 complianceActivitySchema.index({ createdAt: -1 });
 
-export const ComplianceActivityModel = mongoose.model('ComplianceActivity', complianceActivitySchema);
+export const ComplianceActivityModel = mongoose.model(
+  'ComplianceActivity',
+  complianceActivitySchema
+);
 ```
 
 ---
@@ -918,35 +996,37 @@ router.use(authMiddleware(getConfig));
 router.use(requireRole(UserRole.ADMIN));
 
 // Tax Records
-router.get('/tax-records', 
+router.get(
+  '/tax-records',
   validateQuery(validators.listTaxRecordsQuery),
   complianceService.listTaxRecords
 );
 
-router.post('/tax-records',
+router.post(
+  '/tax-records',
   validateBody(validators.createTaxRecordSchema),
   complianceService.createTaxRecord
 );
 
 router.get('/tax-records/summary', complianceService.getTaxSummary);
 
-router.get('/tax-records/:id',
-  validateParams(validators.idParam),
-  complianceService.getTaxRecord
-);
+router.get('/tax-records/:id', validateParams(validators.idParam), complianceService.getTaxRecord);
 
-router.patch('/tax-records/:id',
+router.patch(
+  '/tax-records/:id',
   validateParams(validators.idParam),
   validateBody(validators.updateTaxRecordSchema),
   complianceService.updateTaxRecord
 );
 
-router.delete('/tax-records/:id',
+router.delete(
+  '/tax-records/:id',
   validateParams(validators.idParam),
   complianceService.deleteTaxRecord
 );
 
-router.post('/tax-records/:id/payments',
+router.post(
+  '/tax-records/:id/payments',
   validateParams(validators.idParam),
   validateBody(validators.addPaymentSchema),
   complianceService.addTaxPayment
@@ -955,93 +1035,106 @@ router.post('/tax-records/:id/payments',
 // Business Authenticity
 router.get('/authenticity', complianceService.getAuthenticity);
 
-router.post('/authenticity',
+router.post(
+  '/authenticity',
   validateBody(validators.createAuthenticitySchema),
   complianceService.createAuthenticity
 );
 
-router.patch('/authenticity',
+router.patch(
+  '/authenticity',
   validateBody(validators.updateAuthenticitySchema),
   complianceService.updateAuthenticity
 );
 
-router.post('/authenticity/directors',
+router.post(
+  '/authenticity/directors',
   validateBody(validators.directorSchema),
   complianceService.addDirector
 );
 
-router.patch('/authenticity/directors/:directorId',
+router.patch(
+  '/authenticity/directors/:directorId',
   validateParams(validators.directorIdParam),
   validateBody(validators.updateDirectorSchema),
   complianceService.updateDirector
 );
 
-router.delete('/authenticity/directors/:directorId',
+router.delete(
+  '/authenticity/directors/:directorId',
   validateParams(validators.directorIdParam),
   complianceService.removeDirector
 );
 
 // Certificates
-router.get('/certificates',
+router.get(
+  '/certificates',
   validateQuery(validators.listCertificatesQuery),
   complianceService.listCertificates
 );
 
-router.post('/certificates',
+router.post(
+  '/certificates',
   validateBody(validators.createCertificateSchema),
   complianceService.createCertificate
 );
 
-router.get('/certificates/:id',
+router.get(
+  '/certificates/:id',
   validateParams(validators.idParam),
   complianceService.getCertificate
 );
 
-router.patch('/certificates/:id',
+router.patch(
+  '/certificates/:id',
   validateParams(validators.idParam),
   validateBody(validators.updateCertificateSchema),
   complianceService.updateCertificate
 );
 
-router.delete('/certificates/:id',
+router.delete(
+  '/certificates/:id',
   validateParams(validators.idParam),
   complianceService.deleteCertificate
 );
 
-router.post('/certificates/:id/renew',
+router.post(
+  '/certificates/:id/renew',
   validateParams(validators.idParam),
   validateBody(validators.renewCertificateSchema),
   complianceService.renewCertificate
 );
 
 // Legal Documents
-router.get('/documents',
+router.get(
+  '/documents',
   validateQuery(validators.listDocumentsQuery),
   complianceService.listDocuments
 );
 
-router.post('/documents',
+router.post(
+  '/documents',
   validateBody(validators.createDocumentSchema),
   complianceService.createDocument
 );
 
-router.get('/documents/:id',
-  validateParams(validators.idParam),
-  complianceService.getDocument
-);
+router.get('/documents/:id', validateParams(validators.idParam), complianceService.getDocument);
 
-router.patch('/documents/:id',
+router.patch(
+  '/documents/:id',
   validateParams(validators.idParam),
   validateBody(validators.updateDocumentSchema),
   complianceService.updateDocument
 );
 
-router.delete('/documents/:id',
+router.delete(
+  '/documents/:id',
   validateParams(validators.idParam),
   complianceService.deleteDocument
 );
 
-router.post('/documents/:id/versions',
+router.post(
+  '/documents/:id/versions',
   validateParams(validators.idParam),
   validateBody(validators.newVersionSchema),
   complianceService.addDocumentVersion
@@ -1050,10 +1143,7 @@ router.post('/documents/:id/versions',
 // Dashboard & Reports
 router.get('/dashboard', complianceService.getDashboard);
 router.get('/expiring', complianceService.getExpiringItems);
-router.get('/activity', 
-  validateQuery(validators.activityQuery),
-  complianceService.getActivityLog
-);
+router.get('/activity', validateQuery(validators.activityQuery), complianceService.getActivityLog);
 
 export const complianceRoutes = router;
 ```
@@ -1073,13 +1163,26 @@ export const createTaxRecordSchema = z.object({
   periodMonth: z.number().int().min(1).max(12).optional(),
   periodQuarter: z.number().int().min(1).max(4).optional(),
   grossIncome: z.number().min(0),
-  deductions: z.array(z.object({
-    category: z.enum(['operating_expenses', 'depreciation', 'business_development', 
-                      'professional_services', 'insurance', 'interest', 'donations', 'other']),
-    description: z.string().min(1),
-    amount: z.number().min(0),
-    supportingDocument: z.string().url().optional(),
-  })).optional().default([]),
+  deductions: z
+    .array(
+      z.object({
+        category: z.enum([
+          'operating_expenses',
+          'depreciation',
+          'business_development',
+          'professional_services',
+          'insurance',
+          'interest',
+          'donations',
+          'other',
+        ]),
+        description: z.string().min(1),
+        amount: z.number().min(0),
+        supportingDocument: z.string().url().optional(),
+      })
+    )
+    .optional()
+    .default([]),
   taxableIncome: z.number().min(0),
   taxRate: z.number().min(0).max(100),
   taxAmount: z.number().min(0),
@@ -1100,7 +1203,14 @@ export const addPaymentSchema = z.object({
 
 // Business Authenticity Schemas
 export const createAuthenticitySchema = z.object({
-  registrationType: z.enum(['sole_proprietorship', 'partnership', 'llc', 'corporation', 'cooperative', 'ngo']),
+  registrationType: z.enum([
+    'sole_proprietorship',
+    'partnership',
+    'llc',
+    'corporation',
+    'cooperative',
+    'ngo',
+  ]),
   legalName: z.string().min(1).max(200),
   tradingName: z.string().max(200).optional(),
   registrationNumber: z.string().min(1),
@@ -1126,13 +1236,15 @@ export const directorSchema = z.object({
   ownershipPercentage: z.number().min(0).max(100).optional(),
   identityType: z.enum(['nid', 'passport', 'driving_license']),
   identityNumber: z.string().min(1),
-  address: z.object({
-    street: z.string().optional(),
-    city: z.string().min(1),
-    state: z.string().optional(),
-    postalCode: z.string().optional(),
-    country: z.string().default('Bangladesh'),
-  }).optional(),
+  address: z
+    .object({
+      street: z.string().optional(),
+      city: z.string().min(1),
+      state: z.string().optional(),
+      postalCode: z.string().optional(),
+      country: z.string().default('Bangladesh'),
+    })
+    .optional(),
   phone: z.string().optional(),
   email: z.string().email().optional(),
   appointmentDate: z.string().datetime().optional(),
@@ -1141,9 +1253,17 @@ export const directorSchema = z.object({
 // Certificate Schemas
 export const createCertificateSchema = z.object({
   certificateType: z.enum([
-    'trade_license', 'fire_safety', 'health_safety', 'environmental',
-    'import_license', 'export_license', 'quality_certification',
-    'insurance', 'professional_license', 'tax_clearance', 'other'
+    'trade_license',
+    'fire_safety',
+    'health_safety',
+    'environmental',
+    'import_license',
+    'export_license',
+    'quality_certification',
+    'insurance',
+    'professional_license',
+    'tax_clearance',
+    'other',
   ]),
   certificateNumber: z.string().min(1),
   name: z.string().min(1).max(200),
@@ -1156,11 +1276,13 @@ export const createCertificateSchema = z.object({
   renewalFee: z.number().min(0).optional(),
   certificateFile: z.string().url(),
   tags: z.array(z.string()).optional(),
-  reminder: z.object({
-    enabled: z.boolean().default(true),
-    daysBefore: z.array(z.number().int().positive()).default([30, 14, 7, 1]),
-    notifyEmail: z.array(z.string().email()).optional(),
-  }).optional(),
+  reminder: z
+    .object({
+      enabled: z.boolean().default(true),
+      daysBefore: z.array(z.number().int().positive()).default([30, 14, 7, 1]),
+      notifyEmail: z.array(z.string().email()).optional(),
+    })
+    .optional(),
 });
 
 export const updateCertificateSchema = createCertificateSchema.partial();
@@ -1177,22 +1299,35 @@ export const createDocumentSchema = z.object({
   title: z.string().min(1).max(200),
   documentNumber: z.string().optional(),
   category: z.enum([
-    'incorporation', 'contracts', 'employment', 'intellectual_property',
-    'real_estate', 'financial', 'legal_proceedings', 'compliance',
-    'insurance', 'miscellaneous'
+    'incorporation',
+    'contracts',
+    'employment',
+    'intellectual_property',
+    'real_estate',
+    'financial',
+    'legal_proceedings',
+    'compliance',
+    'insurance',
+    'miscellaneous',
   ]),
   subCategory: z.string().max(100).optional(),
   description: z.string().max(2000).optional(),
-  parties: z.array(z.object({
-    name: z.string().min(1),
-    role: z.string().optional(),
-    contact: z.string().optional(),
-    address: z.string().optional(),
-  })).optional(),
+  parties: z
+    .array(
+      z.object({
+        name: z.string().min(1),
+        role: z.string().optional(),
+        contact: z.string().optional(),
+        address: z.string().optional(),
+      })
+    )
+    .optional(),
   effectiveDate: z.string().datetime().optional(),
   expiryDate: z.string().datetime().optional(),
   executionDate: z.string().datetime().optional(),
-  status: z.enum(['draft', 'active', 'expired', 'terminated', 'superseded', 'archived']).default('draft'),
+  status: z
+    .enum(['draft', 'active', 'expired', 'terminated', 'superseded', 'archived'])
+    .default('draft'),
   currentFile: z.string().url(),
   accessLevel: z.enum(['public', 'internal', 'restricted', 'confidential']).default('internal'),
   tags: z.array(z.string()).optional(),
@@ -1320,24 +1455,25 @@ apps/manage/src/features/compliance/
 ### 6.2 Key Component Examples
 
 #### ComplianceDashboard.tsx
+
 ```tsx
 export function ComplianceDashboard() {
   const { data, isLoading } = useComplianceDashboard();
-  
+
   return (
     <div className="space-y-6">
-      <PageHeader 
-        title="Compliance Dashboard" 
+      <PageHeader
+        title="Compliance Dashboard"
         description="Overview of your business compliance status"
       />
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <ComplianceScoreCard score={data?.complianceScore} />
         <ExpiringSoonCard items={data?.expiringSoon} />
         <PendingActionsCard actions={data?.pendingActions} />
         <TaxSummaryCard summary={data?.taxSummary} />
       </div>
-      
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
           <RecentActivityTimeline activities={data?.recentActivity} />
@@ -1441,69 +1577,75 @@ export function ComplianceDashboard() {
 
 ### 8.1 Tax Record Rules
 
-| Rule | Description |
-|------|-------------|
-| Fiscal Year Format | Must be YYYY-YYYY format (e.g., 2024-2025) |
-| Tax Calculation | taxableIncome = grossIncome - totalDeductions |
-| Payment Validation | Total payments cannot exceed tax amount |
-| Due Date | Cannot be in the past for new records |
-| Filing | Can only file if payments are complete |
-| Deductions | Must have supporting document for amounts > ৳50,000 |
+| Rule               | Description                                         |
+| ------------------ | --------------------------------------------------- |
+| Fiscal Year Format | Must be YYYY-YYYY format (e.g., 2024-2025)          |
+| Tax Calculation    | taxableIncome = grossIncome - totalDeductions       |
+| Payment Validation | Total payments cannot exceed tax amount             |
+| Due Date           | Cannot be in the past for new records               |
+| Filing             | Can only file if payments are complete              |
+| Deductions         | Must have supporting document for amounts > ৳50,000 |
 
 ### 8.2 Certificate Rules
 
-| Rule | Description |
-|------|-------------|
-| Unique Number | Certificate number must be unique |
-| Expiry Date | Must be after issue date |
-| Renewal | Can only renew within 60 days of expiry |
+| Rule          | Description                                |
+| ------------- | ------------------------------------------ |
+| Unique Number | Certificate number must be unique          |
+| Expiry Date   | Must be after issue date                   |
+| Renewal       | Can only renew within 60 days of expiry    |
 | Status Update | Auto-update to "expired" after expiry date |
-| File Required | Certificate file is mandatory |
+| File Required | Certificate file is mandatory              |
 
 ### 8.3 Document Rules
 
-| Rule | Description |
-|------|-------------|
-| Version Control | New version must increment version number |
-| Access Level | Confidential documents require explicit user access |
-| Effective Date | Cannot be after expiry date |
-| File Size | Maximum 10MB per document |
+| Rule            | Description                                         |
+| --------------- | --------------------------------------------------- |
+| Version Control | New version must increment version number           |
+| Access Level    | Confidential documents require explicit user access |
+| Effective Date  | Cannot be after expiry date                         |
+| File Size       | Maximum 10MB per document                           |
 
 ---
 
 ## 9. Implementation Phases
 
 ### Phase 1: Foundation
+
 - Create database schemas
 - Set up API routes structure
 - Create basic CRUD operations
 - Add navigation section to Layout.tsx
 
 ### Phase 2: Tax Management
+
 - Tax record CRUD
 - Payment tracking
 - Filing status management
 - Tax summary dashboard
 
 ### Phase 3: Business Authenticity
+
 - Business registration management
 - Director/owner management
 - Tax identifier management
 - Document uploads
 
 ### Phase 4: Certificates
+
 - Certificate CRUD
 - Renewal tracking
 - Expiry notifications
 - Reminder system
 
 ### Phase 5: Legal Documents
+
 - Document CRUD
 - Version control
 - Search functionality
 - Access control
 
 ### Phase 6: Dashboard & Reporting
+
 - Compliance dashboard
 - Activity logging
 - Reporting features

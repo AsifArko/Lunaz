@@ -3,14 +3,7 @@ import { z } from 'zod';
 // Tax Record Schemas
 export const createTaxRecordSchema = z.object({
   fiscalYear: z.string().regex(/^\d{4}-\d{4}$/, 'Invalid fiscal year format (e.g., 2024-2025)'),
-  taxType: z.enum([
-    'income_tax',
-    'corporate_tax',
-    'vat',
-    'sales_tax',
-    'withholding_tax',
-    'other',
-  ]),
+  taxType: z.enum(['income_tax', 'corporate_tax', 'vat', 'sales_tax', 'withholding_tax', 'other']),
   period: z.enum(['monthly', 'quarterly', 'half_yearly', 'annual']),
   periodMonth: z.number().int().min(1).max(12).optional(),
   periodQuarter: z.number().int().min(1).max(4).optional(),

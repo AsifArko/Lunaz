@@ -35,11 +35,7 @@ router.post(
 router.get('/tax-records/summary', complianceService.getTaxSummary);
 
 // GET /compliance/tax-records/:id - Get single tax record
-router.get(
-  '/tax-records/:id',
-  validateParams(validators.idParam),
-  complianceService.getTaxRecord
-);
+router.get('/tax-records/:id', validateParams(validators.idParam), complianceService.getTaxRecord);
 
 // PATCH /compliance/tax-records/:id - Update tax record
 router.patch(
@@ -211,11 +207,7 @@ router.post(
 );
 
 // GET /compliance/documents/:id - Get document
-router.get(
-  '/documents/:id',
-  validateParams(validators.idParam),
-  complianceService.getDocument
-);
+router.get('/documents/:id', validateParams(validators.idParam), complianceService.getDocument);
 
 // PATCH /compliance/documents/:id - Update document
 router.patch(
@@ -258,10 +250,6 @@ router.get('/dashboard', complianceService.getDashboard);
 router.get('/expiring', complianceService.getExpiringItems);
 
 // GET /compliance/activity - Get activity log
-router.get(
-  '/activity',
-  validateQuery(validators.activityQuery),
-  complianceService.getActivityLog
-);
+router.get('/activity', validateQuery(validators.activityQuery), complianceService.getActivityLog);
 
 export const complianceRoutes = router;

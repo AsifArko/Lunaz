@@ -115,8 +115,18 @@ export function ComplianceDashboard() {
         <div className="bg-white rounded-lg border border-slate-200 p-5">
           <div className="flex items-center gap-3 mb-3">
             <div className="w-9 h-9 bg-slate-100 rounded-lg flex items-center justify-center">
-              <svg className="w-4.5 h-4.5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+              <svg
+                className="w-4.5 h-4.5 text-slate-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z"
+                />
               </svg>
             </div>
             <p className="text-sm text-slate-500">Compliance Score</p>
@@ -125,7 +135,9 @@ export function ComplianceDashboard() {
             <p className={`text-2xl font-semibold ${getScoreColor(data?.complianceScore || 0)}`}>
               {data?.complianceScore || 0}%
             </p>
-            <span className="text-xs text-slate-400">{getScoreStatus(data?.complianceScore || 0)}</span>
+            <span className="text-xs text-slate-400">
+              {getScoreStatus(data?.complianceScore || 0)}
+            </span>
           </div>
         </div>
 
@@ -133,8 +145,18 @@ export function ComplianceDashboard() {
         <div className="bg-white rounded-lg border border-slate-200 p-5">
           <div className="flex items-center gap-3 mb-3">
             <div className="w-9 h-9 bg-slate-100 rounded-lg flex items-center justify-center">
-              <svg className="w-4.5 h-4.5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <svg
+                className="w-4.5 h-4.5 text-slate-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
             </div>
             <p className="text-sm text-slate-500">Expiring Soon</p>
@@ -151,8 +173,18 @@ export function ComplianceDashboard() {
         <div className="bg-white rounded-lg border border-slate-200 p-5">
           <div className="flex items-center gap-3 mb-3">
             <div className="w-9 h-9 bg-slate-100 rounded-lg flex items-center justify-center">
-              <svg className="w-4.5 h-4.5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 14.25l6-6m4.5-3.493V21.75l-3.75-1.5-3.75 1.5-3.75-1.5-3.75 1.5V4.757c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0c1.1.128 1.907 1.077 1.907 2.185z" />
+              <svg
+                className="w-4.5 h-4.5 text-slate-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M9 14.25l6-6m4.5-3.493V21.75l-3.75-1.5-3.75 1.5-3.75-1.5-3.75 1.5V4.757c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0111.186 0c1.1.128 1.907 1.077 1.907 2.185z"
+                />
               </svg>
             </div>
             <p className="text-sm text-slate-500">Pending Payments</p>
@@ -169,8 +201,18 @@ export function ComplianceDashboard() {
         <div className="bg-white rounded-lg border border-slate-200 p-5">
           <div className="flex items-center gap-3 mb-3">
             <div className="w-9 h-9 bg-slate-100 rounded-lg flex items-center justify-center">
-              <svg className="w-4.5 h-4.5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <svg
+                className="w-4.5 h-4.5 text-slate-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
             </div>
             <p className="text-sm text-slate-500">Tax Balance Due</p>
@@ -199,14 +241,21 @@ export function ComplianceDashboard() {
               {data.expiringSoon.map((cert) => {
                 const daysLeft = getDaysUntil(cert.expiryDate);
                 return (
-                  <div
-                    key={cert._id}
-                    className="flex items-center justify-between px-5 py-3.5"
-                  >
+                  <div key={cert._id} className="flex items-center justify-between px-5 py-3.5">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 bg-slate-50 rounded flex items-center justify-center">
-                        <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+                        <svg
+                          className="w-4 h-4 text-slate-400"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={1.5}
+                            d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
+                          />
                         </svg>
                       </div>
                       <div>
@@ -219,16 +268,12 @@ export function ComplianceDashboard() {
                     <div className="text-right">
                       <span
                         className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
-                          daysLeft <= 7
-                            ? 'bg-slate-900 text-white'
-                            : 'bg-slate-100 text-slate-600'
+                          daysLeft <= 7 ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600'
                         }`}
                       >
                         {daysLeft} days
                       </span>
-                      <p className="text-xs text-slate-400 mt-1">
-                        {formatDate(cert.expiryDate)}
-                      </p>
+                      <p className="text-xs text-slate-400 mt-1">{formatDate(cert.expiryDate)}</p>
                     </div>
                   </div>
                 );
@@ -236,8 +281,18 @@ export function ComplianceDashboard() {
             </div>
           ) : (
             <div className="text-center py-10 text-slate-400">
-              <svg className="w-10 h-10 mx-auto text-slate-200 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <svg
+                className="w-10 h-10 mx-auto text-slate-200 mb-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
               <p className="text-sm">No certificates expiring soon</p>
             </div>
@@ -256,8 +311,18 @@ export function ComplianceDashboard() {
                 to="/compliance/income-tax"
                 className="flex items-center gap-3 px-3 py-2.5 rounded-md hover:bg-slate-50 transition-colors"
               >
-                <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4.5v15m7.5-7.5h-15" />
+                <svg
+                  className="w-4 h-4 text-slate-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M12 4.5v15m7.5-7.5h-15"
+                  />
                 </svg>
                 <span className="text-sm text-slate-600">Add Tax Record</span>
               </Link>
@@ -265,8 +330,18 @@ export function ComplianceDashboard() {
                 to="/compliance/certificates"
                 className="flex items-center gap-3 px-3 py-2.5 rounded-md hover:bg-slate-50 transition-colors"
               >
-                <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4.5v15m7.5-7.5h-15" />
+                <svg
+                  className="w-4 h-4 text-slate-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M12 4.5v15m7.5-7.5h-15"
+                  />
                 </svg>
                 <span className="text-sm text-slate-600">Add Certificate</span>
               </Link>
@@ -274,8 +349,18 @@ export function ComplianceDashboard() {
                 to="/compliance/documents"
                 className="flex items-center gap-3 px-3 py-2.5 rounded-md hover:bg-slate-50 transition-colors"
               >
-                <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+                <svg
+                  className="w-4 h-4 text-slate-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"
+                  />
                 </svg>
                 <span className="text-sm text-slate-600">Upload Document</span>
               </Link>
@@ -283,8 +368,18 @@ export function ComplianceDashboard() {
                 to="/compliance/authenticity"
                 className="flex items-center gap-3 px-3 py-2.5 rounded-md hover:bg-slate-50 transition-colors"
               >
-                <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125" />
+                <svg
+                  className="w-4 h-4 text-slate-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125"
+                  />
                 </svg>
                 <span className="text-sm text-slate-600">Update Business Info</span>
               </Link>
@@ -311,7 +406,9 @@ export function ComplianceDashboard() {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-slate-500">Overdue Payments</span>
-                <span className={`text-sm font-medium ${(data?.pendingActions?.overdueTaxPayments || 0) > 0 ? 'text-slate-900' : 'text-slate-900'}`}>
+                <span
+                  className={`text-sm font-medium ${(data?.pendingActions?.overdueTaxPayments || 0) > 0 ? 'text-slate-900' : 'text-slate-900'}`}
+                >
                   {data?.pendingActions?.overdueTaxPayments || 0}
                 </span>
               </div>

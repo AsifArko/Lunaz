@@ -15,6 +15,7 @@ import { SocialTab } from './components/tabs/SocialTab';
 import { AccountTab } from './components/tabs/AccountTab';
 import { SecurityTab } from './components/tabs/SecurityTab';
 import { PaymentTab } from './components/tabs/PaymentTab';
+import { SeoTab } from './components/tabs/SeoTab';
 import { AdvancedTab } from './components/tabs/AdvancedTab';
 
 // Types and constants
@@ -108,6 +109,15 @@ export function SettingsPage() {
         return <SecurityTab />;
       case 'payment':
         return <PaymentTab />;
+      case 'seo':
+        return (
+          <SeoTab
+            settings={settings}
+            onChange={handleUpdateSettings}
+            onSave={handleSave}
+            isSaving={isSaving}
+          />
+        );
       case 'advanced':
         return <AdvancedTab />;
       default:
