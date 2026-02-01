@@ -995,47 +995,135 @@ export function TrafficLogsPage() {
         </button>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-white rounded-xl border border-gray-100 p-4">
-          <p className="text-xs text-gray-500 uppercase tracking-wider">Total Events</p>
-          {isInitialLoad ? (
-            <div className="h-7 w-20 bg-gray-100 rounded animate-pulse mt-2" />
-          ) : (
-            <p className="text-2xl font-light text-gray-900 mt-1 transition-all duration-300">
-              {pagination.total.toLocaleString()}
-            </p>
-          )}
-        </div>
-        <div className="bg-white rounded-xl border border-gray-100 p-4">
-          <p className="text-xs text-gray-500 uppercase tracking-wider">Page Views</p>
-          {isInitialLoad ? (
-            <div className="h-7 w-20 bg-gray-100 rounded animate-pulse mt-2" />
-          ) : (
-            <p className="text-2xl font-light text-blue-600 mt-1 transition-all duration-300">
-              {logs.filter((l) => l.type === 'pageview').length}
-            </p>
-          )}
-        </div>
-        <div className="bg-white rounded-xl border border-gray-100 p-4">
-          <p className="text-xs text-gray-500 uppercase tracking-wider">Unique Visitors</p>
-          {isInitialLoad ? (
-            <div className="h-7 w-20 bg-gray-100 rounded animate-pulse mt-2" />
-          ) : (
-            <p className="text-2xl font-light text-emerald-600 mt-1 transition-all duration-300">
-              {new Set(logs.map((l) => l.visitorId)).size}
-            </p>
-          )}
-        </div>
-        <div className="bg-white rounded-xl border border-gray-100 p-4">
-          <p className="text-xs text-gray-500 uppercase tracking-wider">Sessions</p>
-          {isInitialLoad ? (
-            <div className="h-7 w-20 bg-gray-100 rounded animate-pulse mt-2" />
-          ) : (
-            <p className="text-2xl font-light text-gray-900 mt-1 transition-all duration-300">
-              {new Set(logs.map((l) => l.sessionId)).size}
-            </p>
-          )}
+      {/* Compact Stats Bar */}
+      <div className="bg-white rounded-lg border border-gray-100 px-4 py-2.5">
+        <div className="flex items-center gap-6 flex-wrap">
+          {/* Total Events */}
+          <div className="flex items-center gap-2">
+            <div className="w-5 h-5 bg-gray-100 rounded flex items-center justify-center">
+              <svg
+                className="w-3 h-3 text-gray-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z"
+                />
+              </svg>
+            </div>
+            <div className="flex items-baseline gap-1.5">
+              {isInitialLoad ? (
+                <div className="h-4 w-10 bg-gray-100 rounded animate-pulse" />
+              ) : (
+                <span className="text-sm font-semibold text-gray-900">
+                  {pagination.total.toLocaleString()}
+                </span>
+              )}
+              <span className="text-[10px] text-gray-400 uppercase">events</span>
+            </div>
+          </div>
+
+          <div className="w-px h-4 bg-gray-200" />
+
+          {/* Page Views */}
+          <div className="flex items-center gap-2">
+            <div className="w-5 h-5 bg-blue-50 rounded flex items-center justify-center">
+              <svg
+                className="w-3 h-3 text-blue-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"
+                />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+              </svg>
+            </div>
+            <div className="flex items-baseline gap-1.5">
+              {isInitialLoad ? (
+                <div className="h-4 w-6 bg-gray-100 rounded animate-pulse" />
+              ) : (
+                <span className="text-sm font-semibold text-blue-600">
+                  {logs.filter((l) => l.type === 'pageview').length}
+                </span>
+              )}
+              <span className="text-[10px] text-gray-400 uppercase">views</span>
+            </div>
+          </div>
+
+          <div className="w-px h-4 bg-gray-200" />
+
+          {/* Unique Visitors */}
+          <div className="flex items-center gap-2">
+            <div className="w-5 h-5 bg-emerald-50 rounded flex items-center justify-center">
+              <svg
+                className="w-3 h-3 text-emerald-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"
+                />
+              </svg>
+            </div>
+            <div className="flex items-baseline gap-1.5">
+              {isInitialLoad ? (
+                <div className="h-4 w-6 bg-gray-100 rounded animate-pulse" />
+              ) : (
+                <span className="text-sm font-semibold text-emerald-600">
+                  {new Set(logs.map((l) => l.visitorId)).size}
+                </span>
+              )}
+              <span className="text-[10px] text-gray-400 uppercase">visitors</span>
+            </div>
+          </div>
+
+          <div className="w-px h-4 bg-gray-200" />
+
+          {/* Sessions */}
+          <div className="flex items-center gap-2">
+            <div className="w-5 h-5 bg-gray-100 rounded flex items-center justify-center">
+              <svg
+                className="w-3 h-3 text-gray-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0V12a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 12V5.25"
+                />
+              </svg>
+            </div>
+            <div className="flex items-baseline gap-1.5">
+              {isInitialLoad ? (
+                <div className="h-4 w-6 bg-gray-100 rounded animate-pulse" />
+              ) : (
+                <span className="text-sm font-semibold text-gray-900">
+                  {new Set(logs.map((l) => l.sessionId)).size}
+                </span>
+              )}
+              <span className="text-[10px] text-gray-400 uppercase">sessions</span>
+            </div>
+          </div>
         </div>
       </div>
 

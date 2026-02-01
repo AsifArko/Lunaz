@@ -13,6 +13,10 @@ import { RegisterPage } from './features/auth/RegisterPage';
 import { ForgotPasswordPage } from './features/auth/ForgotPasswordPage';
 import { ResetPasswordPage } from './features/auth/ResetPasswordPage';
 import { CheckoutPage } from './features/checkout/CheckoutPage';
+import { CheckoutSuccessPage } from './features/checkout/CheckoutSuccessPage';
+import { CheckoutFailedPage } from './features/checkout/CheckoutFailedPage';
+import { CheckoutCancelledPage } from './features/checkout/CheckoutCancelledPage';
+import { CheckoutErrorPage } from './features/checkout/CheckoutErrorPage';
 import { AccountLayout } from './features/account/AccountLayout';
 import { ProfilePage } from './features/account/ProfilePage';
 import { AddressesPage } from './features/account/AddressesPage';
@@ -36,7 +40,7 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
 
-        {/* Protected routes */}
+        {/* Checkout routes */}
         <Route
           path="/checkout"
           element={
@@ -45,6 +49,12 @@ function App() {
             </AuthGuard>
           }
         />
+        <Route path="/checkout/success" element={<CheckoutSuccessPage />} />
+        <Route path="/checkout/failed" element={<CheckoutFailedPage />} />
+        <Route path="/checkout/cancelled" element={<CheckoutCancelledPage />} />
+        <Route path="/checkout/error" element={<CheckoutErrorPage />} />
+
+        {/* Protected routes */}
         <Route
           path="/account"
           element={

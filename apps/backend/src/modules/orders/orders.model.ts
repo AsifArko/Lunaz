@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { OrderStatus, PaymentStatus } from '@lunaz/types';
+import { OrderStatus, PaymentStatus, PaymentMethod } from '@lunaz/types';
 
 const orderAddressSchema = new mongoose.Schema({
   name: { type: String, required: true },
@@ -35,12 +35,18 @@ const orderSchema = new mongoose.Schema(
     currency: { type: String, default: 'BDT' },
     shippingAddress: { type: orderAddressSchema, required: true },
     billingAddress: orderAddressSchema,
+    paymentMethod: {
+      type: String,
+      enum: Object.values(PaymentMethod),
+    },
+    paymentId: { type: mongoose.Schema.Types.ObjectId, ref: 'Payment' },
     paymentIntentId: String,
     paymentStatus: {
       type: String,
       enum: Object.values(PaymentStatus),
       default: PaymentStatus.PENDING,
     },
+    paidAt: Date,
     notes: String,
   },
   { timestamps: true }

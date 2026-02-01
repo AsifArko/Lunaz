@@ -31,6 +31,7 @@ export async function register(
     email: input.email.toLowerCase(),
     passwordHash: hash,
     name: input.name,
+    phone: input.phone,
     role: UserRole.CUSTOMER,
   });
   const summary: UserSummary = {

@@ -12,6 +12,7 @@ export function RegisterPage() {
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -41,10 +42,17 @@ export function RegisterPage() {
       return;
     }
 
+    // Validate phone number (Bangladeshi format)
+    const phoneRegex = /^(\+?88)?01[3-9]\d{8}$/;
+    if (!phoneRegex.test(phone)) {
+      setError('Please enter a valid Bangladeshi phone number');
+      return;
+    }
+
     setIsLoading(true);
 
     try {
-      await register({ name, email, password });
+      await register({ name, email, phone, password });
       addToast('Account created successfully!', 'success');
       navigate(redirect, { replace: true });
     } catch (err) {
@@ -86,6 +94,17 @@ export function RegisterPage() {
               onChange={(e) => setEmail(e.target.value)}
               required
               autoComplete="email"
+            />
+            <Input
+              label="Phone Number"
+              type="tel"
+              name="phone"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              required
+              autoComplete="tel"
+              placeholder="01XXXXXXXXX"
+              hint="Enter your Bangladeshi phone number"
             />
             <Input
               label="Password"

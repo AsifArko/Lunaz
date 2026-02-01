@@ -41,233 +41,8 @@ const dateRanges = [
 ];
 
 /* -------------------------------------------------------------------------- */
-/*                              Components                                    */
+/*                              Helper Functions                              */
 /* -------------------------------------------------------------------------- */
-
-function VitalCard({
-  name,
-  description,
-  value,
-  unit,
-  rating,
-  p75,
-  target,
-  isLoading,
-}: {
-  name: string;
-  description: string;
-  value: number;
-  unit: string;
-  rating: 'good' | 'needs-improvement' | 'poor';
-  p75: number;
-  target: string;
-  isLoading: boolean;
-}) {
-  const ratingColors = {
-    good: {
-      bg: 'bg-emerald-50',
-      text: 'text-emerald-600',
-      border: 'border-emerald-200',
-      label: 'Good',
-    },
-    'needs-improvement': {
-      bg: 'bg-amber-50',
-      text: 'text-amber-600',
-      border: 'border-amber-200',
-      label: 'Needs Improvement',
-    },
-    poor: { bg: 'bg-rose-50', text: 'text-rose-600', border: 'border-rose-200', label: 'Poor' },
-  };
-
-  const colors = ratingColors[rating];
-
-  return (
-    <div className={`bg-white rounded-xl border ${colors.border} p-5`}>
-      <div className="flex items-start justify-between mb-4">
-        <div>
-          <h3 className="text-sm font-medium text-gray-900">{name}</h3>
-          <p className="text-xs text-gray-500 mt-0.5">{description}</p>
-        </div>
-        {!isLoading && (
-          <span className={`px-2 py-0.5 text-xs font-medium rounded ${colors.bg} ${colors.text}`}>
-            {colors.label}
-          </span>
-        )}
-      </div>
-
-      {isLoading ? (
-        <div className="space-y-2">
-          <div className="h-10 w-24 bg-gray-100 rounded animate-pulse" />
-          <div className="h-4 w-32 bg-gray-50 rounded animate-pulse" />
-        </div>
-      ) : (
-        <>
-          <div className="flex items-end gap-1 mb-2">
-            <span className={`text-3xl font-light ${colors.text}`}>{value.toLocaleString()}</span>
-            <span className="text-sm text-gray-500 mb-1">{unit}</span>
-          </div>
-          <div className="flex items-center justify-between text-xs text-gray-500">
-            <span>
-              P75: {p75.toLocaleString()}
-              {unit}
-            </span>
-            <span>Target: {target}</span>
-          </div>
-        </>
-      )}
-    </div>
-  );
-}
-
-function MetricBar({
-  value,
-  max,
-  rating,
-  label,
-  unit = 'ms',
-}: {
-  value: number;
-  max: number;
-  rating: 'good' | 'needs-improvement' | 'poor';
-  label: string;
-  unit?: string;
-}) {
-  const width = Math.min((value / max) * 100, 100);
-  const colors = {
-    good: { bar: 'bg-emerald-500', bg: 'bg-emerald-50', text: 'text-emerald-600' },
-    'needs-improvement': { bar: 'bg-amber-500', bg: 'bg-amber-50', text: 'text-amber-600' },
-    poor: { bar: 'bg-rose-500', bg: 'bg-rose-50', text: 'text-rose-600' },
-  };
-
-  const c = colors[rating];
-
-  return (
-    <div className="flex-1">
-      <div className="flex items-center justify-between mb-1.5">
-        <span className="text-[10px] font-medium text-gray-500 uppercase tracking-wider">
-          {label}
-        </span>
-        <span className={`text-xs font-semibold ${c.text}`}>
-          {value.toLocaleString()}
-          {unit}
-        </span>
-      </div>
-      <div className={`h-2 ${c.bg} rounded-full overflow-hidden`}>
-        <div
-          className={`h-full rounded-full ${c.bar} transition-all duration-500 ease-out`}
-          style={{ width: `${width}%` }}
-        />
-      </div>
-    </div>
-  );
-}
-
-function PagePerformanceCard({
-  page,
-  maxLcp,
-  maxTtfb,
-  index,
-}: {
-  page: PagePerformance;
-  maxLcp: number;
-  maxTtfb: number;
-  index: number;
-}) {
-  const lcpRating = getLcpRating(page.lcp);
-  const fidRating = getFidRating(page.fid);
-  const clsRating = getClsRating(page.cls);
-  const ttfbRating = getTtfbRating(page.ttfb);
-
-  // Calculate overall score (simplified)
-  const getScore = () => {
-    const ratings = [lcpRating, fidRating, clsRating, ttfbRating];
-    const scores = ratings.map((r) => (r === 'good' ? 100 : r === 'needs-improvement' ? 60 : 20));
-    return Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
-  };
-
-  const score = getScore();
-  const scoreColor =
-    score >= 80
-      ? 'text-emerald-600 bg-emerald-50'
-      : score >= 50
-        ? 'text-amber-600 bg-amber-50'
-        : 'text-rose-600 bg-rose-50';
-  const ringColor =
-    score >= 80 ? 'stroke-emerald-500' : score >= 50 ? 'stroke-amber-500' : 'stroke-rose-500';
-
-  return (
-    <div
-      className="bg-white rounded-xl border border-gray-100 p-5 hover:border-gray-200 hover:shadow-sm transition-all duration-200"
-      style={{ animationDelay: `${index * 50}ms` }}
-    >
-      {/* Header */}
-      <div className="flex items-start justify-between mb-5">
-        <div className="flex-1 min-w-0 pr-4">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
-              <svg
-                className="w-4 h-4 text-gray-500"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                strokeWidth={1.5}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
-                />
-              </svg>
-            </div>
-            <div className="min-w-0 flex-1">
-              <h3 className="text-sm font-medium text-gray-900 truncate" title={page.path}>
-                {page.path}
-              </h3>
-              <p className="text-xs text-gray-400">
-                {page.samples} sample{page.samples !== 1 ? 's' : ''}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Score Circle */}
-        <div className="relative flex-shrink-0">
-          <svg className="w-14 h-14 -rotate-90" viewBox="0 0 36 36">
-            <circle
-              cx="18"
-              cy="18"
-              r="15"
-              fill="none"
-              className="stroke-gray-100"
-              strokeWidth="3"
-            />
-            <circle
-              cx="18"
-              cy="18"
-              r="15"
-              fill="none"
-              className={ringColor}
-              strokeWidth="3"
-              strokeLinecap="round"
-              strokeDasharray={`${score * 0.94} 100`}
-            />
-          </svg>
-          <div className="absolute inset-0 flex items-center justify-center">
-            <span className={`text-xs font-bold ${scoreColor.split(' ')[0]}`}>{score}</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Metrics Grid */}
-      <div className="grid grid-cols-2 gap-4">
-        <MetricBar value={page.lcp} max={maxLcp} rating={lcpRating} label="LCP" />
-        <MetricBar value={page.fid} max={300} rating={fidRating} label="FID" />
-        <MetricBar value={page.cls} max={0.25} rating={clsRating} label="CLS" unit="" />
-        <MetricBar value={page.ttfb} max={maxTtfb} rating={ttfbRating} label="TTFB" />
-      </div>
-    </div>
-  );
-}
 
 function getLcpRating(v: number): 'good' | 'needs-improvement' | 'poor' {
   return v <= 2500 ? 'good' : v <= 4000 ? 'needs-improvement' : 'poor';
@@ -283,6 +58,74 @@ function getClsRating(v: number): 'good' | 'needs-improvement' | 'poor' {
 
 function getTtfbRating(v: number): 'good' | 'needs-improvement' | 'poor' {
   return v <= 800 ? 'good' : v <= 1800 ? 'needs-improvement' : 'poor';
+}
+
+/* -------------------------------------------------------------------------- */
+/*                              Components                                    */
+/* -------------------------------------------------------------------------- */
+
+function RatingDot({ rating }: { rating: 'good' | 'needs-improvement' | 'poor' }) {
+  const colors = {
+    good: 'bg-emerald-500',
+    'needs-improvement': 'bg-amber-500',
+    poor: 'bg-rose-500',
+  };
+  return <span className={`w-1.5 h-1.5 rounded-full ${colors[rating]}`} />;
+}
+
+function MetricValue({
+  value,
+  unit,
+  rating,
+  isLoading,
+}: {
+  value: number;
+  unit: string;
+  rating?: 'good' | 'needs-improvement' | 'poor';
+  isLoading: boolean;
+}) {
+  const colors = {
+    good: 'text-emerald-600',
+    'needs-improvement': 'text-amber-600',
+    poor: 'text-rose-600',
+  };
+
+  if (isLoading) {
+    return <div className="h-4 w-10 bg-gray-100 rounded animate-pulse" />;
+  }
+
+  return (
+    <span className={`text-sm font-semibold ${rating ? colors[rating] : 'text-gray-900'}`}>
+      {value.toLocaleString()}
+      {unit && <span className="text-[10px] text-gray-400 ml-0.5">{unit}</span>}
+    </span>
+  );
+}
+
+function CompactMetricBar({
+  value,
+  max,
+  rating,
+}: {
+  value: number;
+  max: number;
+  rating: 'good' | 'needs-improvement' | 'poor';
+}) {
+  const width = Math.min((value / max) * 100, 100);
+  const colors = {
+    good: 'bg-emerald-500',
+    'needs-improvement': 'bg-amber-500',
+    poor: 'bg-rose-500',
+  };
+
+  return (
+    <div className="w-16 h-1 bg-gray-100 rounded-full overflow-hidden">
+      <div
+        className={`h-full rounded-full ${colors[rating]} transition-all duration-300`}
+        style={{ width: `${width}%` }}
+      />
+    </div>
+  );
 }
 
 /* -------------------------------------------------------------------------- */
@@ -323,20 +166,33 @@ export function SpeedInsightsPage() {
     fetchData();
   }, [fetchData]);
 
+  // Calculate overall health score
+  const getOverallScore = () => {
+    if (!overview) return 0;
+    const ratings = [overview.lcp.rating, overview.fid.rating, overview.cls.rating];
+    const scores = ratings.map((r) => (r === 'good' ? 100 : r === 'needs-improvement' ? 60 : 20));
+    return Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
+  };
+
+  const score = getOverallScore();
+  const scoreColor =
+    score >= 80 ? 'text-emerald-600' : score >= 50 ? 'text-amber-600' : 'text-rose-600';
+  const scoreBg = score >= 80 ? 'bg-emerald-50' : score >= 50 ? 'bg-amber-50' : 'bg-rose-50';
+
   return (
-    <div className="space-y-6">
-      {/* Header */}
+    <div className="space-y-4">
+      {/* Compact Header */}
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-medium text-gray-900">Speed Insights</h1>
-          <p className="mt-1 text-sm text-gray-500">Core Web Vitals and performance metrics</p>
+        <div className="flex items-center gap-3">
+          <h1 className="text-lg font-medium text-gray-900">Speed Insights</h1>
+          <span className="text-[10px] text-gray-400 uppercase">Core Web Vitals</span>
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-xs text-gray-500">{overview?.samples || 0} samples collected</span>
+          <span className="text-[10px] text-gray-400">{overview?.samples || 0} samples</span>
           <select
             value={dateRange}
             onChange={(e) => setDateRange(e.target.value)}
-            className="px-3 py-1.5 text-sm border border-gray-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-2 py-1 text-xs border border-gray-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-gray-300"
           >
             {dateRanges.map((range) => (
               <option key={range.value} value={range.value}>
@@ -347,154 +203,258 @@ export function SpeedInsightsPage() {
         </div>
       </div>
 
-      {/* Core Web Vitals */}
-      <div>
-        <h2 className="text-sm font-medium text-gray-900 mb-4">Core Web Vitals</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <VitalCard
-            name="LCP"
-            description="Largest Contentful Paint"
-            value={overview?.lcp.value || 0}
-            unit="ms"
-            rating={overview?.lcp.rating || 'good'}
-            p75={overview?.lcp.p75 || 0}
-            target="< 2.5s"
-            isLoading={isLoading}
-          />
-          <VitalCard
-            name="FID"
-            description="First Input Delay"
-            value={overview?.fid.value || 0}
-            unit="ms"
-            rating={overview?.fid.rating || 'good'}
-            p75={overview?.fid.p75 || 0}
-            target="< 100ms"
-            isLoading={isLoading}
-          />
-          <VitalCard
-            name="CLS"
-            description="Cumulative Layout Shift"
-            value={overview?.cls.value || 0}
-            unit=""
-            rating={overview?.cls.rating || 'good'}
-            p75={overview?.cls.p75 || 0}
-            target="< 0.1"
-            isLoading={isLoading}
-          />
-        </div>
-      </div>
-
-      {/* Additional Metrics */}
-      <div>
-        <h2 className="text-sm font-medium text-gray-900 mb-4">Additional Metrics</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {overview?.inp && (
-            <div className="bg-white rounded-xl border border-gray-100 p-5">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-sm font-medium text-gray-900">INP</h3>
-                  <p className="text-xs text-gray-500">Interaction to Next Paint</p>
-                </div>
-                {isLoading ? (
-                  <div className="h-8 w-20 bg-gray-100 rounded animate-pulse" />
-                ) : (
-                  <div className="text-right">
-                    <span className="text-2xl font-light text-gray-900">{overview.inp.value}</span>
-                    <span className="text-sm text-gray-500 ml-1">ms</span>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-          <div className="bg-white rounded-xl border border-gray-100 p-5">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="text-sm font-medium text-gray-900">TTFB</h3>
-                <p className="text-xs text-gray-500">Time to First Byte</p>
-              </div>
+      {/* Compact Vitals Overview */}
+      <div className="bg-white rounded-lg border border-gray-100">
+        {/* Score + Vitals Row */}
+        <div className="px-4 py-3 flex items-center gap-6 flex-wrap">
+          {/* Overall Score */}
+          <div className="flex items-center gap-2">
+            <div className={`w-8 h-8 ${scoreBg} rounded-lg flex items-center justify-center`}>
               {isLoading ? (
-                <div className="h-8 w-20 bg-gray-100 rounded animate-pulse" />
+                <div className="w-4 h-4 bg-gray-200 rounded animate-pulse" />
               ) : (
-                <div className="text-right">
-                  <span className="text-2xl font-light text-gray-900">
-                    {overview?.ttfb.value || 0}
-                  </span>
-                  <span className="text-sm text-gray-500 ml-1">ms</span>
-                </div>
+                <span className={`text-sm font-bold ${scoreColor}`}>{score}</span>
               )}
             </div>
+            <div>
+              <span className="text-[10px] text-gray-400 uppercase block">Score</span>
+              <span className="text-[10px] text-gray-500">
+                {score >= 80 ? 'Good' : score >= 50 ? 'Needs Work' : 'Poor'}
+              </span>
+            </div>
           </div>
+
+          <div className="w-px h-8 bg-gray-100" />
+
+          {/* LCP */}
+          <div className="flex items-center gap-2">
+            <RatingDot rating={overview?.lcp.rating || 'good'} />
+            <div>
+              <span className="text-[10px] text-gray-400 uppercase block">LCP</span>
+              <MetricValue
+                value={overview?.lcp.value || 0}
+                unit="ms"
+                rating={overview?.lcp.rating}
+                isLoading={isLoading}
+              />
+            </div>
+          </div>
+
+          <div className="w-px h-8 bg-gray-100" />
+
+          {/* FID */}
+          <div className="flex items-center gap-2">
+            <RatingDot rating={overview?.fid.rating || 'good'} />
+            <div>
+              <span className="text-[10px] text-gray-400 uppercase block">FID</span>
+              <MetricValue
+                value={overview?.fid.value || 0}
+                unit="ms"
+                rating={overview?.fid.rating}
+                isLoading={isLoading}
+              />
+            </div>
+          </div>
+
+          <div className="w-px h-8 bg-gray-100" />
+
+          {/* CLS */}
+          <div className="flex items-center gap-2">
+            <RatingDot rating={overview?.cls.rating || 'good'} />
+            <div>
+              <span className="text-[10px] text-gray-400 uppercase block">CLS</span>
+              <MetricValue
+                value={overview?.cls.value || 0}
+                unit=""
+                rating={overview?.cls.rating}
+                isLoading={isLoading}
+              />
+            </div>
+          </div>
+
+          <div className="w-px h-8 bg-gray-100" />
+
+          {/* TTFB */}
+          <div className="flex items-center gap-2">
+            <RatingDot rating={getTtfbRating(overview?.ttfb.value || 0)} />
+            <div>
+              <span className="text-[10px] text-gray-400 uppercase block">TTFB</span>
+              <MetricValue
+                value={overview?.ttfb.value || 0}
+                unit="ms"
+                rating={getTtfbRating(overview?.ttfb.value || 0)}
+                isLoading={isLoading}
+              />
+            </div>
+          </div>
+
+          {overview?.inp && (
+            <>
+              <div className="w-px h-8 bg-gray-100" />
+              {/* INP */}
+              <div className="flex items-center gap-2">
+                <RatingDot rating={overview.inp.rating} />
+                <div>
+                  <span className="text-[10px] text-gray-400 uppercase block">INP</span>
+                  <MetricValue
+                    value={overview.inp.value}
+                    unit="ms"
+                    rating={overview.inp.rating}
+                    isLoading={isLoading}
+                  />
+                </div>
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* Targets Row */}
+        <div className="px-4 py-2 bg-gray-50/50 border-t border-gray-100 flex items-center gap-6 text-[10px] text-gray-400">
+          <span className="font-medium text-gray-500">Targets:</span>
+          <span>LCP &lt; 2.5s</span>
+          <span>FID &lt; 100ms</span>
+          <span>CLS &lt; 0.1</span>
+          <span>TTFB &lt; 800ms</span>
         </div>
       </div>
 
-      {/* Performance by Page */}
-      <div>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-sm font-medium text-gray-900">Performance by Page</h2>
-          {pages.length > 0 && (
-            <div className="flex items-center gap-4 text-[10px] text-gray-500">
-              <div className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                <span>Good</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-amber-500" />
-                <span>Needs Work</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-rose-500" />
-                <span>Poor</span>
-              </div>
+      {/* Performance by Page - Compact Table */}
+      <div className="bg-white rounded-lg border border-gray-100 overflow-hidden">
+        <div className="px-4 py-2.5 border-b border-gray-100 flex items-center justify-between">
+          <span className="text-xs font-medium text-gray-700">Performance by Page</span>
+          <div className="flex items-center gap-3 text-[10px] text-gray-400">
+            <div className="flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+              <span>Good</span>
             </div>
-          )}
+            <div className="flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+              <span>Needs Work</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+              <span>Poor</span>
+            </div>
+          </div>
         </div>
 
         {isLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[...Array(6)].map((_, i) => (
-              <div key={i} className="bg-white rounded-xl border border-gray-100 p-5">
-                <div className="flex items-start justify-between mb-5">
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-gray-100 rounded-lg animate-pulse" />
-                    <div>
-                      <div className="h-4 w-24 bg-gray-100 rounded animate-pulse" />
-                      <div className="h-3 w-16 bg-gray-50 rounded animate-pulse mt-1" />
-                    </div>
-                  </div>
-                  <div className="w-14 h-14 bg-gray-100 rounded-full animate-pulse" />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  {[...Array(4)].map((_, j) => (
-                    <div key={j}>
-                      <div className="h-3 w-8 bg-gray-100 rounded animate-pulse mb-2" />
-                      <div className="h-2 bg-gray-100 rounded-full animate-pulse" />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
+          <div className="p-8 text-center">
+            <div className="inline-flex items-center gap-2 text-xs text-gray-500">
+              <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                />
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                />
+              </svg>
+              Loading...
+            </div>
           </div>
         ) : pages.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {pages.map((page, i) => {
-              const maxLcp = Math.max(...pages.map((p) => p.lcp), 4000);
-              const maxTtfb = Math.max(...pages.map((p) => p.ttfb), 1800);
-              return (
-                <PagePerformanceCard
-                  key={i}
-                  page={page}
-                  maxLcp={maxLcp}
-                  maxTtfb={maxTtfb}
-                  index={i}
-                />
-              );
-            })}
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="bg-gray-50/50 border-b border-gray-100">
+                  <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">
+                    Page
+                  </th>
+                  <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">
+                    LCP
+                  </th>
+                  <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">
+                    FID
+                  </th>
+                  <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">
+                    CLS
+                  </th>
+                  <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">
+                    TTFB
+                  </th>
+                  <th className="px-3 py-2 text-right text-[10px] font-medium text-gray-500 uppercase tracking-wider">
+                    Samples
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {pages.map((page, i) => {
+                  const lcpRating = getLcpRating(page.lcp);
+                  const fidRating = getFidRating(page.fid);
+                  const clsRating = getClsRating(page.cls);
+                  const ttfbRating = getTtfbRating(page.ttfb);
+                  const maxLcp = Math.max(...pages.map((p) => p.lcp), 4000);
+                  const maxTtfb = Math.max(...pages.map((p) => p.ttfb), 1800);
+
+                  return (
+                    <tr key={i} className="hover:bg-gray-50/50 transition-colors">
+                      <td className="px-3 py-2">
+                        <span
+                          className="inline-flex px-1.5 py-0.5 text-[10px] font-mono text-gray-600 bg-gray-100 rounded truncate max-w-[200px]"
+                          title={page.path}
+                        >
+                          {page.path}
+                        </span>
+                      </td>
+                      <td className="px-3 py-2">
+                        <div className="flex items-center gap-2">
+                          <RatingDot rating={lcpRating} />
+                          <span className="text-[10px] font-medium text-gray-700">
+                            {page.lcp.toLocaleString()}ms
+                          </span>
+                          <CompactMetricBar value={page.lcp} max={maxLcp} rating={lcpRating} />
+                        </div>
+                      </td>
+                      <td className="px-3 py-2">
+                        <div className="flex items-center gap-2">
+                          <RatingDot rating={fidRating} />
+                          <span className="text-[10px] font-medium text-gray-700">
+                            {page.fid.toLocaleString()}ms
+                          </span>
+                          <CompactMetricBar value={page.fid} max={300} rating={fidRating} />
+                        </div>
+                      </td>
+                      <td className="px-3 py-2">
+                        <div className="flex items-center gap-2">
+                          <RatingDot rating={clsRating} />
+                          <span className="text-[10px] font-medium text-gray-700">
+                            {page.cls.toFixed(3)}
+                          </span>
+                          <CompactMetricBar value={page.cls} max={0.25} rating={clsRating} />
+                        </div>
+                      </td>
+                      <td className="px-3 py-2">
+                        <div className="flex items-center gap-2">
+                          <RatingDot rating={ttfbRating} />
+                          <span className="text-[10px] font-medium text-gray-700">
+                            {page.ttfb.toLocaleString()}ms
+                          </span>
+                          <CompactMetricBar value={page.ttfb} max={maxTtfb} rating={ttfbRating} />
+                        </div>
+                      </td>
+                      <td className="px-3 py-2 text-right">
+                        <span className="inline-flex px-1.5 py-0.5 text-[10px] text-gray-500 bg-gray-50 rounded">
+                          {page.samples}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
         ) : (
-          <div className="bg-white rounded-xl border border-gray-100 py-16 text-center">
-            <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl flex items-center justify-center">
+          <div className="py-12 text-center">
+            <div className="w-10 h-10 mx-auto mb-3 bg-gray-100 rounded-lg flex items-center justify-center">
               <svg
-                className="w-8 h-8 text-gray-400"
+                className="w-5 h-5 text-gray-400"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -507,54 +467,33 @@ export function SpeedInsightsPage() {
                 />
               </svg>
             </div>
-            <p className="text-sm font-medium text-gray-900 mb-1">
-              No performance data collected yet
-            </p>
-            <p className="text-xs text-gray-500 max-w-xs mx-auto">
-              Performance metrics are collected automatically from visitors browsing your site.
-            </p>
+            <p className="text-xs font-medium text-gray-700 mb-0.5">No data yet</p>
+            <p className="text-[10px] text-gray-400">Metrics are collected from site visitors</p>
           </div>
         )}
       </div>
 
-      {/* Info Card */}
-      <div className="bg-blue-50 rounded-xl border border-blue-100 p-5">
-        <div className="flex items-start gap-3">
-          <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-            <svg
-              className="w-4 h-4 text-blue-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"
-              />
-            </svg>
-          </div>
-          <div>
-            <h3 className="text-sm font-medium text-blue-900">About Core Web Vitals</h3>
-            <p className="text-xs text-blue-700 mt-1 leading-relaxed">
-              Core Web Vitals are a set of metrics that measure real-world user experience for
-              loading performance, interactivity, and visual stability. These metrics are collected
-              from actual visitors to your site.
-            </p>
-            <div className="mt-3 flex flex-wrap gap-4 text-xs text-blue-700">
-              <div>
-                <span className="font-medium">LCP:</span> Loading performance
-              </div>
-              <div>
-                <span className="font-medium">FID:</span> Interactivity
-              </div>
-              <div>
-                <span className="font-medium">CLS:</span> Visual stability
-              </div>
-            </div>
-          </div>
-        </div>
+      {/* Compact Info */}
+      <div className="px-4 py-2.5 bg-gray-50 rounded-lg border border-gray-100 flex items-center gap-4 text-[10px] text-gray-500">
+        <svg
+          className="w-3.5 h-3.5 text-gray-400 flex-shrink-0"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          strokeWidth={1.5}
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z"
+          />
+        </svg>
+        <span>
+          <span className="font-medium text-gray-600">LCP</span> = Loading ·
+          <span className="font-medium text-gray-600 ml-1">FID</span> = Interactivity ·
+          <span className="font-medium text-gray-600 ml-1">CLS</span> = Visual Stability ·
+          <span className="font-medium text-gray-600 ml-1">TTFB</span> = Server Response
+        </span>
       </div>
     </div>
   );

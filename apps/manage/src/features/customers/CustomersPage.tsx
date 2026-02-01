@@ -187,19 +187,22 @@ export function CustomersPage() {
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-gray-100 bg-gray-50/50">
-                    <th className="px-4 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">
                       Customer
                     </th>
-                    <th className="px-4 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">
                       Email
                     </th>
-                    <th className="px-4 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">
+                      Phone
+                    </th>
+                    <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">
                       Joined
                     </th>
-                    <th className="px-4 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">
                       Status
                     </th>
-                    <th className="px-4 py-2 text-right text-[10px] font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-3 py-2 text-right text-[10px] font-medium text-gray-500 uppercase tracking-wider">
                       Action
                     </th>
                   </tr>
@@ -207,26 +210,108 @@ export function CustomersPage() {
                 <tbody className="divide-y divide-gray-50">
                   {customers.map((customer) => (
                     <tr key={customer.id} className="hover:bg-gray-50/50 transition-colors">
-                      <td className="px-4 py-2">
-                        <div className="flex items-center gap-2.5">
-                          <div className="w-7 h-7 bg-gray-100 rounded-full flex items-center justify-center shrink-0">
-                            <span className="text-[10px] font-medium text-gray-600">
+                      <td className="px-3 py-2">
+                        <div className="flex items-center gap-2">
+                          <div className="w-6 h-6 bg-gray-200 rounded-full flex items-center justify-center shrink-0">
+                            <span className="text-[9px] font-medium text-gray-600">
                               {customer.name.charAt(0).toUpperCase()}
                             </span>
                           </div>
                           <Link
                             to={`/customers/${customer.id}`}
-                            className="text-xs text-gray-700 hover:text-gray-900 transition-colors truncate"
+                            className="text-xs font-medium text-gray-700 hover:text-gray-900 transition-colors truncate"
                           >
                             {customer.name}
                           </Link>
                         </div>
                       </td>
-                      <td className="px-4 py-2">
-                        <span className="text-xs text-gray-500">{customer.email}</span>
+                      <td className="px-3 py-2">
+                        <div className="flex items-center gap-1">
+                          <span
+                            className="inline-flex px-1.5 py-0.5 text-[10px] font-mono text-gray-600 bg-gray-100 rounded truncate max-w-[140px]"
+                            title={customer.email}
+                          >
+                            {customer.email}
+                          </span>
+                          <button
+                            onClick={() => {
+                              navigator.clipboard.writeText(customer.email);
+                              addToast('Email copied', 'success');
+                            }}
+                            className="p-0.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors"
+                            title="Copy email"
+                          >
+                            <svg
+                              className="w-3 h-3"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                              strokeWidth={2}
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M15.666 3.888A2.25 2.25 0 0013.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 01-.75.75H9a.75.75 0 01-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 01-2.25 2.25H6.75A2.25 2.25 0 014.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 011.927-.184"
+                              />
+                            </svg>
+                          </button>
+                        </div>
                       </td>
-                      <td className="px-4 py-2">
-                        <span className="text-xs text-gray-500">
+                      <td className="px-3 py-2">
+                        <div className="flex items-center gap-1">
+                          {customer.phone ? (
+                            <>
+                              <a
+                                href={`tel:${customer.phone}`}
+                                className="inline-flex px-1.5 py-0.5 text-[10px] font-mono text-gray-600 bg-gray-100 rounded hover:bg-gray-200 transition-colors"
+                              >
+                                {customer.phone}
+                              </a>
+                              <button
+                                onClick={() => {
+                                  navigator.clipboard.writeText(customer.phone);
+                                  addToast('Phone copied', 'success');
+                                }}
+                                className="p-0.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors"
+                                title="Copy phone"
+                              >
+                                <svg
+                                  className="w-3 h-3"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                  strokeWidth={2}
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    d="M15.666 3.888A2.25 2.25 0 0013.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 01-.75.75H9a.75.75 0 01-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 01-2.25 2.25H6.75A2.25 2.25 0 014.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 011.927-.184"
+                                  />
+                                </svg>
+                              </button>
+                            </>
+                          ) : (
+                            <span className="inline-flex px-1.5 py-0.5 text-[10px] text-gray-400 bg-gray-50 rounded">
+                              -
+                            </span>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-3 py-2">
+                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] text-gray-600 bg-gray-100 rounded">
+                          <svg
+                            className="w-2.5 h-2.5 text-gray-400"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            strokeWidth={2}
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"
+                            />
+                          </svg>
                           {new Date(customer.createdAt).toLocaleDateString('en-US', {
                             month: 'short',
                             day: 'numeric',
@@ -234,18 +319,18 @@ export function CustomersPage() {
                           })}
                         </span>
                       </td>
-                      <td className="px-4 py-2">
+                      <td className="px-3 py-2">
                         <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium text-emerald-700 bg-emerald-50 rounded">
                           <span className="w-1 h-1 rounded-full bg-emerald-500" />
                           Active
                         </span>
                       </td>
-                      <td className="px-4 py-2">
+                      <td className="px-3 py-2">
                         <div className="flex items-center justify-end gap-0.5">
                           <Link
                             to={`/customers/${customer.id}`}
                             className="p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors"
-                            title="Edit"
+                            title="View"
                           >
                             <svg
                               className="w-3.5 h-3.5"
@@ -257,7 +342,7 @@ export function CustomersPage() {
                               <path
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
-                                d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
+                                d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"
                               />
                             </svg>
                           </Link>

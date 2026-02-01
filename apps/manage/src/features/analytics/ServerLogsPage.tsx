@@ -871,16 +871,14 @@ export function ServerLogsPage() {
         </div>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-white rounded-xl border border-gray-100 p-4 hover:shadow-md hover:border-gray-200 transition-all duration-200">
-          <div className="flex items-center justify-between">
-            <p className="text-xs text-gray-500 uppercase tracking-wider font-medium">
-              Total Requests
-            </p>
-            <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
+      {/* Compact Stats Bar */}
+      <div className="bg-white rounded-lg border border-gray-100 px-4 py-2.5">
+        <div className="flex items-center gap-6 flex-wrap">
+          {/* Total Requests */}
+          <div className="flex items-center gap-2">
+            <div className="w-5 h-5 bg-gray-100 rounded flex items-center justify-center">
               <svg
-                className="w-4 h-4 text-blue-600"
+                className="w-3 h-3 text-gray-500"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -893,21 +891,27 @@ export function ServerLogsPage() {
                 />
               </svg>
             </div>
+            <div className="flex items-baseline gap-1.5">
+              {isInitialLoad ? (
+                <div className="h-4 w-12 bg-gray-100 rounded animate-pulse" />
+              ) : (
+                <span className="text-sm font-semibold text-gray-900">
+                  {stats?.totalRequests.toLocaleString() || 0}
+                </span>
+              )}
+              <span className="text-[10px] text-gray-400 uppercase">requests</span>
+            </div>
           </div>
-          {isInitialLoad ? (
-            <div className="h-8 w-24 bg-gray-100 rounded animate-pulse mt-3" />
-          ) : (
-            <p className="text-2xl font-semibold text-gray-900 mt-3 transition-all duration-300">
-              {stats?.totalRequests.toLocaleString() || 0}
-            </p>
-          )}
-        </div>
-        <div className="bg-white rounded-xl border border-gray-100 p-4 hover:shadow-md hover:border-gray-200 transition-all duration-200">
-          <div className="flex items-center justify-between">
-            <p className="text-xs text-gray-500 uppercase tracking-wider font-medium">Errors</p>
-            <div className="w-8 h-8 bg-rose-50 rounded-lg flex items-center justify-center">
+
+          <div className="w-px h-4 bg-gray-200" />
+
+          {/* Errors */}
+          <div className="flex items-center gap-2">
+            <div
+              className={`w-5 h-5 rounded flex items-center justify-center ${(stats?.errorCount || 0) > 0 ? 'bg-rose-50' : 'bg-gray-100'}`}
+            >
               <svg
-                className="w-4 h-4 text-rose-600"
+                className={`w-3 h-3 ${(stats?.errorCount || 0) > 0 ? 'text-rose-500' : 'text-gray-400'}`}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -920,23 +924,29 @@ export function ServerLogsPage() {
                 />
               </svg>
             </div>
+            <div className="flex items-baseline gap-1.5">
+              {isInitialLoad ? (
+                <div className="h-4 w-6 bg-gray-100 rounded animate-pulse" />
+              ) : (
+                <span
+                  className={`text-sm font-semibold ${(stats?.errorCount || 0) > 0 ? 'text-rose-600' : 'text-gray-900'}`}
+                >
+                  {stats?.errorCount || 0}
+                </span>
+              )}
+              <span className="text-[10px] text-gray-400 uppercase">errors</span>
+            </div>
           </div>
-          {isInitialLoad ? (
-            <div className="h-8 w-16 bg-gray-100 rounded animate-pulse mt-3" />
-          ) : (
-            <p
-              className={`text-2xl font-semibold mt-3 transition-all duration-300 ${(stats?.errorCount || 0) > 0 ? 'text-rose-600' : 'text-gray-900'}`}
+
+          <div className="w-px h-4 bg-gray-200" />
+
+          {/* Warnings */}
+          <div className="flex items-center gap-2">
+            <div
+              className={`w-5 h-5 rounded flex items-center justify-center ${(stats?.warnCount || 0) > 0 ? 'bg-amber-50' : 'bg-gray-100'}`}
             >
-              {stats?.errorCount || 0}
-            </p>
-          )}
-        </div>
-        <div className="bg-white rounded-xl border border-gray-100 p-4 hover:shadow-md hover:border-gray-200 transition-all duration-200">
-          <div className="flex items-center justify-between">
-            <p className="text-xs text-gray-500 uppercase tracking-wider font-medium">Warnings</p>
-            <div className="w-8 h-8 bg-amber-50 rounded-lg flex items-center justify-center">
               <svg
-                className="w-4 h-4 text-amber-600"
+                className={`w-3 h-3 ${(stats?.warnCount || 0) > 0 ? 'text-amber-500' : 'text-gray-400'}`}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -949,25 +959,27 @@ export function ServerLogsPage() {
                 />
               </svg>
             </div>
+            <div className="flex items-baseline gap-1.5">
+              {isInitialLoad ? (
+                <div className="h-4 w-6 bg-gray-100 rounded animate-pulse" />
+              ) : (
+                <span
+                  className={`text-sm font-semibold ${(stats?.warnCount || 0) > 0 ? 'text-amber-600' : 'text-gray-900'}`}
+                >
+                  {stats?.warnCount || 0}
+                </span>
+              )}
+              <span className="text-[10px] text-gray-400 uppercase">warnings</span>
+            </div>
           </div>
-          {isInitialLoad ? (
-            <div className="h-8 w-16 bg-gray-100 rounded animate-pulse mt-3" />
-          ) : (
-            <p
-              className={`text-2xl font-semibold mt-3 transition-all duration-300 ${(stats?.warnCount || 0) > 0 ? 'text-amber-600' : 'text-gray-900'}`}
-            >
-              {stats?.warnCount || 0}
-            </p>
-          )}
-        </div>
-        <div className="bg-white rounded-xl border border-gray-100 p-4 hover:shadow-md hover:border-gray-200 transition-all duration-200">
-          <div className="flex items-center justify-between">
-            <p className="text-xs text-gray-500 uppercase tracking-wider font-medium">
-              Avg Response
-            </p>
-            <div className="w-8 h-8 bg-emerald-50 rounded-lg flex items-center justify-center">
+
+          <div className="w-px h-4 bg-gray-200" />
+
+          {/* Avg Response */}
+          <div className="flex items-center gap-2">
+            <div className="w-5 h-5 bg-gray-100 rounded flex items-center justify-center">
               <svg
-                className="w-4 h-4 text-emerald-600"
+                className="w-3 h-3 text-gray-500"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -980,15 +992,20 @@ export function ServerLogsPage() {
                 />
               </svg>
             </div>
+            <div className="flex items-baseline gap-1.5">
+              {isInitialLoad ? (
+                <div className="h-4 w-10 bg-gray-100 rounded animate-pulse" />
+              ) : (
+                <>
+                  <span className="text-sm font-semibold text-gray-900">
+                    {stats?.avgResponseTime || 0}
+                  </span>
+                  <span className="text-[10px] text-gray-400">ms</span>
+                </>
+              )}
+              <span className="text-[10px] text-gray-400 uppercase">avg</span>
+            </div>
           </div>
-          {isInitialLoad ? (
-            <div className="h-8 w-20 bg-gray-100 rounded animate-pulse mt-3" />
-          ) : (
-            <p className="text-2xl font-semibold text-gray-900 mt-3 transition-all duration-300">
-              {stats?.avgResponseTime || 0}
-              <span className="text-sm font-normal text-gray-500 ml-1">ms</span>
-            </p>
-          )}
         </div>
       </div>
 

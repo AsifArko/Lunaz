@@ -6,16 +6,13 @@ export interface PriceProps {
   className?: string;
 }
 
-const defaultCurrency = 'BDT';
-
-export function Price({ amount, currency = defaultCurrency, className = '' }: PriceProps) {
+export function Price({ amount, currency: _currency, className = '' }: PriceProps) {
+  // Always display in Bangladeshi Taka with ৳ symbol
   const formatted = new Intl.NumberFormat('en-IN', {
-    style: 'currency',
-    currency,
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   }).format(amount);
-  return <span className={className}>{formatted}</span>;
+  return <span className={className}>৳{formatted}</span>;
 }
 
 /** Resolve price for a product (base or variant override). */

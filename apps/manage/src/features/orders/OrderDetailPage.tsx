@@ -1053,14 +1053,16 @@ export function OrderDetailPage() {
             }
           >
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
-                <span className="text-sm font-medium text-gray-600">
-                  {order.shippingAddress.line1.charAt(0).toUpperCase()}
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center">
+                <span className="text-sm font-medium text-white">
+                  {(order.customerName || order.shippingAddress.name || 'C')
+                    .charAt(0)
+                    .toUpperCase()}
                 </span>
               </div>
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-medium text-gray-900 truncate">
-                  {order.shippingAddress.line1}
+                  {order.customerName || order.shippingAddress.name || 'Customer'}
                 </p>
                 <p className="text-xs text-gray-500">
                   {order.shippingAddress.city}, {order.shippingAddress.country}

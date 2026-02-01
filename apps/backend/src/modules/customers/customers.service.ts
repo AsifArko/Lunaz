@@ -19,6 +19,7 @@ function toCustomer(doc: Record<string, unknown>) {
     id: (doc._id as mongoose.Types.ObjectId).toString(),
     email: doc.email as string,
     name: doc.name as string,
+    phone: (doc.phone as string) || '',
     role: doc.role as string,
     emailVerified: doc.emailVerified as boolean,
     addresses: ((doc.addresses as unknown[]) ?? []).map((a) => {
