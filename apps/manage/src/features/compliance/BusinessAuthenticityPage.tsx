@@ -55,6 +55,8 @@ export function BusinessAuthenticityPage() {
 
   useEffect(() => {
     fetchAuthenticity();
+    // fetchAuthenticity depends on token which is stable from useAuth
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function fetchAuthenticity() {
@@ -69,6 +71,7 @@ export function BusinessAuthenticityPage() {
         }
       }
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Failed to fetch authenticity:', error);
     } finally {
       setLoading(false);

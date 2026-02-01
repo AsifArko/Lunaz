@@ -707,6 +707,8 @@ export function ServerLogsPage() {
       active.push({ key: 'search', label: `Search: "${filters.search}"` });
     }
     return active;
+    // levelOptions and statusOptions are stable constants defined outside the component
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters]);
 
   const clearAllFilters = () => {
@@ -772,12 +774,15 @@ export function ServerLogsPage() {
         setStats(statsRes);
         hasLoadedRef.current = true;
       } catch (err) {
+        // eslint-disable-next-line no-console
         console.error('Failed to fetch logs:', err);
       } finally {
         setIsInitialLoad(false);
         setIsRefreshing(false);
       }
     },
+    // timeRanges is a stable constant defined outside the component
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [token, filters]
   );
 

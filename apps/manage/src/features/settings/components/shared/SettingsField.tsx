@@ -7,14 +7,7 @@ interface SettingsFieldProps {
   required?: boolean;
   children: ReactNode;
   horizontal?: boolean;
-  labelWidth?: 'sm' | 'md' | 'lg';
 }
-
-const labelWidthClasses = {
-  sm: 'w-1/4',
-  md: 'w-1/3',
-  lg: 'w-1/2',
-};
 
 export function SettingsField({
   label,
@@ -23,7 +16,6 @@ export function SettingsField({
   required = false,
   children,
   horizontal = true,
-  labelWidth = 'md',
 }: SettingsFieldProps) {
   if (horizontal) {
     return (

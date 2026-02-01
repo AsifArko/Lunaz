@@ -201,6 +201,7 @@ router.delete(
             await deleteFromS3(key);
           } catch {
             // Log but don't fail on S3 errors
+            // eslint-disable-next-line no-console
             console.error(`Failed to delete image from S3: ${key}`);
           }
         }
@@ -328,6 +329,7 @@ router.delete(
         try {
           await deleteFromS3(key);
         } catch {
+          // eslint-disable-next-line no-console
           console.error(`Failed to delete image from S3: ${key}`);
         }
       }

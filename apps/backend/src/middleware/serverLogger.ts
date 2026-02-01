@@ -196,9 +196,11 @@ export function serverLoggerMiddleware() {
 
         // Save to database asynchronously (don't block response)
         ServerLogModel.create(logEntry).catch((err) => {
+          // eslint-disable-next-line no-console
           console.error('Failed to save server log:', err.message);
         });
       } catch (err) {
+        // eslint-disable-next-line no-console
         console.error('Server logger error:', err);
       }
     });

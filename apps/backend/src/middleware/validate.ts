@@ -6,7 +6,8 @@ export function validateBody(schema: z.ZodTypeAny) {
     // Check if schema wraps body in { body: ... } structure
     // This is determined by checking if the schema's shape has a 'body' key
     // and that 'body' is itself a Zod schema (has safeParse method)
-    const schemaShape = (schema as z.ZodObject<any>).shape;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const schemaShape = (schema as z.ZodObject<z.ZodRawShape>).shape as Record<string, any>;
     const isWrappedSchema =
       schemaShape && 'body' in schemaShape && typeof schemaShape.body?.safeParse === 'function';
 

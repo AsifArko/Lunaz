@@ -161,6 +161,8 @@ export function LegalDocumentsPage() {
 
   useEffect(() => {
     fetchDocuments();
+    // fetchDocuments depends on token which is stable from useAuth
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter]);
 
   async function fetchDocuments() {
@@ -178,6 +180,7 @@ export function LegalDocumentsPage() {
         setDocuments(json.data);
       }
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Failed to fetch documents:', error);
     } finally {
       setLoading(false);

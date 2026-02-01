@@ -658,6 +658,8 @@ export function ReportsPage() {
       }
     }
     fetchData();
+    // addToast is stable from context, averageOrderValue is used only for predictions
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token, period]);
 
   const growthRate = useMemo(() => {

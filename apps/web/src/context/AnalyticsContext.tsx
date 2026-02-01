@@ -197,6 +197,7 @@ export function AnalyticsProvider({ children }: { children: ReactNode }) {
       });
     } catch (err) {
       // Silently fail - don't break user experience
+      // eslint-disable-next-line no-console
       console.warn('Analytics collection failed:', err);
     }
   }, [token]);

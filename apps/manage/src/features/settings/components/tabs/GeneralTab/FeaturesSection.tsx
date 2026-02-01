@@ -1,5 +1,4 @@
 import { SettingsSection } from '../../shared/SettingsSection';
-import { SettingsCard } from '../../shared/SettingsCard';
 import { Toggle } from '../../form/Toggle';
 import type { StoreSettings } from '../../../types';
 
