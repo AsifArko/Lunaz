@@ -17,6 +17,7 @@ import { dashboardRoutes } from './modules/dashboard/dashboard.routes.js';
 import { settingsRoutes } from './modules/settings/settings.routes.js';
 import { analyticsRoutes } from './modules/analytics/analytics.routes.js';
 import { paymentsRoutes } from './modules/payments/payments.routes.js';
+import { complianceRoutes } from './modules/compliance/index.js';
 
 export function createApp() {
   const config = getConfig();
@@ -62,6 +63,9 @@ export function createApp() {
 
   // Analytics
   api.use('/analytics', analyticsRoutes);
+
+  // Compliance
+  api.use('/compliance', complianceRoutes);
 
   app.use('/api/v1', api);
 

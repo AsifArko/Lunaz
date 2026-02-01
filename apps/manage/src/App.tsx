@@ -18,6 +18,13 @@ import { AnalyticsPage } from './features/analytics/AnalyticsPage';
 import { SpeedInsightsPage } from './features/analytics/SpeedInsightsPage';
 import { ServerLogsPage } from './features/analytics/ServerLogsPage';
 import { TrafficLogsPage } from './features/analytics/TrafficLogsPage';
+import {
+  ComplianceDashboard,
+  IncomeTaxPage,
+  BusinessAuthenticityPage,
+  CertificatesPage,
+  LegalDocumentsPage,
+} from './features/compliance';
 
 function App() {
   return (
@@ -50,6 +57,11 @@ function App() {
         <Route path="traffic-logs" element={<TrafficLogsPage />} />
         <Route path="server-logs" element={<ServerLogsPage />} />
         <Route path="settings" element={<SettingsPage />} />
+        <Route path="compliance/dashboard" element={<ComplianceDashboard />} />
+        <Route path="compliance/income-tax" element={<IncomeTaxPage />} />
+        <Route path="compliance/authenticity" element={<BusinessAuthenticityPage />} />
+        <Route path="compliance/certificates" element={<CertificatesPage />} />
+        <Route path="compliance/documents" element={<LegalDocumentsPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
