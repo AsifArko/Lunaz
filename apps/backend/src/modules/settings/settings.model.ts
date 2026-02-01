@@ -11,18 +11,18 @@ const settingsSchema = new mongoose.Schema(
     storeEmail: { type: String, default: '' },
     supportEmail: { type: String, default: '' },
     currency: { type: String, default: 'BDT' },
-    
+
     // Shipping settings
     freeShippingThreshold: { type: Number, default: 0 },
     flatShippingRate: { type: Number, default: 0 },
-    
+
     // Tax settings
     taxRate: { type: Number, default: 0 }, // Percentage (e.g., 8.5 for 8.5%)
     taxIncludedInPrices: { type: Boolean, default: false },
-    
+
     // Order settings
     orderPrefix: { type: String, default: 'LN' },
-    
+
     // Features toggles
     allowGuestCheckout: { type: Boolean, default: true },
     requireEmailVerification: { type: Boolean, default: false },

@@ -37,32 +37,40 @@ const pageDataSchema = z.object({
   hash: z.string().optional(),
 });
 
-const referrerSchema = z.object({
-  url: z.string().optional(),
-}).optional();
+const referrerSchema = z
+  .object({
+    url: z.string().optional(),
+  })
+  .optional();
 
-const utmSchema = z.object({
-  source: z.string().optional(),
-  medium: z.string().optional(),
-  campaign: z.string().optional(),
-  term: z.string().optional(),
-  content: z.string().optional(),
-}).optional();
+const utmSchema = z
+  .object({
+    source: z.string().optional(),
+    medium: z.string().optional(),
+    campaign: z.string().optional(),
+    term: z.string().optional(),
+    content: z.string().optional(),
+  })
+  .optional();
 
-const customEventSchema = z.object({
-  name: z.string().min(1).max(100),
-  properties: z.record(z.unknown()).optional(),
-}).optional();
+const customEventSchema = z
+  .object({
+    name: z.string().min(1).max(100),
+    properties: z.record(z.unknown()).optional(),
+  })
+  .optional();
 
-const deviceSchema = z.object({
-  type: z.enum(deviceTypes).optional(),
-  screenWidth: z.number().optional(),
-  screenHeight: z.number().optional(),
-  viewportWidth: z.number().optional(),
-  viewportHeight: z.number().optional(),
-  touchEnabled: z.boolean().optional(),
-  language: z.string().optional(),
-}).optional();
+const deviceSchema = z
+  .object({
+    type: z.enum(deviceTypes).optional(),
+    screenWidth: z.number().optional(),
+    screenHeight: z.number().optional(),
+    viewportWidth: z.number().optional(),
+    viewportHeight: z.number().optional(),
+    touchEnabled: z.boolean().optional(),
+    language: z.string().optional(),
+  })
+  .optional();
 
 const eventSchema = z.object({
   type: z.enum(analyticsEventTypes),
@@ -98,12 +106,14 @@ export const collectPerformanceSchema = z.object({
     cachedResources: z.number().optional(),
     customMarks: z.record(z.number()).optional(),
   }),
-  connection: z.object({
-    effectiveType: z.string().optional(),
-    downlink: z.number().optional(),
-    rtt: z.number().optional(),
-    saveData: z.boolean().optional(),
-  }).optional(),
+  connection: z
+    .object({
+      effectiveType: z.string().optional(),
+      downlink: z.number().optional(),
+      rtt: z.number().optional(),
+      saveData: z.boolean().optional(),
+    })
+    .optional(),
   device: deviceSchema,
 });
 

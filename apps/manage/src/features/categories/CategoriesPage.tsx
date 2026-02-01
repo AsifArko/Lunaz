@@ -73,12 +73,20 @@ function FilterDropdown({
               setIsOpen(false);
             }}
             className={`w-full px-3 py-2 text-left text-xs transition-colors flex items-center justify-between ${
-              !value ? 'text-gray-900 bg-gray-50' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700'
+              !value
+                ? 'text-gray-900 bg-gray-50'
+                : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700'
             }`}
           >
             <span>{placeholder}</span>
             {!value && (
-              <svg className="w-3 h-3 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+              <svg
+                className="w-3 h-3 text-gray-900"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                strokeWidth={2}
+              >
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
               </svg>
             )}
@@ -99,7 +107,13 @@ function FilterDropdown({
             >
               <span>{option.label}</span>
               {value === option.value && (
-                <svg className="w-3 h-3 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                <svg
+                  className="w-3 h-3 text-gray-900"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  strokeWidth={2}
+                >
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                 </svg>
               )}
@@ -128,7 +142,9 @@ export function CategoriesPage() {
     async function fetchCategories() {
       if (!token) return;
       try {
-        const res = await api<{ data: CategoryWithCounts[] }>('/categories?withCounts=true', { token });
+        const res = await api<{ data: CategoryWithCounts[] }>('/categories?withCounts=true', {
+          token,
+        });
         setCategories(res.data);
       } catch {
         addToast('Failed to load categories', 'error');
@@ -183,7 +199,10 @@ export function CategoriesPage() {
     // Search filter
     if (search) {
       const searchLower = search.toLowerCase();
-      if (!cat.name.toLowerCase().includes(searchLower) && !cat.slug.toLowerCase().includes(searchLower)) {
+      if (
+        !cat.name.toLowerCase().includes(searchLower) &&
+        !cat.slug.toLowerCase().includes(searchLower)
+      ) {
         return false;
       }
     }
@@ -234,7 +253,13 @@ export function CategoriesPage() {
           to="/categories/new"
           className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white bg-gray-900 rounded-lg hover:bg-gray-800 transition-colors"
         >
-          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+          <svg
+            className="w-3.5 h-3.5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            strokeWidth={2}
+          >
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
           </svg>
           Add Category
@@ -305,7 +330,13 @@ export function CategoriesPage() {
             className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors"
             title="Clear filters"
           >
-            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+            <svg
+              className="w-3.5 h-3.5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+            >
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
@@ -323,7 +354,14 @@ export function CategoriesPage() {
           <div className="p-12 text-center">
             <div className="inline-flex items-center gap-2 text-sm text-gray-500">
               <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                />
                 <path
                   className="opacity-75"
                   fill="currentColor"
@@ -336,8 +374,18 @@ export function CategoriesPage() {
         ) : paginatedCategories.length === 0 ? (
           <div className="p-12 text-center">
             <div className="w-12 h-12 mx-auto mb-4 bg-gray-50 rounded-full flex items-center justify-center">
-              <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z" />
+              <svg
+                className="w-6 h-6 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z"
+                />
               </svg>
             </div>
             <p className="text-sm text-gray-500 mb-4">
@@ -376,7 +424,9 @@ export function CategoriesPage() {
                     <th className="px-4 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">
                       Slug
                     </th>
-                    <th className="px-4 py-2 text-right text-[10px] font-medium text-gray-500 uppercase tracking-wider">Action</th>
+                    <th className="px-4 py-2 text-right text-[10px] font-medium text-gray-500 uppercase tracking-wider">
+                      Action
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
@@ -390,10 +440,24 @@ export function CategoriesPage() {
                           <div className="flex items-center gap-2.5">
                             <div className="w-7 h-7 bg-gray-100 rounded overflow-hidden shrink-0 flex items-center justify-center opacity-80">
                               {category.imageUrl ? (
-                                <img src={category.imageUrl} alt="" className="w-full h-full object-cover" />
+                                <img
+                                  src={category.imageUrl}
+                                  alt=""
+                                  className="w-full h-full object-cover"
+                                />
                               ) : (
-                                <svg className="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                                  <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z" />
+                                <svg
+                                  className="w-3 h-3 text-gray-400"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                  strokeWidth={1.5}
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z"
+                                  />
                                 </svg>
                               )}
                             </div>
@@ -427,7 +491,9 @@ export function CategoriesPage() {
                         </td>
                         <td className="px-4 py-2 text-center">
                           {isParent ? (
-                            <span className={`text-xs ${category.childCount > 0 ? 'text-gray-600' : 'text-gray-400'}`}>
+                            <span
+                              className={`text-xs ${category.childCount > 0 ? 'text-gray-600' : 'text-gray-400'}`}
+                            >
                               {category.childCount}
                             </span>
                           ) : (
@@ -435,7 +501,9 @@ export function CategoriesPage() {
                           )}
                         </td>
                         <td className="px-4 py-2 text-center">
-                          <span className={`text-xs ${category.productCount > 0 ? 'text-gray-600' : 'text-gray-400'}`}>
+                          <span
+                            className={`text-xs ${category.productCount > 0 ? 'text-gray-600' : 'text-gray-400'}`}
+                          >
                             {category.productCount}
                           </span>
                         </td>
@@ -451,7 +519,13 @@ export function CategoriesPage() {
                               className="p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors"
                               title="Edit"
                             >
-                              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                              <svg
+                                className="w-3.5 h-3.5"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                                strokeWidth={1.5}
+                              >
                                 <path
                                   strokeLinecap="round"
                                   strokeLinejoin="round"
@@ -464,7 +538,13 @@ export function CategoriesPage() {
                               className="p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors"
                               title="Delete"
                             >
-                              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                              <svg
+                                className="w-3.5 h-3.5"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                                strokeWidth={1.5}
+                              >
                                 <path
                                   strokeLinecap="round"
                                   strokeLinejoin="round"
@@ -495,8 +575,18 @@ export function CategoriesPage() {
                     onClick={() => updateParams({ page: String(page - 1) })}
                     className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                   >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M15.75 19.5L8.25 12l7.5-7.5"
+                      />
                     </svg>
                   </button>
 
@@ -535,8 +625,18 @@ export function CategoriesPage() {
                     onClick={() => updateParams({ page: String(page + 1) })}
                     className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                   >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M8.25 4.5l7.5 7.5-7.5 7.5"
+                      />
                     </svg>
                   </button>
                 </div>

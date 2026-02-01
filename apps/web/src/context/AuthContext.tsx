@@ -55,14 +55,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setState({ user: res.user, token: res.token, isLoading: false });
   }, []);
 
-  const register = useCallback(async (data: RegisterRequest) => {
-    await api<{ message: string }>('/auth/register', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    });
-    // After successful registration, log the user in
-    await login({ email: data.email, password: data.password });
-  }, [login]);
+  const register = useCallback(
+    async (data: RegisterRequest) => {
+      await api<{ message: string }>('/auth/register', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      });
+      // After successful registration, log the user in
+      await login({ email: data.email, password: data.password });
+    },
+    [login]
+  );
 
   const logout = useCallback(() => {
     localStorage.removeItem(TOKEN_KEY);

@@ -10,29 +10,29 @@
 
 ### 2.1 Public
 
-| Route | Page | Description |
-|-------|------|-------------|
-| `/` | Home | Hero, featured categories, featured/latest products, promotions |
-| `/categories` | Category list | List all categories (grid or list) |
-| `/categories/:slug` | Category products | Products in category; sort and filter |
-| `/products` | Product listing | All products; search, sort, filter; pagination |
-| `/products/:slug` | Product detail | Gallery, title, description, **price**, **sizes/variants**, stock, **Add to cart** |
-| `/search` | Search results | Query param `q`; same listing behaviour as products |
-| `/cart` | Cart | Line items, quantities, variant, unit price, line total; update/remove; link to checkout |
-| `/login` | Login | Email + password; redirect after login (cart or account) |
-| `/register` | Register | Email, name, password; validation; redirect to login or home |
-| `/forgot-password` | Forgot password | Request reset link (if backend supports) |
+| Route               | Page              | Description                                                                              |
+| ------------------- | ----------------- | ---------------------------------------------------------------------------------------- |
+| `/`                 | Home              | Hero, featured categories, featured/latest products, promotions                          |
+| `/categories`       | Category list     | List all categories (grid or list)                                                       |
+| `/categories/:slug` | Category products | Products in category; sort and filter                                                    |
+| `/products`         | Product listing   | All products; search, sort, filter; pagination                                           |
+| `/products/:slug`   | Product detail    | Gallery, title, description, **price**, **sizes/variants**, stock, **Add to cart**       |
+| `/search`           | Search results    | Query param `q`; same listing behaviour as products                                      |
+| `/cart`             | Cart              | Line items, quantities, variant, unit price, line total; update/remove; link to checkout |
+| `/login`            | Login             | Email + password; redirect after login (cart or account)                                 |
+| `/register`         | Register          | Email, name, password; validation; redirect to login or home                             |
+| `/forgot-password`  | Forgot password   | Request reset link (if backend supports)                                                 |
 
 ### 2.2 Authenticated (customer)
 
-| Route | Page | Description |
-|-------|------|-------------|
-| `/checkout` | Checkout | Shipping address (new or saved), order summary; place order; confirmation |
-| `/account` | Account home | Links to profile, addresses, orders |
-| `/account/profile` | Profile | View/edit name, email; change password |
-| `/account/addresses` | Addresses | List, add, edit, delete; set default |
-| `/account/orders` | Order history | List orders (date, status, total); link to detail |
-| `/account/orders/:id` | Order detail | Status, items, address, totals; tracking if available |
+| Route                 | Page          | Description                                                               |
+| --------------------- | ------------- | ------------------------------------------------------------------------- |
+| `/checkout`           | Checkout      | Shipping address (new or saved), order summary; place order; confirmation |
+| `/account`            | Account home  | Links to profile, addresses, orders                                       |
+| `/account/profile`    | Profile       | View/edit name, email; change password                                    |
+| `/account/addresses`  | Addresses     | List, add, edit, delete; set default                                      |
+| `/account/orders`     | Order history | List orders (date, status, total); link to detail                         |
+| `/account/orders/:id` | Order detail  | Status, items, address, totals; tracking if available                     |
 
 ### 2.3 Shared components and layout
 

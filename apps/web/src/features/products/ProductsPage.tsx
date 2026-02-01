@@ -1,17 +1,12 @@
-import { useState, useEffect, useCallback, useRef } from "react";
-import { Link, useSearchParams, useNavigate } from "react-router-dom";
-import type { Product, Category, PaginatedResponse } from "@lunaz/types";
-import {
-  Container,
-  ProductCard,
-  ProductCardSkeleton,
-  type ProductCardProduct,
-} from "@lunaz/ui";
-import { api } from "../../api/client";
-import { useCart } from "../../context/CartContext";
-import { useToast } from "../../context/ToastContext";
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { Link, useSearchParams, useNavigate } from 'react-router-dom';
+import type { Product, Category, PaginatedResponse } from '@lunaz/types';
+import { Container, ProductCard, ProductCardSkeleton, type ProductCardProduct } from '@lunaz/ui';
+import { api } from '../../api/client';
+import { useCart } from '../../context/CartContext';
+import { useToast } from '../../context/ToastContext';
 
-type SortOption = "newest" | "price-low" | "price-high" | "name";
+type SortOption = 'newest' | 'price-low' | 'price-high' | 'name';
 
 interface GroupedCategory {
   parent: Category;
@@ -40,7 +35,7 @@ function FilterDropdown({
   label,
   value,
   children,
-  className = "",
+  className = '',
 }: {
   label: string;
   value: string;
@@ -52,15 +47,12 @@ function FilterDropdown({
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsOpen(false);
       }
     }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   return (
@@ -70,19 +62,14 @@ function FilterDropdown({
         className="flex items-center gap-2 px-3 py-2 text-sm bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition-colors"
       >
         <span className="text-slate-500">{label}:</span>
-        <span className="text-slate-900 font-medium">{value || "All"}</span>
+        <span className="text-slate-900 font-medium">{value || 'All'}</span>
         <svg
-          className={`w-4 h-4 text-slate-400 transition-transform ${isOpen ? "rotate-180" : ""}`}
+          className={`w-4 h-4 text-slate-400 transition-transform ${isOpen ? 'rotate-180' : ''}`}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M19 9l-7 7-7-7"
-          />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>
       </button>
 
@@ -109,12 +96,10 @@ function DropdownItem({
   return (
     <button
       onClick={onClick}
-      className={`w-full text-left px-3 py-2 text-sm transition-colors ${
-        indent ? "pl-7" : ""
-      } ${
+      className={`w-full text-left px-3 py-2 text-sm transition-colors ${indent ? 'pl-7' : ''} ${
         selected
-          ? "bg-slate-100 text-slate-900 font-medium"
-          : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+          ? 'bg-slate-100 text-slate-900 font-medium'
+          : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
       }`}
     >
       <div className="flex items-center gap-2">
@@ -125,15 +110,10 @@ function DropdownItem({
             stroke="currentColor"
             viewBox="0 0 24 24"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M5 13l4 4L19 7"
-            />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
           </svg>
         )}
-        <span className={selected ? "" : "ml-6"}>{children}</span>
+        <span className={selected ? '' : 'ml-6'}>{children}</span>
       </div>
     </button>
   );
@@ -147,24 +127,22 @@ export function ProductsPage() {
 
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [groupedCategories, setGroupedCategories] = useState<GroupedCategory[]>(
-    []
-  );
+  const [groupedCategories, setGroupedCategories] = useState<GroupedCategory[]>([]);
   const [total, setTotal] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   // Local state for price inputs (to enable debouncing)
-  const [minPriceInput, setMinPriceInput] = useState("");
-  const [maxPriceInput, setMaxPriceInput] = useState("");
+  const [minPriceInput, setMinPriceInput] = useState('');
+  const [maxPriceInput, setMaxPriceInput] = useState('');
 
   // URL params
-  const page = parseInt(searchParams.get("page") || "1", 10);
-  const categoryId = searchParams.get("category") || "";
-  const sort = (searchParams.get("sort") as SortOption) || "newest";
-  const minPrice = searchParams.get("minPrice") || "";
-  const maxPrice = searchParams.get("maxPrice") || "";
+  const page = parseInt(searchParams.get('page') || '1', 10);
+  const categoryId = searchParams.get('category') || '';
+  const sort = (searchParams.get('sort') as SortOption) || 'newest';
+  const minPrice = searchParams.get('minPrice') || '';
+  const maxPrice = searchParams.get('maxPrice') || '';
 
   // Debounced price values
   const debouncedMinPrice = useDebounce(minPriceInput, 500);
@@ -182,25 +160,25 @@ export function ProductsPage() {
       const newParams = new URLSearchParams(searchParams);
 
       if (debouncedMinPrice) {
-        newParams.set("minPrice", debouncedMinPrice);
+        newParams.set('minPrice', debouncedMinPrice);
       } else {
-        newParams.delete("minPrice");
+        newParams.delete('minPrice');
       }
 
       if (debouncedMaxPrice) {
-        newParams.set("maxPrice", debouncedMaxPrice);
+        newParams.set('maxPrice', debouncedMaxPrice);
       } else {
-        newParams.delete("maxPrice");
+        newParams.delete('maxPrice');
       }
 
-      newParams.set("page", "1"); // Reset to page 1 when filters change
+      newParams.set('page', '1'); // Reset to page 1 when filters change
       setSearchParams(newParams);
     }
   }, [debouncedMinPrice, debouncedMaxPrice]);
 
   // Fetch and organize categories
   useEffect(() => {
-    api<PaginatedResponse<Category>>("/categories?limit=100").then((res) => {
+    api<PaginatedResponse<Category>>('/categories?limit=100').then((res) => {
       const allCategories = res.data;
       setCategories(allCategories);
 
@@ -221,46 +199,42 @@ export function ProductsPage() {
 
       try {
         const params = new URLSearchParams();
-        params.set("status", "published");
-        params.set("page", page.toString());
-        params.set("limit", "12");
+        params.set('status', 'published');
+        params.set('page', page.toString());
+        params.set('limit', '12');
 
-        if (categoryId) params.set("category", categoryId);
+        if (categoryId) params.set('category', categoryId);
 
         // Price range filters
-        if (minPrice) params.set("minPrice", minPrice);
-        if (maxPrice) params.set("maxPrice", maxPrice);
+        if (minPrice) params.set('minPrice', minPrice);
+        if (maxPrice) params.set('maxPrice', maxPrice);
 
         // Sorting
         switch (sort) {
-          case "price-low":
-            params.set("sort", "basePrice");
-            params.set("order", "asc");
+          case 'price-low':
+            params.set('sort', 'basePrice');
+            params.set('order', 'asc');
             break;
-          case "price-high":
-            params.set("sort", "basePrice");
-            params.set("order", "desc");
+          case 'price-high':
+            params.set('sort', 'basePrice');
+            params.set('order', 'desc');
             break;
-          case "name":
-            params.set("sort", "name");
-            params.set("order", "asc");
+          case 'name':
+            params.set('sort', 'name');
+            params.set('order', 'asc');
             break;
           default:
-            params.set("sort", "createdAt");
-            params.set("order", "desc");
+            params.set('sort', 'createdAt');
+            params.set('order', 'desc');
         }
 
-        const res = await api<PaginatedResponse<Product>>(
-          `/products?${params.toString()}`
-        );
+        const res = await api<PaginatedResponse<Product>>(`/products?${params.toString()}`);
 
         setProducts(res.data);
         setTotal(res.total);
         setTotalPages(res.totalPages);
       } catch (err) {
-        setError(
-          err instanceof Error ? err.message : "Failed to load products"
-        );
+        setError(err instanceof Error ? err.message : 'Failed to load products');
       } finally {
         setIsLoading(false);
       }
@@ -278,38 +252,37 @@ export function ProductsPage() {
       }
     });
     if (!updates.page) {
-      newParams.set("page", "1");
+      newParams.set('page', '1');
     }
     setSearchParams(newParams);
   };
 
-  const hasActiveFilters =
-    categoryId || minPrice || maxPrice || sort !== "newest";
+  const hasActiveFilters = categoryId || minPrice || maxPrice || sort !== 'newest';
 
   const clearFilters = useCallback(() => {
-    setMinPriceInput("");
-    setMaxPriceInput("");
+    setMinPriceInput('');
+    setMaxPriceInput('');
     setSearchParams({});
   }, [setSearchParams]);
 
   // Get selected category name for display
   const getSelectedCategoryName = () => {
-    if (!categoryId) return "All";
+    if (!categoryId) return 'All';
     const cat = categories.find((c) => c.id === categoryId);
-    return cat?.name || "All";
+    return cat?.name || 'All';
   };
 
   // Get sort label for display
   const getSortLabel = () => {
     switch (sort) {
-      case "price-low":
-        return "Price: Low to High";
-      case "price-high":
-        return "Price: High to Low";
-      case "name":
-        return "Name A-Z";
+      case 'price-low':
+        return 'Price: Low to High';
+      case 'price-high':
+        return 'Price: High to Low';
+      case 'name':
+        return 'Name A-Z';
       default:
-        return "Newest";
+        return 'Newest';
     }
   };
 
@@ -319,7 +292,7 @@ export function ProductsPage() {
     const product = products.find((p) => p.id === cardProduct.id);
     if (product && product.variants.length > 0) {
       addItem(product, product.variants[0], 1);
-      addToast(`Added ${product.name} to cart`, "success");
+      addToast(`Added ${product.name} to cart`, 'success');
     }
   };
 
@@ -329,7 +302,7 @@ export function ProductsPage() {
     const product = products.find((p) => p.id === cardProduct.id);
     if (product && product.variants.length > 0) {
       addItem(product, product.variants[0], 1);
-      navigate("/cart");
+      navigate('/cart');
     }
   };
 
@@ -345,7 +318,7 @@ export function ProductsPage() {
               </h1>
               {!isLoading && (
                 <p className="text-sm text-slate-400">
-                  {total} {total === 1 ? "item" : "items"}
+                  {total} {total === 1 ? 'item' : 'items'}
                 </p>
               )}
             </div>
@@ -359,13 +332,10 @@ export function ProductsPage() {
           <div className="mb-8 pb-6 border-b border-slate-100">
             <div className="flex flex-wrap items-center gap-3">
               {/* Category Filter */}
-              <FilterDropdown
-                label="Category"
-                value={getSelectedCategoryName()}
-              >
+              <FilterDropdown label="Category" value={getSelectedCategoryName()}>
                 <DropdownItem
-                  selected={categoryId === ""}
-                  onClick={() => updateParams({ category: "" })}
+                  selected={categoryId === ''}
+                  onClick={() => updateParams({ category: '' })}
                 >
                   All Categories
                 </DropdownItem>
@@ -421,26 +391,26 @@ export function ProductsPage() {
               {/* Sort Filter */}
               <FilterDropdown label="Sort" value={getSortLabel()}>
                 <DropdownItem
-                  selected={sort === "newest"}
-                  onClick={() => updateParams({ sort: "newest" })}
+                  selected={sort === 'newest'}
+                  onClick={() => updateParams({ sort: 'newest' })}
                 >
                   Newest
                 </DropdownItem>
                 <DropdownItem
-                  selected={sort === "price-low"}
-                  onClick={() => updateParams({ sort: "price-low" })}
+                  selected={sort === 'price-low'}
+                  onClick={() => updateParams({ sort: 'price-low' })}
                 >
                   Price: Low to High
                 </DropdownItem>
                 <DropdownItem
-                  selected={sort === "price-high"}
-                  onClick={() => updateParams({ sort: "price-high" })}
+                  selected={sort === 'price-high'}
+                  onClick={() => updateParams({ sort: 'price-high' })}
                 >
                   Price: High to Low
                 </DropdownItem>
                 <DropdownItem
-                  selected={sort === "name"}
-                  onClick={() => updateParams({ sort: "name" })}
+                  selected={sort === 'name'}
+                  onClick={() => updateParams({ sort: 'name' })}
                 >
                   Name A-Z
                 </DropdownItem>
@@ -452,12 +422,7 @@ export function ProductsPage() {
                   onClick={clearFilters}
                   className="flex items-center gap-1.5 px-3 py-2 text-sm text-slate-500 hover:text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
                 >
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -477,7 +442,7 @@ export function ProductsPage() {
                   <span className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium text-slate-600 bg-slate-100 rounded-full">
                     {getSelectedCategoryName()}
                     <button
-                      onClick={() => updateParams({ category: "" })}
+                      onClick={() => updateParams({ category: '' })}
                       className="text-slate-400 hover:text-slate-600"
                     >
                       <svg
@@ -498,14 +463,14 @@ export function ProductsPage() {
                 )}
                 {(minPrice || maxPrice) && (
                   <span className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium text-slate-600 bg-slate-100 rounded-full">
-                    ${minPrice || "0"} — ${maxPrice || "∞"}
+                    ${minPrice || '0'} — ${maxPrice || '∞'}
                     <button
                       onClick={() => {
-                        setMinPriceInput("");
-                        setMaxPriceInput("");
+                        setMinPriceInput('');
+                        setMaxPriceInput('');
                         const newParams = new URLSearchParams(searchParams);
-                        newParams.delete("minPrice");
-                        newParams.delete("maxPrice");
+                        newParams.delete('minPrice');
+                        newParams.delete('maxPrice');
                         setSearchParams(newParams);
                       }}
                       className="text-slate-400 hover:text-slate-600"
@@ -526,11 +491,11 @@ export function ProductsPage() {
                     </button>
                   </span>
                 )}
-                {sort !== "newest" && (
+                {sort !== 'newest' && (
                   <span className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium text-slate-600 bg-slate-100 rounded-full">
                     {getSortLabel()}
                     <button
-                      onClick={() => updateParams({ sort: "" })}
+                      onClick={() => updateParams({ sort: '' })}
                       className="text-slate-400 hover:text-slate-600"
                     >
                       <svg
@@ -572,9 +537,7 @@ export function ProductsPage() {
           {/* Empty State */}
           {!isLoading && !error && products.length === 0 && (
             <div className="text-center py-16">
-              <p className="text-slate-400 mb-4">
-                No products match your criteria.
-              </p>
+              <p className="text-slate-400 mb-4">No products match your criteria.</p>
               <button
                 onClick={clearFilters}
                 className="text-sm text-slate-600 hover:text-slate-900 underline underline-offset-4"

@@ -89,7 +89,9 @@ export function CartPage() {
         <Container>
           <div className="mb-8">
             <p className="heading-sub text-slate-500 mb-2">Your</p>
-            <h1 className="font-serif text-3xl md:text-4xl font-medium text-gray-900 tracking-tight">Shopping Cart</h1>
+            <h1 className="font-serif text-3xl md:text-4xl font-medium text-gray-900 tracking-tight">
+              Shopping Cart
+            </h1>
           </div>
           <div className="animate-pulse space-y-4">
             <div className="h-24 bg-gray-200 rounded-lg" />
@@ -106,15 +108,29 @@ export function CartPage() {
         <Container>
           <div className="mb-8">
             <p className="heading-sub text-slate-500 mb-2">Your</p>
-            <h1 className="font-serif text-3xl md:text-4xl font-medium text-gray-900 tracking-tight">Shopping Cart</h1>
+            <h1 className="font-serif text-3xl md:text-4xl font-medium text-gray-900 tracking-tight">
+              Shopping Cart
+            </h1>
           </div>
           <Card className="text-center py-12">
             <div className="w-20 h-20 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
-              <svg className="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+              <svg
+                className="w-10 h-10 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                />
               </svg>
             </div>
-            <h2 className="font-serif text-2xl font-medium text-gray-900 mb-2">Your cart is empty</h2>
+            <h2 className="font-serif text-2xl font-medium text-gray-900 mb-2">
+              Your cart is empty
+            </h2>
             <p className="text-gray-600 mb-6">
               Looks like you haven't added anything to your cart yet.
             </p>
@@ -158,7 +174,9 @@ export function CartPage() {
           {/* Order Summary */}
           <div>
             <Card>
-              <h2 className="font-serif text-xl font-medium text-gray-900 mb-5 tracking-tight">Order Summary</h2>
+              <h2 className="font-serif text-xl font-medium text-gray-900 mb-5 tracking-tight">
+                Order Summary
+              </h2>
 
               <div className="space-y-3 mb-6">
                 <div className="flex justify-between text-gray-600">
@@ -193,7 +211,10 @@ export function CartPage() {
                   </Link>
                   <p className="text-center text-sm text-gray-500">
                     or{' '}
-                    <Link to="/register?redirect=/checkout" className="text-indigo-600 hover:text-indigo-700">
+                    <Link
+                      to="/register?redirect=/checkout"
+                      className="text-indigo-600 hover:text-indigo-700"
+                    >
                       create an account
                     </Link>
                   </p>

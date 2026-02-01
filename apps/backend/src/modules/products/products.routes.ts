@@ -14,12 +14,7 @@ import {
   updateProductSchema,
   listProductsQuerySchema,
 } from './products.validation.js';
-import {
-  uploadToS3,
-  deleteFromS3,
-  generateImageKey,
-  extractKeyFromUrl,
-} from '../../lib/s3.js';
+import { uploadToS3, deleteFromS3, generateImageKey, extractKeyFromUrl } from '../../lib/s3.js';
 
 const router = Router();
 const getConfigFn = getConfig;
@@ -52,7 +47,9 @@ router.get('/', async (req, res, next) => {
     const filter: Record<string, unknown> = {};
 
     // For public, only show published products (unless admin)
-    const token = req.headers.authorization?.startsWith('Bearer ') ? req.headers.authorization.slice(7) : null;
+    const token = req.headers.authorization?.startsWith('Bearer ')
+      ? req.headers.authorization.slice(7)
+      : null;
     let isAdmin = false;
     if (token) {
       try {
@@ -74,10 +71,12 @@ router.get('/', async (req, res, next) => {
       // Find all child categories of the selected category
       const childCategories = await CategoryModel.find({ parentId: query.category }).lean();
       const childCategoryIds = childCategories.map((c) => c._id);
-      
+
       // Include the selected category and all its children
       if (childCategoryIds.length > 0) {
-        filter.categoryId = { $in: [new mongoose.Types.ObjectId(query.category), ...childCategoryIds] };
+        filter.categoryId = {
+          $in: [new mongoose.Types.ObjectId(query.category), ...childCategoryIds],
+        };
       } else {
         filter.categoryId = query.category;
       }
@@ -113,7 +112,13 @@ router.get('/', async (req, res, next) => {
     ]);
 
     const data = list.map(toProduct);
-    res.json({ data, total, page: query.page, limit: query.limit, totalPages: Math.ceil(total / query.limit) });
+    res.json({
+      data,
+      total,
+      page: query.page,
+      limit: query.limit,
+      totalPages: Math.ceil(total / query.limit),
+    });
   } catch (e) {
     next(e);
   }
@@ -136,167 +141,204 @@ router.get('/:id', async (req, res, next) => {
 });
 
 // POST /products — admin create
-router.post('/', authMiddleware(getConfigFn), requireRole(UserRole.ADMIN), validateBody(createProductSchema), async (req, res, next) => {
-  try {
-    const created = await ProductModel.create({ ...req.body, images: [] });
-    res.status(201).json(toProduct(created));
-  } catch (e) {
-    next(e);
+router.post(
+  '/',
+  authMiddleware(getConfigFn),
+  requireRole(UserRole.ADMIN),
+  validateBody(createProductSchema),
+  async (req, res, next) => {
+    try {
+      const created = await ProductModel.create({ ...req.body, images: [] });
+      res.status(201).json(toProduct(created));
+    } catch (e) {
+      next(e);
+    }
   }
-});
+);
 
 // PATCH /products/:id — admin update
-router.patch('/:id', authMiddleware(getConfigFn), requireRole(UserRole.ADMIN), validateBody(updateProductSchema), async (req, res, next) => {
-  try {
-    const doc = await ProductModel.findByIdAndUpdate(req.params.id, { $set: req.body }, { new: true });
-    if (!doc) {
-      res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Product not found' } });
-      return;
+router.patch(
+  '/:id',
+  authMiddleware(getConfigFn),
+  requireRole(UserRole.ADMIN),
+  validateBody(updateProductSchema),
+  async (req, res, next) => {
+    try {
+      const doc = await ProductModel.findByIdAndUpdate(
+        req.params.id,
+        { $set: req.body },
+        { new: true }
+      );
+      if (!doc) {
+        res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Product not found' } });
+        return;
+      }
+      res.json(toProduct(doc));
+    } catch (e) {
+      next(e);
     }
-    res.json(toProduct(doc));
-  } catch (e) {
-    next(e);
   }
-});
+);
 
 // DELETE /products/:id — admin delete (also deletes images from S3)
-router.delete('/:id', authMiddleware(getConfigFn), requireRole(UserRole.ADMIN), async (req, res, next) => {
-  try {
-    const doc = await ProductModel.findById(req.params.id);
-    if (!doc) {
-      res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Product not found' } });
-      return;
-    }
+router.delete(
+  '/:id',
+  authMiddleware(getConfigFn),
+  requireRole(UserRole.ADMIN),
+  async (req, res, next) => {
+    try {
+      const doc = await ProductModel.findById(req.params.id);
+      if (!doc) {
+        res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Product not found' } });
+        return;
+      }
 
-    // Delete images from S3
-    for (const img of doc.images) {
+      // Delete images from S3
+      for (const img of doc.images) {
+        const key = extractKeyFromUrl(img.url);
+        if (key) {
+          try {
+            await deleteFromS3(key);
+          } catch {
+            // Log but don't fail on S3 errors
+            console.error(`Failed to delete image from S3: ${key}`);
+          }
+        }
+      }
+
+      await doc.deleteOne();
+      res.status(204).send();
+    } catch (e) {
+      next(e);
+    }
+  }
+);
+
+// POST /products/:id/images — admin upload image(s)
+router.post(
+  '/:id/images',
+  authMiddleware(getConfigFn),
+  requireRole(UserRole.ADMIN),
+  upload.array('images', 10),
+  async (req, res, next) => {
+    try {
+      const doc = await ProductModel.findById(req.params.id);
+      if (!doc) {
+        res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Product not found' } });
+        return;
+      }
+
+      const files = req.files as Express.Multer.File[];
+      if (!files || files.length === 0) {
+        res.status(400).json({ error: { code: 'NO_FILES', message: 'No files uploaded' } });
+        return;
+      }
+
+      const uploadedImages = [];
+      const currentMaxOrder = doc.images.reduce((max, img) => Math.max(max, img.order), 0);
+
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const ext = file.originalname.split('.').pop() ?? 'jpg';
+        const key = generateImageKey(req.params.id, ext);
+        const url = await uploadToS3(key, file.buffer, file.mimetype);
+
+        const image = {
+          id: randomUUID(),
+          url,
+          order: currentMaxOrder + i + 1,
+        };
+        doc.images.push(image);
+        uploadedImages.push(image);
+      }
+
+      await doc.save();
+      res.status(201).json({ images: uploadedImages });
+    } catch (e) {
+      next(e);
+    }
+  }
+);
+
+// POST /products/:id/images/url — admin add image via URL
+router.post(
+  '/:id/images/url',
+  authMiddleware(getConfigFn),
+  requireRole(UserRole.ADMIN),
+  async (req, res, next) => {
+    try {
+      const doc = await ProductModel.findById(req.params.id);
+      if (!doc) {
+        res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Product not found' } });
+        return;
+      }
+
+      const { url } = req.body;
+      if (!url || typeof url !== 'string') {
+        res.status(400).json({ error: { code: 'INVALID_URL', message: 'URL is required' } });
+        return;
+      }
+
+      // Basic URL validation
+      try {
+        new URL(url);
+      } catch {
+        res.status(400).json({ error: { code: 'INVALID_URL', message: 'Invalid URL format' } });
+        return;
+      }
+
+      const currentMaxOrder = doc.images.reduce((max, img) => Math.max(max, img.order), 0);
+      const image = {
+        id: randomUUID(),
+        url,
+        order: currentMaxOrder + 1,
+      };
+      doc.images.push(image);
+
+      await doc.save();
+      res.status(201).json({ image });
+    } catch (e) {
+      next(e);
+    }
+  }
+);
+
+// DELETE /products/:id/images/:imageId — admin delete image
+router.delete(
+  '/:id/images/:imageId',
+  authMiddleware(getConfigFn),
+  requireRole(UserRole.ADMIN),
+  async (req, res, next) => {
+    try {
+      const doc = await ProductModel.findById(req.params.id);
+      if (!doc) {
+        res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Product not found' } });
+        return;
+      }
+
+      const imgIndex = doc.images.findIndex((img) => img.id === req.params.imageId);
+      if (imgIndex === -1) {
+        res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Image not found' } });
+        return;
+      }
+
+      const img = doc.images[imgIndex];
       const key = extractKeyFromUrl(img.url);
       if (key) {
         try {
           await deleteFromS3(key);
         } catch {
-          // Log but don't fail on S3 errors
           console.error(`Failed to delete image from S3: ${key}`);
         }
       }
-    }
 
-    await doc.deleteOne();
-    res.status(204).send();
-  } catch (e) {
-    next(e);
+      doc.images.splice(imgIndex, 1);
+      await doc.save();
+      res.status(204).send();
+    } catch (e) {
+      next(e);
+    }
   }
-});
-
-// POST /products/:id/images — admin upload image(s)
-router.post('/:id/images', authMiddleware(getConfigFn), requireRole(UserRole.ADMIN), upload.array('images', 10), async (req, res, next) => {
-  try {
-    const doc = await ProductModel.findById(req.params.id);
-    if (!doc) {
-      res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Product not found' } });
-      return;
-    }
-
-    const files = req.files as Express.Multer.File[];
-    if (!files || files.length === 0) {
-      res.status(400).json({ error: { code: 'NO_FILES', message: 'No files uploaded' } });
-      return;
-    }
-
-    const uploadedImages = [];
-    const currentMaxOrder = doc.images.reduce((max, img) => Math.max(max, img.order), 0);
-
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-      const ext = file.originalname.split('.').pop() ?? 'jpg';
-      const key = generateImageKey(req.params.id, ext);
-      const url = await uploadToS3(key, file.buffer, file.mimetype);
-
-      const image = {
-        id: randomUUID(),
-        url,
-        order: currentMaxOrder + i + 1,
-      };
-      doc.images.push(image);
-      uploadedImages.push(image);
-    }
-
-    await doc.save();
-    res.status(201).json({ images: uploadedImages });
-  } catch (e) {
-    next(e);
-  }
-});
-
-// POST /products/:id/images/url — admin add image via URL
-router.post('/:id/images/url', authMiddleware(getConfigFn), requireRole(UserRole.ADMIN), async (req, res, next) => {
-  try {
-    const doc = await ProductModel.findById(req.params.id);
-    if (!doc) {
-      res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Product not found' } });
-      return;
-    }
-
-    const { url } = req.body;
-    if (!url || typeof url !== 'string') {
-      res.status(400).json({ error: { code: 'INVALID_URL', message: 'URL is required' } });
-      return;
-    }
-
-    // Basic URL validation
-    try {
-      new URL(url);
-    } catch {
-      res.status(400).json({ error: { code: 'INVALID_URL', message: 'Invalid URL format' } });
-      return;
-    }
-
-    const currentMaxOrder = doc.images.reduce((max, img) => Math.max(max, img.order), 0);
-    const image = {
-      id: randomUUID(),
-      url,
-      order: currentMaxOrder + 1,
-    };
-    doc.images.push(image);
-
-    await doc.save();
-    res.status(201).json({ image });
-  } catch (e) {
-    next(e);
-  }
-});
-
-// DELETE /products/:id/images/:imageId — admin delete image
-router.delete('/:id/images/:imageId', authMiddleware(getConfigFn), requireRole(UserRole.ADMIN), async (req, res, next) => {
-  try {
-    const doc = await ProductModel.findById(req.params.id);
-    if (!doc) {
-      res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Product not found' } });
-      return;
-    }
-
-    const imgIndex = doc.images.findIndex((img) => img.id === req.params.imageId);
-    if (imgIndex === -1) {
-      res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Image not found' } });
-      return;
-    }
-
-    const img = doc.images[imgIndex];
-    const key = extractKeyFromUrl(img.url);
-    if (key) {
-      try {
-        await deleteFromS3(key);
-      } catch {
-        console.error(`Failed to delete image from S3: ${key}`);
-      }
-    }
-
-    doc.images.splice(imgIndex, 1);
-    await doc.save();
-    res.status(204).send();
-  } catch (e) {
-    next(e);
-  }
-});
+);
 
 export const productsRoutes = router;

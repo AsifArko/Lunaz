@@ -88,10 +88,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
       try {
         // First, fetch existing cart from backend
         const backendCart = await api<CartResponse>('/cart', { token: token || undefined });
-        
+
         // Get current local items
         const localItems = [...items];
-        
+
         if (backendCart.items && backendCart.items.length > 0) {
           // Merge backend cart with local cart
           const mergedItems: LocalCartItem[] = [];
@@ -121,7 +121,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
               },
               variant: {
                 name: item.variantName,
-                priceOverride: item.unitPrice !== item.product.basePrice ? item.unitPrice : undefined,
+                priceOverride:
+                  item.unitPrice !== item.product.basePrice ? item.unitPrice : undefined,
               },
             });
           }
@@ -180,53 +181,46 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }, [isAuthenticated]);
 
-  const addItem = useCallback(
-    (product: Product, variant: ProductVariant, quantity: number) => {
-      setItems((prev) => {
-        // Check if item with same product and variant exists
-        const existing = prev.find(
-          (item) => item.productId === product.id && item.variantId === variant.id
+  const addItem = useCallback((product: Product, variant: ProductVariant, quantity: number) => {
+    setItems((prev) => {
+      // Check if item with same product and variant exists
+      const existing = prev.find(
+        (item) => item.productId === product.id && item.variantId === variant.id
+      );
+
+      if (existing) {
+        return prev.map((item) =>
+          item.id === existing.id ? { ...item, quantity: item.quantity + quantity } : item
         );
+      }
 
-        if (existing) {
-          return prev.map((item) =>
-            item.id === existing.id
-              ? { ...item, quantity: item.quantity + quantity }
-              : item
-          );
-        }
+      const newItem: LocalCartItem = {
+        id: generateId(),
+        productId: product.id,
+        variantId: variant.id,
+        quantity,
+        product: {
+          name: product.name,
+          slug: product.slug,
+          basePrice: product.basePrice,
+          currency: product.currency,
+          images: product.images.slice(0, 1),
+        },
+        variant: {
+          name: variant.name,
+          priceOverride: variant.priceOverride,
+        },
+      };
 
-        const newItem: LocalCartItem = {
-          id: generateId(),
-          productId: product.id,
-          variantId: variant.id,
-          quantity,
-          product: {
-            name: product.name,
-            slug: product.slug,
-            basePrice: product.basePrice,
-            currency: product.currency,
-            images: product.images.slice(0, 1),
-          },
-          variant: {
-            name: variant.name,
-            priceOverride: variant.priceOverride,
-          },
-        };
-
-        return [...prev, newItem];
-      });
-    },
-    []
-  );
+      return [...prev, newItem];
+    });
+  }, []);
 
   const updateQuantity = useCallback((itemId: string, quantity: number) => {
     if (quantity <= 0) {
       setItems((prev) => prev.filter((item) => item.id !== itemId));
     } else {
-      setItems((prev) =>
-        prev.map((item) => (item.id === itemId ? { ...item, quantity } : item))
-      );
+      setItems((prev) => prev.map((item) => (item.id === itemId ? { ...item, quantity } : item)));
     }
   }, []);
 

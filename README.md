@@ -47,7 +47,7 @@ Lifestyle and home décor e-commerce — Web (customer storefront), Manage (admi
    ```bash
    # With default credentials (admin@lunaz.local / Admin123!)
    MONGODB_URI=mongodb://localhost:27017/lunaz npm run seed:admin
-   
+
    # Or with custom credentials
    MONGODB_URI=mongodb://localhost:27017/lunaz \
    ADMIN_EMAIL=admin@example.com \
@@ -63,9 +63,9 @@ Lifestyle and home décor e-commerce — Web (customer storefront), Manage (admi
    npm run dev:manage # http://localhost:3001
    ```
 
-- Backend: http://localhost:4000  
-- API: http://localhost:4000/api/v1  
-- Health: http://localhost:4000/health  
+- Backend: http://localhost:4000
+- API: http://localhost:4000/api/v1
+- Health: http://localhost:4000/health
 
 ## Docker
 
@@ -73,30 +73,32 @@ Lifestyle and home décor e-commerce — Web (customer storefront), Manage (admi
 docker compose up --build
 ```
 
-- Backend: http://localhost:4000  
-- Web: http://localhost:3000  
-- Manage: http://localhost:3001  
-- MongoDB: localhost:27017  
+- Backend: http://localhost:4000
+- Web: http://localhost:3000
+- Manage: http://localhost:3001
+- MongoDB: localhost:27017
 
 ## Scripts
 
-| Script        | Description                    |
-|---------------|--------------------------------|
-| `npm run build` | Build all workspaces          |
-| `npm run dev:backend` | Start backend dev server |
-| `npm run dev:web` | Start Web dev server      |
-| `npm run dev:manage` | Start Manage dev server |
-| `npm run seed:admin` | Create admin user (requires MONGODB_URI) |
+| Script                | Description                              |
+| --------------------- | ---------------------------------------- |
+| `npm run build`       | Build all workspaces                     |
+| `npm run dev:backend` | Start backend dev server                 |
+| `npm run dev:web`     | Start Web dev server                     |
+| `npm run dev:manage`  | Start Manage dev server                  |
+| `npm run seed:admin`  | Create admin user (requires MONGODB_URI) |
 
 ## Admin Access
 
 The Manage app (`/manage`) is for administrators only. Admin users are created via the seed script, not through public registration.
 
 **Default admin credentials** (when using `npm run seed:admin`):
+
 - Email: `admin@lunaz.local`
 - Password: `Admin123!`
 
 To create an admin with custom credentials:
+
 ```bash
 MONGODB_URI=mongodb://localhost:27017/lunaz \
 ADMIN_EMAIL=your@email.com \
@@ -105,6 +107,7 @@ npm run seed:admin
 ```
 
 For Docker:
+
 ```bash
 make docker-seed-admin
 # or

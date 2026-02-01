@@ -125,10 +125,10 @@ packages/ui/
 
 ## 6. Summary
 
-| Package | Consumed by | Main contents |
-|---------|-------------|----------------|
-| `@lunaz/types` | Backend, Web, Manage | Entities, enums, API request/response types |
-| `@lunaz/ui` | Web, Manage | Reusable React components and theme tokens |
-| `@lunaz/config` (optional) | Backend, Web, Manage | Env validation and typed config |
+| Package                    | Consumed by          | Main contents                               |
+| -------------------------- | -------------------- | ------------------------------------------- |
+| `@lunaz/types`             | Backend, Web, Manage | Entities, enums, API request/response types |
+| `@lunaz/ui`                | Web, Manage          | Reusable React components and theme tokens  |
+| `@lunaz/config` (optional) | Backend, Web, Manage | Env validation and typed config             |
 
 Keeping interfaces in `@lunaz/types` and shared UI in `@lunaz/ui` ensures the whole project stays strictly typed and consistent across the two React applications and the Backend.

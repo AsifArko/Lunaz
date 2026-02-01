@@ -70,7 +70,9 @@ function MetricCard({
 
   return (
     <div className="bg-white border border-gray-200 rounded-lg p-6">
-      <p className="text-[11px] font-medium text-gray-400 uppercase tracking-widest mb-3">{label}</p>
+      <p className="text-[11px] font-medium text-gray-400 uppercase tracking-widest mb-3">
+        {label}
+      </p>
       {isLoading ? (
         <div className="h-8 w-28 bg-gray-100 rounded animate-pulse" />
       ) : (
@@ -117,8 +119,10 @@ function AreaChart({
   const chartWidth = width - padding.left - padding.right;
   const chartHeight = height - padding.top - padding.bottom;
 
-  const getX = (index: number) => padding.left + (index / Math.max(allData.length - 1, 1)) * chartWidth;
-  const getY = (value: number) => padding.top + chartHeight - ((value - minValue) / range) * chartHeight;
+  const getX = (index: number) =>
+    padding.left + (index / Math.max(allData.length - 1, 1)) * chartWidth;
+  const getY = (value: number) =>
+    padding.top + chartHeight - ((value - minValue) / range) * chartHeight;
 
   // Create smooth curve path using cubic bezier
   const createSmoothPath = (points: { x: number; y: number }[]) => {
@@ -245,7 +249,15 @@ function AreaChart({
 
       {/* Data points */}
       {actualPoints.map((point, i) => (
-        <circle key={i} cx={point.x} cy={point.y} r="3" fill="#fff" stroke="#374151" strokeWidth="1.5" />
+        <circle
+          key={i}
+          cx={point.x}
+          cy={point.y}
+          r="3"
+          fill="#fff"
+          stroke="#374151"
+          strokeWidth="1.5"
+        />
       ))}
 
       {/* X-axis labels */}
@@ -295,7 +307,14 @@ function RingChart({ data, total }: { data: { label: string; value: number }[]; 
       <div className="relative">
         <svg viewBox="0 0 100 100" className="w-32 h-32 -rotate-90">
           {/* Background ring */}
-          <circle cx="50" cy="50" r={radius} fill="none" stroke="#f3f4f6" strokeWidth={strokeWidth} />
+          <circle
+            cx="50"
+            cy="50"
+            r={radius}
+            fill="none"
+            stroke="#f3f4f6"
+            strokeWidth={strokeWidth}
+          />
           {/* Data segments */}
           {segments.map((seg, i) => (
             <circle
@@ -379,9 +398,7 @@ function ProgressBar({
         <span className="text-sm text-gray-600 capitalize">{label}</span>
         <span className="text-sm text-gray-900 font-medium tabular-nums">
           {value}
-          {showPercentage && (
-            <span className="text-gray-400 ml-1">({percentage.toFixed(0)}%)</span>
-          )}
+          {showPercentage && <span className="text-gray-400 ml-1">({percentage.toFixed(0)}%)</span>}
         </span>
       </div>
       <div className="h-1 bg-gray-100 rounded-full overflow-hidden">
@@ -414,7 +431,9 @@ function WeeklyRevenueTable({
           <div key={day.label} className="flex-1 min-w-0">
             <div className="flex items-center justify-between mb-1">
               <span className="text-[11px] text-gray-500">{day.label}</span>
-              <span className={`text-[11px] tabular-nums ${isHighest ? 'text-gray-900 font-medium' : 'text-gray-500'}`}>
+              <span
+                className={`text-[11px] tabular-nums ${isHighest ? 'text-gray-900 font-medium' : 'text-gray-500'}`}
+              >
                 ৳{(day.current / 100).toLocaleString(undefined, { maximumFractionDigits: 0 })}
               </span>
             </div>
@@ -499,7 +518,8 @@ export function ReportsPage() {
         const periodOrders = orders.filter((o) => new Date(o.createdAt) >= periodStart);
         const previousOrders = orders.filter(
           (o) =>
-            new Date(o.createdAt) >= previousPeriodStart && new Date(o.createdAt) < previousPeriodEnd
+            new Date(o.createdAt) >= previousPeriodStart &&
+            new Date(o.createdAt) < previousPeriodEnd
         );
 
         const revenue = periodOrders.reduce((sum, o) => sum + o.total, 0);
@@ -534,7 +554,13 @@ export function ReportsPage() {
 
         const productMap = new Map<
           string,
-          { productId: string; productName: string; revenue: number; quantity: number; imageUrl?: string }
+          {
+            productId: string;
+            productName: string;
+            revenue: number;
+            quantity: number;
+            imageUrl?: string;
+          }
         >();
         periodOrders.forEach((o) => {
           o.items.forEach((item) => {
@@ -690,9 +716,7 @@ export function ReportsPage() {
             <button
               key={p}
               className={`px-4 py-1.5 text-sm font-medium rounded transition-all ${
-                period === p
-                  ? 'bg-gray-900 text-white'
-                  : 'text-gray-500 hover:text-gray-700'
+                period === p ? 'bg-gray-900 text-white' : 'text-gray-500 hover:text-gray-700'
               }`}
               onClick={() => setPeriod(p)}
             >
@@ -795,9 +819,7 @@ export function ReportsPage() {
           <p className="text-3xl font-extralight text-gray-900">
             {isLoading ? '—' : totalItemsSold.toLocaleString()}
           </p>
-          <p className="text-xs text-gray-400 mt-2">
-            {itemsPerOrder.toFixed(1)} avg per order
-          </p>
+          <p className="text-xs text-gray-400 mt-2">{itemsPerOrder.toFixed(1)} avg per order</p>
         </div>
       </div>
 
@@ -914,12 +936,7 @@ export function ReportsPage() {
           ) : (
             <div className="space-y-5">
               {Object.entries(paymentStatusCounts).map(([status, count]) => (
-                <ProgressBar
-                  key={status}
-                  label={status}
-                  value={count}
-                  total={totalOrders}
-                />
+                <ProgressBar key={status} label={status} value={count} total={totalOrders} />
               ))}
             </div>
           )}
@@ -953,8 +970,18 @@ export function ReportsPage() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
-              <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+              <svg
+                className="w-4 h-4 text-gray-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"
+                />
               </svg>
             </div>
             <div>
@@ -979,15 +1006,29 @@ export function ReportsPage() {
               }}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-600 bg-white border border-gray-200 rounded-md hover:bg-gray-50 hover:border-gray-300 transition-colors"
             >
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+              <svg
+                className="w-3.5 h-3.5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
+                />
               </svg>
               Revenue
             </button>
             <button
               onClick={() => {
                 const headers = ['Product', 'Revenue', 'Units'];
-                const rows = topProducts.map((p) => [p.productName, p.revenue.toFixed(2), p.quantity]);
+                const rows = topProducts.map((p) => [
+                  p.productName,
+                  p.revenue.toFixed(2),
+                  p.quantity,
+                ]);
                 const csv = [headers, ...rows].map((r) => r.join(',')).join('\n');
                 const blob = new Blob([csv], { type: 'text/csv' });
                 const url = URL.createObjectURL(blob);
@@ -1000,8 +1041,18 @@ export function ReportsPage() {
               }}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-gray-600 bg-white border border-gray-200 rounded-md hover:bg-gray-50 hover:border-gray-300 transition-colors"
             >
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+              <svg
+                className="w-3.5 h-3.5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
+                />
               </svg>
               Products
             </button>
@@ -1038,8 +1089,18 @@ export function ReportsPage() {
               }}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white bg-gray-900 rounded-md hover:bg-gray-800 transition-colors"
             >
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+              <svg
+                className="w-3.5 h-3.5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3"
+                />
               </svg>
               Full Report
             </button>

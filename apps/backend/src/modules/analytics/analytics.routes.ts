@@ -23,15 +23,16 @@ const getConfigFn = getConfig;
 router.post('/collect', validateBody(collectEventsSchema), async (req, res, next) => {
   try {
     const { visitorId, sessionId, events } = req.body;
-    const clientIp = (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() || 
-                     req.socket.remoteAddress || 
-                     '0.0.0.0';
+    const clientIp =
+      (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() ||
+      req.socket.remoteAddress ||
+      '0.0.0.0';
     const userAgent = req.headers['user-agent'] || '';
-    
+
     // Get userId if authenticated
     let userId: string | undefined;
-    const token = req.headers.authorization?.startsWith('Bearer ') 
-      ? req.headers.authorization.slice(7) 
+    const token = req.headers.authorization?.startsWith('Bearer ')
+      ? req.headers.authorization.slice(7)
       : null;
     if (token) {
       try {
@@ -65,18 +66,21 @@ router.post('/performance', validateBody(collectPerformanceSchema), async (req, 
 router.post('/error', async (req, res, next) => {
   try {
     const { visitorId, sessionId, error, page } = req.body;
-    const clientIp = (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() || 
-                     req.socket.remoteAddress || 
-                     '0.0.0.0';
+    const clientIp =
+      (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() ||
+      req.socket.remoteAddress ||
+      '0.0.0.0';
     const userAgent = req.headers['user-agent'] || '';
 
     await analyticsService.collectEvents(
-      [{
-        type: 'error' as const,
-        timestamp: new Date().toISOString(),
-        page: page || { url: '', path: '/', hostname: '' },
-        event: { name: 'error', properties: error },
-      }],
+      [
+        {
+          type: 'error' as const,
+          timestamp: new Date().toISOString(),
+          page: page || { url: '', path: '/', hostname: '' },
+          event: { name: 'error', properties: error },
+        },
+      ],
       visitorId || 'unknown',
       sessionId || 'unknown',
       clientIp,
@@ -102,8 +106,10 @@ router.get(
     try {
       const query = req.query as { from?: string; to?: string };
       const to = query.to ? new Date(query.to) : new Date();
-      const from = query.from ? new Date(query.from) : new Date(to.getTime() - 7 * 24 * 60 * 60 * 1000);
-      
+      const from = query.from
+        ? new Date(query.from)
+        : new Date(to.getTime() - 7 * 24 * 60 * 60 * 1000);
+
       const overview = await analyticsService.getOverview(from, to);
       res.json(overview);
     } catch (e) {
@@ -120,11 +126,17 @@ router.get(
   validateQuery(analyticsQuerySchema),
   async (req, res, next) => {
     try {
-      const query = req.query as { from?: string; to?: string; period?: 'hour' | 'day' | 'week' | 'month' };
+      const query = req.query as {
+        from?: string;
+        to?: string;
+        period?: 'hour' | 'day' | 'week' | 'month';
+      };
       const to = query.to ? new Date(query.to) : new Date();
-      const from = query.from ? new Date(query.from) : new Date(to.getTime() - 7 * 24 * 60 * 60 * 1000);
+      const from = query.from
+        ? new Date(query.from)
+        : new Date(to.getTime() - 7 * 24 * 60 * 60 * 1000);
       const period = query.period || 'day';
-      
+
       const timeseries = await analyticsService.getTimeSeries(from, to, period);
       res.json(timeseries);
     } catch (e) {
@@ -143,9 +155,11 @@ router.get(
     try {
       const query = req.query as { from?: string; to?: string; limit?: number };
       const to = query.to ? new Date(query.to) : new Date();
-      const from = query.from ? new Date(query.from) : new Date(to.getTime() - 7 * 24 * 60 * 60 * 1000);
+      const from = query.from
+        ? new Date(query.from)
+        : new Date(to.getTime() - 7 * 24 * 60 * 60 * 1000);
       const limit = query.limit || 10;
-      
+
       const pages = await analyticsService.getTopPages(from, to, limit);
       res.json(pages);
     } catch (e) {
@@ -164,9 +178,11 @@ router.get(
     try {
       const query = req.query as { from?: string; to?: string; limit?: number };
       const to = query.to ? new Date(query.to) : new Date();
-      const from = query.from ? new Date(query.from) : new Date(to.getTime() - 7 * 24 * 60 * 60 * 1000);
+      const from = query.from
+        ? new Date(query.from)
+        : new Date(to.getTime() - 7 * 24 * 60 * 60 * 1000);
       const limit = query.limit || 10;
-      
+
       const referrers = await analyticsService.getTopReferrers(from, to, limit);
       res.json(referrers);
     } catch (e) {
@@ -185,9 +201,11 @@ router.get(
     try {
       const query = req.query as { from?: string; to?: string; limit?: number };
       const to = query.to ? new Date(query.to) : new Date();
-      const from = query.from ? new Date(query.from) : new Date(to.getTime() - 7 * 24 * 60 * 60 * 1000);
+      const from = query.from
+        ? new Date(query.from)
+        : new Date(to.getTime() - 7 * 24 * 60 * 60 * 1000);
       const limit = query.limit || 10;
-      
+
       const countries = await analyticsService.getCountryStats(from, to, limit);
       res.json(countries);
     } catch (e) {
@@ -206,8 +224,10 @@ router.get(
     try {
       const query = req.query as { from?: string; to?: string };
       const to = query.to ? new Date(query.to) : new Date();
-      const from = query.from ? new Date(query.from) : new Date(to.getTime() - 7 * 24 * 60 * 60 * 1000);
-      
+      const from = query.from
+        ? new Date(query.from)
+        : new Date(to.getTime() - 7 * 24 * 60 * 60 * 1000);
+
       const devices = await analyticsService.getDeviceStats(from, to);
       res.json(devices);
     } catch (e) {
@@ -226,9 +246,11 @@ router.get(
     try {
       const query = req.query as { from?: string; to?: string; limit?: number };
       const to = query.to ? new Date(query.to) : new Date();
-      const from = query.from ? new Date(query.from) : new Date(to.getTime() - 7 * 24 * 60 * 60 * 1000);
+      const from = query.from
+        ? new Date(query.from)
+        : new Date(to.getTime() - 7 * 24 * 60 * 60 * 1000);
       const limit = query.limit || 10;
-      
+
       const browsers = await analyticsService.getBrowserStats(from, to, limit);
       res.json(browsers);
     } catch (e) {
@@ -247,9 +269,11 @@ router.get(
     try {
       const query = req.query as { from?: string; to?: string; limit?: number };
       const to = query.to ? new Date(query.to) : new Date();
-      const from = query.from ? new Date(query.from) : new Date(to.getTime() - 7 * 24 * 60 * 60 * 1000);
+      const from = query.from
+        ? new Date(query.from)
+        : new Date(to.getTime() - 7 * 24 * 60 * 60 * 1000);
       const limit = query.limit || 10;
-      
+
       const os = await analyticsService.getOSStats(from, to, limit);
       res.json(os);
     } catch (e) {
@@ -263,7 +287,7 @@ router.get(
   '/realtime',
   authMiddleware(getConfigFn),
   requireRole(UserRole.ADMIN),
-  async (req, res, next) => {
+  async (_req, res, next) => {
     try {
       const realtime = await analyticsService.getRealTimeData();
       res.json(realtime);
@@ -287,8 +311,10 @@ router.get(
     try {
       const query = req.query as { from?: string; to?: string };
       const to = query.to ? new Date(query.to) : new Date();
-      const from = query.from ? new Date(query.from) : new Date(to.getTime() - 7 * 24 * 60 * 60 * 1000);
-      
+      const from = query.from
+        ? new Date(query.from)
+        : new Date(to.getTime() - 7 * 24 * 60 * 60 * 1000);
+
       const overview = await analyticsService.getSpeedInsightsOverview(from, to);
       res.json(overview);
     } catch (e) {
@@ -307,9 +333,11 @@ router.get(
     try {
       const query = req.query as { from?: string; to?: string; limit?: number };
       const to = query.to ? new Date(query.to) : new Date();
-      const from = query.from ? new Date(query.from) : new Date(to.getTime() - 7 * 24 * 60 * 60 * 1000);
+      const from = query.from
+        ? new Date(query.from)
+        : new Date(to.getTime() - 7 * 24 * 60 * 60 * 1000);
       const limit = query.limit || 10;
-      
+
       const pages = await analyticsService.getPagePerformance(from, to, limit);
       res.json(pages);
     } catch (e) {
@@ -330,12 +358,19 @@ router.get(
   validateQuery(analyticsQuerySchema),
   async (req, res, next) => {
     try {
-      const query = req.query as { from?: string; to?: string; limit?: number; sort?: 'views' | 'purchases' | 'revenue' };
+      const query = req.query as {
+        from?: string;
+        to?: string;
+        limit?: number;
+        sort?: 'views' | 'purchases' | 'revenue';
+      };
       const to = query.to ? new Date(query.to) : new Date();
-      const from = query.from ? new Date(query.from) : new Date(to.getTime() - 7 * 24 * 60 * 60 * 1000);
+      const from = query.from
+        ? new Date(query.from)
+        : new Date(to.getTime() - 7 * 24 * 60 * 60 * 1000);
       const limit = query.limit || 10;
       const sortBy = query.sort || 'views';
-      
+
       const products = await analyticsService.getTopProducts(from, to, limit, sortBy);
       res.json(products);
     } catch (e) {
@@ -354,8 +389,10 @@ router.get(
     try {
       const query = req.query as { from?: string; to?: string };
       const to = query.to ? new Date(query.to) : new Date();
-      const from = query.from ? new Date(query.from) : new Date(to.getTime() - 7 * 24 * 60 * 60 * 1000);
-      
+      const from = query.from
+        ? new Date(query.from)
+        : new Date(to.getTime() - 7 * 24 * 60 * 60 * 1000);
+
       const analytics = await analyticsService.getProductAnalytics(req.params.id, from, to);
       res.json(analytics);
     } catch (e) {
@@ -388,7 +425,7 @@ router.get(
         page?: number;
         limit?: number;
       };
-      
+
       const result = await analyticsService.getTrafficLogs({
         from: query.from ? new Date(query.from) : undefined,
         to: query.to ? new Date(query.to) : undefined,
@@ -432,7 +469,7 @@ router.get(
         page?: number;
         limit?: number;
       };
-      
+
       const result = await analyticsService.getServerLogs({
         from: query.from ? new Date(query.from) : undefined,
         to: query.to ? new Date(query.to) : undefined,
@@ -463,7 +500,7 @@ router.get(
       const query = req.query as { from?: string; to?: string };
       const to = query.to ? new Date(query.to) : new Date();
       const from = query.from ? new Date(query.from) : new Date(to.getTime() - 24 * 60 * 60 * 1000);
-      
+
       const stats = await analyticsService.getServerLogStats(from, to);
       res.json(stats);
     } catch (e) {
@@ -481,12 +518,12 @@ router.get(
     try {
       const { ServerLogModel } = await import('./analytics.model.js');
       const log = await ServerLogModel.findOne({ requestId: req.params.requestId }).lean();
-      
+
       if (!log) {
         res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Log entry not found' } });
         return;
       }
-      
+
       res.json({
         id: log._id.toString(),
         timestamp: log.timestamp.toISOString(),

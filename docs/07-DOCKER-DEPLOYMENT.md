@@ -45,11 +45,11 @@ services:
   mongodb:
     image: mongo:7
     ports:
-      - "27017:27017"
+      - '27017:27017'
     volumes:
       - mongodb_data:/data/db
     healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      test: ['CMD', 'mongosh', '--eval', "db.adminCommand('ping')"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -58,15 +58,15 @@ services:
     image: minio/minio
     command: server /data
     ports:
-      - "9000:9000"
-      - "9001:9001"
+      - '9000:9000'
+      - '9001:9001'
     volumes:
       - minio_data:/data
     environment:
       MINIO_ROOT_USER: minioadmin
       MINIO_ROOT_PASSWORD: minioadmin
     healthcheck:
-      test: ["CMD", "mc", "ready", "local"]
+      test: ['CMD', 'mc', 'ready', 'local']
       interval: 5s
       timeout: 5s
       retries: 5
@@ -76,7 +76,7 @@ services:
       context: .
       dockerfile: apps/backend/Dockerfile
     ports:
-      - "4000:4000"
+      - '4000:4000'
     environment:
       NODE_ENV: development
       PORT: 4000
@@ -100,7 +100,7 @@ services:
       context: .
       dockerfile: apps/web/Dockerfile
     ports:
-      - "3000:80"
+      - '3000:80'
     environment:
       VITE_API_URL: http://localhost:4000/api/v1
     depends_on:
@@ -111,7 +111,7 @@ services:
       context: .
       dockerfile: apps/manage/Dockerfile
     ports:
-      - "3001:80"
+      - '3001:80'
     environment:
       VITE_API_URL: http://localhost:4000/api/v1
     depends_on:

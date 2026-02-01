@@ -71,7 +71,11 @@ interface AnalyticsContextType {
   trackAddToCart: (productId: string, quantity: number, price: number) => void;
   trackRemoveFromCart: (productId: string) => void;
   trackCheckoutStart: (cartValue: number) => void;
-  trackPurchase: (orderId: string, total: number, items: Array<{ productId: string; total: number }>) => void;
+  trackPurchase: (
+    orderId: string,
+    total: number,
+    items: Array<{ productId: string; total: number }>
+  ) => void;
   trackSearch: (query: string, resultsCount: number) => void;
 }
 
@@ -95,7 +99,7 @@ function getVisitorId(): string {
 function getSessionId(): string {
   const SESSION_TIMEOUT = 30 * 60 * 1000; // 30 minutes
   const now = Date.now();
-  
+
   const stored = sessionStorage.getItem('lunaz_session');
   if (stored) {
     const { id, lastActivity } = JSON.parse(stored);
@@ -105,7 +109,7 @@ function getSessionId(): string {
       return id;
     }
   }
-  
+
   // New session
   const newId = 's_' + Math.random().toString(36).substring(2) + Date.now().toString(36);
   sessionStorage.setItem('lunaz_session', JSON.stringify({ id: newId, lastActivity: now }));
@@ -116,7 +120,7 @@ function getSessionId(): string {
 function getUTMParams(): Record<string, string> | undefined {
   const params = new URLSearchParams(window.location.search);
   const utm: Record<string, string> = {};
-  
+
   const utmParams = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'];
   for (const param of utmParams) {
     const value = params.get(param);
@@ -124,7 +128,7 @@ function getUTMParams(): Record<string, string> | undefined {
       utm[param.replace('utm_', '')] = value;
     }
   }
-  
+
   return Object.keys(utm).length > 0 ? utm : undefined;
 }
 
@@ -198,34 +202,43 @@ export function AnalyticsProvider({ children }: { children: ReactNode }) {
   }, [token]);
 
   // Queue an event
-  const queueEvent = useCallback((event: AnalyticsEvent) => {
-    eventQueueRef.current.push(event);
+  const queueEvent = useCallback(
+    (event: AnalyticsEvent) => {
+      eventQueueRef.current.push(event);
 
-    // Clear existing timeout
-    if (flushTimeoutRef.current) {
-      clearTimeout(flushTimeoutRef.current);
-    }
+      // Clear existing timeout
+      if (flushTimeoutRef.current) {
+        clearTimeout(flushTimeoutRef.current);
+      }
 
-    // Flush after 2 seconds or when batch reaches 10 events
-    if (eventQueueRef.current.length >= 10) {
-      flushEvents();
-    } else {
-      flushTimeoutRef.current = setTimeout(flushEvents, 2000);
-    }
-  }, [flushEvents]);
+      // Flush after 2 seconds or when batch reaches 10 events
+      if (eventQueueRef.current.length >= 10) {
+        flushEvents();
+      } else {
+        flushTimeoutRef.current = setTimeout(flushEvents, 2000);
+      }
+    },
+    [flushEvents]
+  );
 
   // Create base event
-  const createEvent = useCallback((type: AnalyticsEventType, eventData?: { name: string; properties?: Record<string, unknown> }): AnalyticsEvent => {
-    return {
-      type,
-      timestamp: new Date().toISOString(),
-      page: getPageData(),
-      referrer: document.referrer ? { url: document.referrer } : undefined,
-      utm: getUTMParams(),
-      event: eventData,
-      device: getDeviceData(),
-    };
-  }, []);
+  const createEvent = useCallback(
+    (
+      type: AnalyticsEventType,
+      eventData?: { name: string; properties?: Record<string, unknown> }
+    ): AnalyticsEvent => {
+      return {
+        type,
+        timestamp: new Date().toISOString(),
+        page: getPageData(),
+        referrer: document.referrer ? { url: document.referrer } : undefined,
+        utm: getUTMParams(),
+        event: eventData,
+        device: getDeviceData(),
+      };
+    },
+    []
+  );
 
   // Track page views on route change
   useEffect(() => {
@@ -247,23 +260,25 @@ export function AnalyticsProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let sent = false;
     const metrics: PerformanceData = {};
-    
+
     const sendPerformanceData = () => {
       if (sent) return;
       sent = true;
-      
+
       // Always get navigation timing data
-      const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming | undefined;
+      const navigation = performance.getEntriesByType('navigation')[0] as
+        | PerformanceNavigationTiming
+        | undefined;
       if (navigation) {
         metrics.ttfb = Math.max(0, navigation.responseStart - navigation.requestStart);
         metrics.fcp = navigation.responseStart;
         metrics.domContentLoaded = navigation.domContentLoadedEventEnd - navigation.startTime;
         metrics.loadComplete = navigation.loadEventEnd - navigation.startTime;
       }
-      
+
       // Only send if we have at least some metrics
       if (Object.keys(metrics).length === 0) return;
-      
+
       fetch(`${API_URL}/analytics/performance`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -272,10 +287,16 @@ export function AnalyticsProvider({ children }: { children: ReactNode }) {
           sessionId: getSessionId(),
           page: getPageData(),
           metrics,
-          connection: (navigator as Navigator & { connection?: { effectiveType?: string; downlink?: number; rtt?: number } }).connection
+          connection: (
+            navigator as Navigator & {
+              connection?: { effectiveType?: string; downlink?: number; rtt?: number };
+            }
+          ).connection
             ? {
-                effectiveType: (navigator as Navigator & { connection: { effectiveType?: string } }).connection.effectiveType,
-                downlink: (navigator as Navigator & { connection: { downlink?: number } }).connection.downlink,
+                effectiveType: (navigator as Navigator & { connection: { effectiveType?: string } })
+                  .connection.effectiveType,
+                downlink: (navigator as Navigator & { connection: { downlink?: number } })
+                  .connection.downlink,
                 rtt: (navigator as Navigator & { connection: { rtt?: number } }).connection.rtt,
               }
             : undefined,
@@ -286,26 +307,30 @@ export function AnalyticsProvider({ children }: { children: ReactNode }) {
         // Silently fail
       });
     };
-    
+
     // Wait for page to be fully loaded
     const trackPerformance = () => {
       // Get LCP from buffered entries
       try {
         const lcpEntries = performance.getEntriesByType('largest-contentful-paint');
         if (lcpEntries.length > 0) {
-          const lastEntry = lcpEntries[lcpEntries.length - 1] as PerformanceEntry & { startTime: number };
+          const lastEntry = lcpEntries[lcpEntries.length - 1] as PerformanceEntry & {
+            startTime: number;
+          };
           metrics.lcp = lastEntry.startTime;
         }
       } catch {
         // Try observer approach
       }
-      
+
       // Observe LCP for future entries
       if (typeof PerformanceObserver !== 'undefined') {
         try {
           const lcpObserver = new PerformanceObserver((list) => {
             const entries = list.getEntries();
-            const lastEntry = entries[entries.length - 1] as PerformanceEntry & { startTime: number };
+            const lastEntry = entries[entries.length - 1] as PerformanceEntry & {
+              startTime: number;
+            };
             if (lastEntry) {
               metrics.lcp = lastEntry.startTime;
             }
@@ -319,7 +344,10 @@ export function AnalyticsProvider({ children }: { children: ReactNode }) {
         try {
           const fidObserver = new PerformanceObserver((list) => {
             const entries = list.getEntries();
-            const firstEntry = entries[0] as PerformanceEntry & { processingStart: number; startTime: number };
+            const firstEntry = entries[0] as PerformanceEntry & {
+              processingStart: number;
+              startTime: number;
+            };
             if (firstEntry) {
               metrics.fid = firstEntry.processingStart - firstEntry.startTime;
             }
@@ -334,7 +362,10 @@ export function AnalyticsProvider({ children }: { children: ReactNode }) {
           let clsValue = 0;
           const clsObserver = new PerformanceObserver((list) => {
             for (const entry of list.getEntries()) {
-              const layoutShift = entry as PerformanceEntry & { hadRecentInput: boolean; value: number };
+              const layoutShift = entry as PerformanceEntry & {
+                hadRecentInput: boolean;
+                value: number;
+              };
               if (!layoutShift.hadRecentInput) {
                 clsValue += layoutShift.value;
               }
@@ -382,33 +413,70 @@ export function AnalyticsProvider({ children }: { children: ReactNode }) {
   }, [flushEvents, queueEvent, createEvent]);
 
   // Public tracking methods
-  const trackEvent = useCallback((name: string, properties?: Record<string, unknown>) => {
-    queueEvent(createEvent('custom', { name, properties }));
-  }, [queueEvent, createEvent]);
+  const trackEvent = useCallback(
+    (name: string, properties?: Record<string, unknown>) => {
+      queueEvent(createEvent('custom', { name, properties }));
+    },
+    [queueEvent, createEvent]
+  );
 
-  const trackProductView = useCallback((productId: string, productName: string) => {
-    queueEvent(createEvent('product_view', { name: 'product_view', properties: { productId, productName } }));
-  }, [queueEvent, createEvent]);
+  const trackProductView = useCallback(
+    (productId: string, productName: string) => {
+      queueEvent(
+        createEvent('product_view', {
+          name: 'product_view',
+          properties: { productId, productName },
+        })
+      );
+    },
+    [queueEvent, createEvent]
+  );
 
-  const trackAddToCart = useCallback((productId: string, quantity: number, price: number) => {
-    queueEvent(createEvent('add_to_cart', { name: 'add_to_cart', properties: { productId, quantity, price } }));
-  }, [queueEvent, createEvent]);
+  const trackAddToCart = useCallback(
+    (productId: string, quantity: number, price: number) => {
+      queueEvent(
+        createEvent('add_to_cart', {
+          name: 'add_to_cart',
+          properties: { productId, quantity, price },
+        })
+      );
+    },
+    [queueEvent, createEvent]
+  );
 
-  const trackRemoveFromCart = useCallback((productId: string) => {
-    queueEvent(createEvent('remove_from_cart', { name: 'remove_from_cart', properties: { productId } }));
-  }, [queueEvent, createEvent]);
+  const trackRemoveFromCart = useCallback(
+    (productId: string) => {
+      queueEvent(
+        createEvent('remove_from_cart', { name: 'remove_from_cart', properties: { productId } })
+      );
+    },
+    [queueEvent, createEvent]
+  );
 
-  const trackCheckoutStart = useCallback((cartValue: number) => {
-    queueEvent(createEvent('checkout_start', { name: 'checkout_start', properties: { cartValue } }));
-  }, [queueEvent, createEvent]);
+  const trackCheckoutStart = useCallback(
+    (cartValue: number) => {
+      queueEvent(
+        createEvent('checkout_start', { name: 'checkout_start', properties: { cartValue } })
+      );
+    },
+    [queueEvent, createEvent]
+  );
 
-  const trackPurchase = useCallback((orderId: string, total: number, items: Array<{ productId: string; total: number }>) => {
-    queueEvent(createEvent('purchase', { name: 'purchase', properties: { orderId, total, items } }));
-  }, [queueEvent, createEvent]);
+  const trackPurchase = useCallback(
+    (orderId: string, total: number, items: Array<{ productId: string; total: number }>) => {
+      queueEvent(
+        createEvent('purchase', { name: 'purchase', properties: { orderId, total, items } })
+      );
+    },
+    [queueEvent, createEvent]
+  );
 
-  const trackSearch = useCallback((query: string, resultsCount: number) => {
-    queueEvent(createEvent('search', { name: 'search', properties: { query, resultsCount } }));
-  }, [queueEvent, createEvent]);
+  const trackSearch = useCallback(
+    (query: string, resultsCount: number) => {
+      queueEvent(createEvent('search', { name: 'search', properties: { query, resultsCount } }));
+    },
+    [queueEvent, createEvent]
+  );
 
   const value: AnalyticsContextType = {
     trackEvent,
@@ -420,11 +488,7 @@ export function AnalyticsProvider({ children }: { children: ReactNode }) {
     trackSearch,
   };
 
-  return (
-    <AnalyticsContext.Provider value={value}>
-      {children}
-    </AnalyticsContext.Provider>
-  );
+  return <AnalyticsContext.Provider value={value}>{children}</AnalyticsContext.Provider>;
 }
 
 export function useAnalytics(): AnalyticsContextType {

@@ -3,7 +3,12 @@ import crypto from 'crypto';
 import type { UserSummary } from '@lunaz/types';
 import { UserRole } from '@lunaz/types';
 import { UserModel } from './auth.model.js';
-import type { RegisterInput, LoginInput, ForgotPasswordInput, ResetPasswordInput } from './auth.validation.js';
+import type {
+  RegisterInput,
+  LoginInput,
+  ForgotPasswordInput,
+  ResetPasswordInput,
+} from './auth.validation.js';
 import { signToken } from '../../lib/jwt.js';
 import type { BackendEnv } from '@lunaz/config';
 
@@ -68,7 +73,7 @@ export async function forgotPassword(
   input: ForgotPasswordInput
 ): Promise<{ message: string; token?: string }> {
   const user = await UserModel.findOne({ email: input.email.toLowerCase() });
-  
+
   // Always return success to prevent email enumeration
   if (!user) {
     return { message: 'If an account exists with that email, a reset link has been sent.' };
@@ -86,7 +91,7 @@ export async function forgotPassword(
   // In production: send email with reset link containing resetToken
   // For development, we return the token (remove in production!)
   const isDev = process.env.NODE_ENV !== 'production';
-  
+
   return {
     message: 'If an account exists with that email, a reset link has been sent.',
     ...(isDev && { token: resetToken }), // Only in development

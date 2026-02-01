@@ -5,13 +5,7 @@ export interface LabelProps extends LabelHTMLAttributes<HTMLLabelElement> {
   size?: 'sm' | 'md' | 'lg';
 }
 
-export function Label({
-  required,
-  size = 'md',
-  className = '',
-  children,
-  ...props
-}: LabelProps) {
+export function Label({ required, size = 'md', className = '', children, ...props }: LabelProps) {
   const sizes = {
     sm: 'text-xs',
     md: 'text-sm',

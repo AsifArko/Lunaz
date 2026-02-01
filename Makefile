@@ -5,7 +5,7 @@
 # Usage: make <target>
 # ============================================================================
 
-.PHONY: help install dev build clean docker-build docker-up docker-down docker-logs docker-clean seed-admin seed-products seed-data seed-all
+.PHONY: help install dev build clean docker-build docker-up docker-down docker-logs docker-clean seed-admin seed-products seed-data seed-all lint format typecheck test ci security-scan
 
 # Default target
 help:
@@ -19,6 +19,15 @@ help:
 	@echo "    make dev-manage  Start manage development server"
 	@echo "    make build       Build all packages and apps"
 	@echo "    make clean       Remove node_modules and dist folders"
+	@echo ""
+	@echo "  CI/CD:"
+	@echo "    make lint        Run ESLint on all workspaces"
+	@echo "    make format      Format code with Prettier"
+	@echo "    make format-check Check code formatting"
+	@echo "    make typecheck   Run TypeScript type checking"
+	@echo "    make test        Run all tests"
+	@echo "    make ci          Run full CI pipeline locally"
+	@echo "    make security-scan Run security scans"
 	@echo ""
 	@echo "  Database Seeding:"
 	@echo "    make seed-admin     Create an admin user"
@@ -73,6 +82,68 @@ clean:
 	rm -rf packages/*/node_modules
 	rm -rf apps/*/dist
 	rm -rf packages/*/dist
+
+# ─────────────────────────────────────────────────────────────────────────────
+# CI/CD
+# ─────────────────────────────────────────────────────────────────────────────
+
+# Run ESLint on all workspaces
+lint:
+	npm run lint
+
+# Fix ESLint issues
+lint-fix:
+	npm run lint:fix
+
+# Format code with Prettier
+format:
+	npm run format
+
+# Check code formatting
+format-check:
+	npm run format:check
+
+# Run TypeScript type checking
+typecheck:
+	npm run typecheck
+
+# Run all tests
+test:
+	npm run test
+
+# Run full CI pipeline locally
+ci:
+	@echo "Running CI pipeline..."
+	@echo ""
+	@echo "Step 1/4: Linting..."
+	npm run lint
+	@echo ""
+	@echo "Step 2/4: Type checking..."
+	npm run typecheck
+	@echo ""
+	@echo "Step 3/4: Running tests..."
+	npm run test
+	@echo ""
+	@echo "Step 4/4: Building..."
+	npm run build
+	@echo ""
+	@echo "✓ CI pipeline completed successfully!"
+
+# Run security scans
+security-scan:
+	@echo "Running security scans..."
+	npm audit --audit-level=high || true
+	@echo ""
+	@echo "Scanning for secrets..."
+	npx secretlint "**/*" || true
+	@echo ""
+	@echo "✓ Security scan completed!"
+
+# Setup husky pre-commit hooks
+setup-hooks:
+	npm run prepare
+	npx husky add .husky/pre-commit "npm run lint && npm run format:check"
+	@echo "✓ Git hooks configured!"
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Database / Seeding

@@ -29,7 +29,7 @@ export function Skeleton({
   const style: React.CSSProperties = {
     width: width ?? (variant === 'text' ? '100%' : undefined),
     height:
-      height ?? (variant === 'text' ? '1em' : variant === 'circular' ? width ?? '40px' : '100px'),
+      height ?? (variant === 'text' ? '1em' : variant === 'circular' ? (width ?? '40px') : '100px'),
   };
 
   const cn = ['bg-gray-200', animations[animation], variants[variant], className]

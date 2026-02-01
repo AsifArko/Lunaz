@@ -16,11 +16,11 @@
  *   - Run seed:products first to have products to order
  */
 
-import dotenv from "dotenv";
-import path from "path";
-import { fileURLToPath } from "url";
-import mongoose from "mongoose";
-import bcrypt from "bcrypt";
+import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import mongoose from 'mongoose';
+import bcrypt from 'bcrypt';
 import {
   UserRole,
   OrderStatus,
@@ -28,11 +28,11 @@ import {
   TransactionType,
   TransactionStatus,
   ProductStatus,
-} from "@lunaz/types";
+} from '@lunaz/types';
 
 // Load .env from project root
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-dotenv.config({ path: path.resolve(__dirname, "../../../../.env") });
+dotenv.config({ path: path.resolve(__dirname, '../../../../.env') });
 
 // ============================================================================
 // SCHEMAS (recreated to avoid import issues in standalone script)
@@ -79,7 +79,7 @@ const orderAddressSchema = new mongoose.Schema({
 const orderItemSchema = new mongoose.Schema({
   productId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Product",
+    ref: 'Product',
     required: true,
   },
   variantId: { type: String, required: true },
@@ -96,7 +96,7 @@ const orderSchema = new mongoose.Schema(
     orderNumber: { type: String, required: true, unique: true },
     userId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: 'User',
       required: true,
     },
     status: {
@@ -109,7 +109,7 @@ const orderSchema = new mongoose.Schema(
     shippingAmount: { type: Number, default: 0 },
     taxAmount: Number,
     total: { type: Number, required: true },
-    currency: { type: String, default: "BDT" },
+    currency: { type: String, default: 'BDT' },
     shippingAddress: { type: orderAddressSchema, required: true },
     billingAddress: orderAddressSchema,
     paymentIntentId: String,
@@ -127,7 +127,7 @@ const transactionSchema = new mongoose.Schema(
   {
     orderId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Order",
+      ref: 'Order',
       required: true,
     },
     type: {
@@ -136,7 +136,7 @@ const transactionSchema = new mongoose.Schema(
       required: true,
     },
     amount: { type: Number, required: true },
-    currency: { type: String, default: "BDT" },
+    currency: { type: String, default: 'BDT' },
     paymentMethod: { type: String, required: true },
     externalId: String,
     status: {
@@ -171,7 +171,7 @@ const productSchema = new mongoose.Schema(
     description: String,
     categoryId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Category",
+      ref: 'Category',
       required: true,
     },
     status: {
@@ -180,7 +180,7 @@ const productSchema = new mongoose.Schema(
       default: ProductStatus.DRAFT,
     },
     basePrice: { type: Number, required: true },
-    currency: { type: String, default: "BDT" },
+    currency: { type: String, default: 'BDT' },
     variants: [variantSchema],
     images: [imageSchema],
     meta: { title: String, description: String },
@@ -188,10 +188,10 @@ const productSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const UserModel = mongoose.model("User", userSchema);
-const OrderModel = mongoose.model("Order", orderSchema);
-const TransactionModel = mongoose.model("Transaction", transactionSchema);
-const ProductModel = mongoose.model("Product", productSchema);
+const UserModel = mongoose.model('User', userSchema);
+const OrderModel = mongoose.model('Order', orderSchema);
+const TransactionModel = mongoose.model('Transaction', transactionSchema);
+const ProductModel = mongoose.model('Product', productSchema);
 
 // ============================================================================
 // HELPERS
@@ -199,8 +199,7 @@ const ProductModel = mongoose.model("Product", productSchema);
 
 const generateId = () => Math.random().toString(36).substring(2, 11);
 
-const randomInt = (min: number, max: number) =>
-  Math.floor(Math.random() * (max - min + 1)) + min;
+const randomInt = (min: number, max: number) => Math.floor(Math.random() * (max - min + 1)) + min;
 
 const randomElement = <T>(arr: T[]): T => arr[Math.floor(Math.random() * arr.length)];
 
@@ -239,206 +238,206 @@ interface CustomerSeed {
 
 const customers: CustomerSeed[] = [
   {
-    email: "sarah.johnson@example.com",
-    name: "Sarah Johnson",
-    password: "Customer123!",
+    email: 'sarah.johnson@example.com',
+    name: 'Sarah Johnson',
+    password: 'Customer123!',
     addresses: [
       {
-        label: "Home",
-        line1: "123 Oak Street",
-        line2: "Apt 4B",
-        city: "Brooklyn",
-        state: "NY",
-        postalCode: "11201",
-        country: "US",
+        label: 'Home',
+        line1: '123 Oak Street',
+        line2: 'Apt 4B',
+        city: 'Brooklyn',
+        state: 'NY',
+        postalCode: '11201',
+        country: 'US',
         isDefault: true,
       },
       {
-        label: "Work",
-        line1: "456 Madison Avenue",
-        line2: "Floor 12",
-        city: "New York",
-        state: "NY",
-        postalCode: "10022",
-        country: "US",
+        label: 'Work',
+        line1: '456 Madison Avenue',
+        line2: 'Floor 12',
+        city: 'New York',
+        state: 'NY',
+        postalCode: '10022',
+        country: 'US',
         isDefault: false,
       },
     ],
   },
   {
-    email: "michael.chen@example.com",
-    name: "Michael Chen",
-    password: "Customer123!",
+    email: 'michael.chen@example.com',
+    name: 'Michael Chen',
+    password: 'Customer123!',
     addresses: [
       {
-        label: "Home",
-        line1: "789 Pine Road",
-        city: "San Francisco",
-        state: "CA",
-        postalCode: "94102",
-        country: "US",
+        label: 'Home',
+        line1: '789 Pine Road',
+        city: 'San Francisco',
+        state: 'CA',
+        postalCode: '94102',
+        country: 'US',
         isDefault: true,
       },
     ],
   },
   {
-    email: "emma.wilson@example.com",
-    name: "Emma Wilson",
-    password: "Customer123!",
+    email: 'emma.wilson@example.com',
+    name: 'Emma Wilson',
+    password: 'Customer123!',
     addresses: [
       {
-        label: "Home",
-        line1: "321 Maple Lane",
-        city: "Austin",
-        state: "TX",
-        postalCode: "78701",
-        country: "US",
+        label: 'Home',
+        line1: '321 Maple Lane',
+        city: 'Austin',
+        state: 'TX',
+        postalCode: '78701',
+        country: 'US',
         isDefault: true,
       },
     ],
   },
   {
-    email: "james.martinez@example.com",
-    name: "James Martinez",
-    password: "Customer123!",
+    email: 'james.martinez@example.com',
+    name: 'James Martinez',
+    password: 'Customer123!',
     addresses: [
       {
-        label: "Home",
-        line1: "555 Cedar Boulevard",
-        line2: "Suite 200",
-        city: "Los Angeles",
-        state: "CA",
-        postalCode: "90001",
-        country: "US",
+        label: 'Home',
+        line1: '555 Cedar Boulevard',
+        line2: 'Suite 200',
+        city: 'Los Angeles',
+        state: 'CA',
+        postalCode: '90001',
+        country: 'US',
         isDefault: true,
       },
     ],
   },
   {
-    email: "olivia.brown@example.com",
-    name: "Olivia Brown",
-    password: "Customer123!",
+    email: 'olivia.brown@example.com',
+    name: 'Olivia Brown',
+    password: 'Customer123!',
     addresses: [
       {
-        label: "Home",
-        line1: "888 Birch Street",
-        city: "Seattle",
-        state: "WA",
-        postalCode: "98101",
-        country: "US",
+        label: 'Home',
+        line1: '888 Birch Street',
+        city: 'Seattle',
+        state: 'WA',
+        postalCode: '98101',
+        country: 'US',
         isDefault: true,
       },
     ],
   },
   {
-    email: "william.davis@example.com",
-    name: "William Davis",
-    password: "Customer123!",
+    email: 'william.davis@example.com',
+    name: 'William Davis',
+    password: 'Customer123!',
     addresses: [
       {
-        label: "Home",
-        line1: "444 Elm Court",
-        city: "Denver",
-        state: "CO",
-        postalCode: "80202",
-        country: "US",
+        label: 'Home',
+        line1: '444 Elm Court',
+        city: 'Denver',
+        state: 'CO',
+        postalCode: '80202',
+        country: 'US',
         isDefault: true,
       },
     ],
   },
   {
-    email: "sophia.garcia@example.com",
-    name: "Sophia Garcia",
-    password: "Customer123!",
+    email: 'sophia.garcia@example.com',
+    name: 'Sophia Garcia',
+    password: 'Customer123!',
     addresses: [
       {
-        label: "Home",
-        line1: "777 Willow Way",
-        city: "Miami",
-        state: "FL",
-        postalCode: "33101",
-        country: "US",
+        label: 'Home',
+        line1: '777 Willow Way',
+        city: 'Miami',
+        state: 'FL',
+        postalCode: '33101',
+        country: 'US',
         isDefault: true,
       },
     ],
   },
   {
-    email: "benjamin.taylor@example.com",
-    name: "Benjamin Taylor",
-    password: "Customer123!",
+    email: 'benjamin.taylor@example.com',
+    name: 'Benjamin Taylor',
+    password: 'Customer123!',
     addresses: [
       {
-        label: "Home",
-        line1: "222 Spruce Drive",
-        line2: "Apt 15",
-        city: "Chicago",
-        state: "IL",
-        postalCode: "60601",
-        country: "US",
+        label: 'Home',
+        line1: '222 Spruce Drive',
+        line2: 'Apt 15',
+        city: 'Chicago',
+        state: 'IL',
+        postalCode: '60601',
+        country: 'US',
         isDefault: true,
       },
     ],
   },
   {
-    email: "ava.anderson@example.com",
-    name: "Ava Anderson",
-    password: "Customer123!",
+    email: 'ava.anderson@example.com',
+    name: 'Ava Anderson',
+    password: 'Customer123!',
     addresses: [
       {
-        label: "Home",
-        line1: "999 Aspen Circle",
-        city: "Portland",
-        state: "OR",
-        postalCode: "97201",
-        country: "US",
+        label: 'Home',
+        line1: '999 Aspen Circle',
+        city: 'Portland',
+        state: 'OR',
+        postalCode: '97201',
+        country: 'US',
         isDefault: true,
       },
     ],
   },
   {
-    email: "lucas.thomas@example.com",
-    name: "Lucas Thomas",
-    password: "Customer123!",
+    email: 'lucas.thomas@example.com',
+    name: 'Lucas Thomas',
+    password: 'Customer123!',
     addresses: [
       {
-        label: "Home",
-        line1: "111 Redwood Lane",
-        city: "Boston",
-        state: "MA",
-        postalCode: "02101",
-        country: "US",
+        label: 'Home',
+        line1: '111 Redwood Lane',
+        city: 'Boston',
+        state: 'MA',
+        postalCode: '02101',
+        country: 'US',
         isDefault: true,
       },
     ],
   },
   {
-    email: "mia.jackson@example.com",
-    name: "Mia Jackson",
-    password: "Customer123!",
+    email: 'mia.jackson@example.com',
+    name: 'Mia Jackson',
+    password: 'Customer123!',
     addresses: [
       {
-        label: "Home",
-        line1: "333 Hickory Street",
-        city: "Nashville",
-        state: "TN",
-        postalCode: "37201",
-        country: "US",
+        label: 'Home',
+        line1: '333 Hickory Street',
+        city: 'Nashville',
+        state: 'TN',
+        postalCode: '37201',
+        country: 'US',
         isDefault: true,
       },
     ],
   },
   {
-    email: "ethan.white@example.com",
-    name: "Ethan White",
-    password: "Customer123!",
+    email: 'ethan.white@example.com',
+    name: 'Ethan White',
+    password: 'Customer123!',
     addresses: [
       {
-        label: "Home",
-        line1: "666 Magnolia Avenue",
-        city: "Phoenix",
-        state: "AZ",
-        postalCode: "85001",
-        country: "US",
+        label: 'Home',
+        line1: '666 Magnolia Avenue',
+        city: 'Phoenix',
+        state: 'AZ',
+        postalCode: '85001',
+        country: 'US',
         isDefault: true,
       },
     ],
@@ -446,23 +445,23 @@ const customers: CustomerSeed[] = [
 ];
 
 const paymentMethods = [
-  "card_visa_4242",
-  "card_mastercard_5555",
-  "card_amex_3782",
-  "paypal",
-  "apple_pay",
+  'card_visa_4242',
+  'card_mastercard_5555',
+  'card_amex_3782',
+  'paypal',
+  'apple_pay',
 ];
 
 const orderNotes = [
   null,
-  "Please leave at the door",
-  "Gift wrap requested",
-  "Call before delivery",
-  "Fragile items - handle with care",
+  'Please leave at the door',
+  'Gift wrap requested',
+  'Call before delivery',
+  'Fragile items - handle with care',
   null,
-  "Expedited shipping requested",
+  'Expedited shipping requested',
   null,
-  "No signature required",
+  'No signature required',
   null,
 ];
 
@@ -471,16 +470,16 @@ const orderNotes = [
 // ============================================================================
 
 async function clearData() {
-  console.log("🗑️  Clearing existing customers, orders, and transactions...");
+  console.log('🗑️  Clearing existing customers, orders, and transactions...');
   await TransactionModel.deleteMany({});
   await OrderModel.deleteMany({});
   // Only delete customer users, not admins
   await UserModel.deleteMany({ role: UserRole.CUSTOMER });
-  console.log("✅ Cleared existing data");
+  console.log('✅ Cleared existing data');
 }
 
 async function seedCustomers(): Promise<mongoose.Types.ObjectId[]> {
-  console.log("\n👥 Seeding customers...");
+  console.log('\n👥 Seeding customers...');
   const customerIds: mongoose.Types.ObjectId[] = [];
 
   for (const customer of customers) {
@@ -534,7 +533,7 @@ interface ProductDoc {
 async function seedOrders(
   customerIds: mongoose.Types.ObjectId[]
 ): Promise<mongoose.Types.ObjectId[]> {
-  console.log("\n📦 Seeding orders...");
+  console.log('\n📦 Seeding orders...');
   const orderIds: mongoose.Types.ObjectId[] = [];
 
   // Get all published products
@@ -543,9 +542,7 @@ async function seedOrders(
   }).lean()) as ProductDoc[];
 
   if (products.length === 0) {
-    console.log(
-      "   ⚠️  No published products found. Run seed:products first."
-    );
+    console.log('   ⚠️  No published products found. Run seed:products first.');
     return orderIds;
   }
 
@@ -556,9 +553,7 @@ async function seedOrders(
     _id: { $in: customerIds },
   }).lean();
 
-  const customerMap = new Map(
-    customerDocs.map((c) => [c._id.toString(), c])
-  );
+  const customerMap = new Map(customerDocs.map((c) => [c._id.toString(), c]));
 
   // Generate orders for the past 60 days
   const ordersToCreate = 45; // Number of orders to create
@@ -587,10 +582,7 @@ async function seedOrders(
       do {
         product = randomElement(products);
         attempts++;
-      } while (
-        selectedProducts.has(product._id.toString()) &&
-        attempts < 10
-      );
+      } while (selectedProducts.has(product._id.toString()) && attempts < 10);
 
       if (selectedProducts.has(product._id.toString())) continue;
       selectedProducts.add(product._id.toString());
@@ -621,13 +613,10 @@ async function seedOrders(
     const shippingAmount = subtotal >= 5000 ? 0 : 150;
     const taxRate = 0.05; // 5% VAT
     const taxAmount = Math.round(subtotal * taxRate * 100) / 100;
-    const total =
-      Math.round((subtotal + shippingAmount + taxAmount) * 100) / 100;
+    const total = Math.round((subtotal + shippingAmount + taxAmount) * 100) / 100;
 
     // Determine order status based on age
-    const daysOld = Math.floor(
-      (Date.now() - orderDate.getTime()) / (1000 * 60 * 60 * 24)
-    );
+    const daysOld = Math.floor((Date.now() - orderDate.getTime()) / (1000 * 60 * 60 * 24));
     let status: OrderStatus;
     let paymentStatus: PaymentStatus;
 
@@ -635,9 +624,7 @@ async function seedOrders(
       // Older orders are delivered or cancelled
       status = Math.random() > 0.1 ? OrderStatus.DELIVERED : OrderStatus.CANCELLED;
       paymentStatus =
-        status === OrderStatus.CANCELLED
-          ? PaymentStatus.REFUNDED
-          : PaymentStatus.PAID;
+        status === OrderStatus.CANCELLED ? PaymentStatus.REFUNDED : PaymentStatus.PAID;
     } else if (daysOld > 7) {
       // Week old orders are shipped or delivered
       status = Math.random() > 0.3 ? OrderStatus.DELIVERED : OrderStatus.SHIPPED;
@@ -653,10 +640,7 @@ async function seedOrders(
     } else {
       // Today's orders are pending or confirmed
       status = Math.random() > 0.5 ? OrderStatus.CONFIRMED : OrderStatus.PENDING;
-      paymentStatus =
-        status === OrderStatus.PENDING
-          ? PaymentStatus.PENDING
-          : PaymentStatus.PAID;
+      paymentStatus = status === OrderStatus.PENDING ? PaymentStatus.PENDING : PaymentStatus.PAID;
     }
 
     const order = await OrderModel.create({
@@ -668,7 +652,7 @@ async function seedOrders(
       shippingAmount,
       taxAmount,
       total,
-      currency: "BDT",
+      currency: 'BDT',
       shippingAddress: {
         name: customer.name,
         line1: address.line1,
@@ -689,26 +673,22 @@ async function seedOrders(
 
     const statusEmoji =
       {
-        pending: "🟡",
-        confirmed: "🔵",
-        processing: "🟣",
-        shipped: "📦",
-        delivered: "✅",
-        cancelled: "❌",
-      }[status] || "⚪";
+        pending: '🟡',
+        confirmed: '🔵',
+        processing: '🟣',
+        shipped: '📦',
+        delivered: '✅',
+        cancelled: '❌',
+      }[status] || '⚪';
 
-    console.log(
-      `   ${statusEmoji} Order ${order.orderNumber}: $${total.toFixed(2)} (${status})`
-    );
+    console.log(`   ${statusEmoji} Order ${order.orderNumber}: $${total.toFixed(2)} (${status})`);
   }
 
   return orderIds;
 }
 
-async function seedTransactions(
-  orderIds: mongoose.Types.ObjectId[]
-): Promise<void> {
-  console.log("\n💳 Seeding transactions...");
+async function seedTransactions(orderIds: mongoose.Types.ObjectId[]): Promise<void> {
+  console.log('\n💳 Seeding transactions...');
 
   const orders = await OrderModel.find({ _id: { $in: orderIds } }).lean();
 
@@ -751,7 +731,7 @@ async function seedTransactions(
         status: TransactionStatus.COMPLETED,
         metadata: {
           orderNumber: order.orderNumber,
-          reason: "Customer requested cancellation",
+          reason: 'Customer requested cancellation',
         },
         createdAt: refundDate,
       });
@@ -771,20 +751,20 @@ async function seedTransactions(
 async function main() {
   const mongoUri = process.env.MONGODB_URI;
   if (!mongoUri) {
-    console.error("❌ MONGODB_URI environment variable is required");
+    console.error('❌ MONGODB_URI environment variable is required');
     process.exit(1);
   }
 
-  const shouldClear = process.argv.includes("--clear");
+  const shouldClear = process.argv.includes('--clear');
 
-  console.log("🌱 Lunaz Data Seed Script");
-  console.log("=========================\n");
-  console.log("This script creates dummy customers, orders, and transactions.");
-  console.log("Prerequisites: Run seed:products first.\n");
+  console.log('🌱 Lunaz Data Seed Script');
+  console.log('=========================\n');
+  console.log('This script creates dummy customers, orders, and transactions.');
+  console.log('Prerequisites: Run seed:products first.\n');
 
-  console.log("🔌 Connecting to MongoDB...");
+  console.log('🔌 Connecting to MongoDB...');
   await mongoose.connect(mongoUri);
-  console.log("✅ Connected to MongoDB");
+  console.log('✅ Connected to MongoDB');
 
   try {
     if (shouldClear) {
@@ -803,9 +783,7 @@ async function main() {
       console.log(`   - ${existingCustomers} customers`);
       console.log(`   - ${existingOrders} orders`);
       console.log(`   - ${existingTransactions} transactions`);
-      console.log(
-        "   Run with --clear flag to remove existing data before seeding\n"
-      );
+      console.log('   Run with --clear flag to remove existing data before seeding\n');
     }
 
     // Seed data
@@ -822,42 +800,40 @@ async function main() {
 
     // Order status breakdown
     const statusCounts = await OrderModel.aggregate([
-      { $group: { _id: "$status", count: { $sum: 1 } } },
+      { $group: { _id: '$status', count: { $sum: 1 } } },
     ]);
 
     // Revenue calculation
     const revenue = await OrderModel.aggregate([
       { $match: { paymentStatus: PaymentStatus.PAID } },
-      { $group: { _id: null, total: { $sum: "$total" } } },
+      { $group: { _id: null, total: { $sum: '$total' } } },
     ]);
 
-    console.log("\n=========================");
-    console.log("📊 Seeding Complete!");
-    console.log("=========================");
+    console.log('\n=========================');
+    console.log('📊 Seeding Complete!');
+    console.log('=========================');
     console.log(`   Customers:     ${totalCustomers}`);
     console.log(`   Orders:        ${totalOrders}`);
     console.log(`   Transactions:  ${totalTransactions}`);
-    console.log("");
-    console.log("   Order Status Breakdown:");
+    console.log('');
+    console.log('   Order Status Breakdown:');
     for (const { _id, count } of statusCounts) {
       console.log(`     - ${_id}: ${count}`);
     }
-    console.log("");
-    console.log(
-      `   💰 Total Revenue: $${(revenue[0]?.total || 0).toFixed(2)}`
-    );
-    console.log("");
-    console.log("   Test customer credentials:");
-    console.log("     Email:    sarah.johnson@example.com");
-    console.log("     Password: Customer123!");
-    console.log("");
+    console.log('');
+    console.log(`   💰 Total Revenue: $${(revenue[0]?.total || 0).toFixed(2)}`);
+    console.log('');
+    console.log('   Test customer credentials:');
+    console.log('     Email:    sarah.johnson@example.com');
+    console.log('     Password: Customer123!');
+    console.log('');
   } finally {
     await mongoose.disconnect();
-    console.log("🔌 Disconnected from MongoDB");
+    console.log('🔌 Disconnected from MongoDB');
   }
 }
 
 main().catch((err) => {
-  console.error("❌ Error seeding data:", err);
+  console.error('❌ Error seeding data:', err);
   process.exit(1);
 });

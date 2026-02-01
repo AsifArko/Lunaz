@@ -8,7 +8,9 @@ export function authMiddleware(getConfig: () => BackendEnv) {
     const token = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : undefined;
 
     if (!token) {
-      res.status(401).json({ error: { code: 'UNAUTHORIZED', message: 'Missing or invalid token' } });
+      res
+        .status(401)
+        .json({ error: { code: 'UNAUTHORIZED', message: 'Missing or invalid token' } });
       return;
     }
 
@@ -17,7 +19,9 @@ export function authMiddleware(getConfig: () => BackendEnv) {
       req.user = verifyToken(token, JWT_SECRET);
       next();
     } catch {
-      res.status(401).json({ error: { code: 'UNAUTHORIZED', message: 'Invalid or expired token' } });
+      res
+        .status(401)
+        .json({ error: { code: 'UNAUTHORIZED', message: 'Invalid or expired token' } });
     }
   };
 }

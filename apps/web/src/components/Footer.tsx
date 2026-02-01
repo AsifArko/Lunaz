@@ -1,5 +1,5 @@
-import { Link } from "react-router-dom";
-import { Container } from "@lunaz/ui";
+import { Link } from 'react-router-dom';
+import { Container } from '@lunaz/ui';
 
 function SocialIcon({
   href,
@@ -41,22 +41,15 @@ export function Footer() {
                   Lunaz
                 </Link>
                 <p className="mt-4 text-sm text-slate-500 leading-relaxed max-w-xs">
-                  Curated lifestyle and home décor for modern living. Discover
-                  pieces that bring sophistication and warmth to your space.
+                  Curated lifestyle and home décor for modern living. Discover pieces that bring
+                  sophistication and warmth to your space.
                 </p>
               </div>
 
               {/* Social Links */}
               <div className="flex items-center gap-3">
-                <SocialIcon
-                  href="https://www.facebook.com/CandleistabyAfrin"
-                  label="Facebook"
-                >
-                  <svg
-                    className="w-4 h-4"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                  >
+                <SocialIcon href="https://www.facebook.com/CandleistabyAfrin" label="Facebook">
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
                   </svg>
                 </SocialIcon>
@@ -69,27 +62,13 @@ export function Footer() {
                     <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                   </svg>
                 </SocialIcon> */}
-                <SocialIcon
-                  href="https://www.instagram.com/lunaz_decor"
-                  label="Instagram"
-                >
-                  <svg
-                    className="w-4 h-4"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                  >
+                <SocialIcon href="https://www.instagram.com/lunaz_decor" label="Instagram">
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.45 2.525c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.63zm-.081 1.802h-.468c-2.456 0-2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.96-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.058-3.96-.045-.976-.207-1.505-.344-1.858a3.097 3.097 0 00-.748-1.15 3.098 3.098 0 00-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z" />
                   </svg>
                 </SocialIcon>
-                <SocialIcon
-                  href="https://www.threads.com/@lunaz_decor"
-                  label="Threads"
-                >
-                  <svg
-                    className="w-4 h-4"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                  >
+                <SocialIcon href="https://www.threads.com/@lunaz_decor" label="Threads">
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12.186 24h-.007c-3.581-.024-6.334-1.205-8.184-3.509C2.35 18.44 1.5 15.586 1.472 12.01v-.017c.03-3.579.879-6.43 2.525-8.482C5.845 1.205 8.6.024 12.18 0h.014c2.746.02 5.043.725 6.826 2.098 1.677 1.29 2.858 3.13 3.509 5.467l-2.04.569c-1.104-3.96-3.898-5.984-8.304-6.015-2.91.022-5.11.936-6.54 2.717C4.307 6.504 3.616 8.914 3.589 12c.027 3.086.718 5.496 2.057 7.164 1.43 1.783 3.631 2.698 6.54 2.717 2.623-.02 4.358-.631 5.8-2.045 1.647-1.613 1.618-3.593 1.09-4.798-.31-.71-.873-1.3-1.634-1.75-.192 1.352-.622 2.446-1.284 3.272-.886 1.102-2.14 1.704-3.73 1.79-1.202.065-2.361-.218-3.259-.801-1.063-.689-1.685-1.74-1.752-2.96-.065-1.17.408-2.133 1.332-2.727.851-.539 1.987-.812 3.381-.812.476 0 .964.025 1.459.076-.082-.62-.278-1.126-.586-1.508-.41-.507-1.022-.763-1.82-.763h-.043c-.903.02-1.627.386-2.073.886l-1.447-1.342c.782-.88 1.95-1.382 3.463-1.424h.065c1.344 0 2.444.417 3.273 1.24.715.71 1.166 1.678 1.342 2.87.592.163 1.14.391 1.638.685 1.13.665 1.994 1.587 2.49 2.726.738 1.7.783 4.523-1.478 6.734-1.893 1.853-4.238 2.637-7.385 2.66zm-.09-5.918c.056 0 .112 0 .168-.002 1.056-.057 1.86-.467 2.382-1.218.378-.543.614-1.251.71-2.123-.39-.088-.798-.133-1.221-.133-.956 0-1.722.183-2.216.53-.435.305-.644.7-.622 1.174.033.676.704 1.772 2.8 1.772z" />
                   </svg>
                 </SocialIcon>
@@ -116,9 +95,7 @@ export function Footer() {
               <div className="md:grid md:grid-cols-2 md:gap-8">
                 {/* Shop */}
                 <div>
-                  <h3 className="text-sm font-semibold text-slate-900 tracking-wide">
-                    Shop
-                  </h3>
+                  <h3 className="text-sm font-semibold text-slate-900 tracking-wide">Shop</h3>
                   <ul className="mt-5 space-y-4">
                     <li>
                       <Link
@@ -157,9 +134,7 @@ export function Footer() {
 
                 {/* Account */}
                 <div className="mt-10 md:mt-0">
-                  <h3 className="text-sm font-semibold text-slate-900 tracking-wide">
-                    Account
-                  </h3>
+                  <h3 className="text-sm font-semibold text-slate-900 tracking-wide">Account</h3>
                   <ul className="mt-5 space-y-4">
                     <li>
                       <Link
@@ -200,9 +175,7 @@ export function Footer() {
               <div className="md:grid md:grid-cols-2 md:gap-8">
                 {/* Support */}
                 <div>
-                  <h3 className="text-sm font-semibold text-slate-900 tracking-wide">
-                    Support
-                  </h3>
+                  <h3 className="text-sm font-semibold text-slate-900 tracking-wide">Support</h3>
                   <ul className="mt-5 space-y-4">
                     <li>
                       <a
@@ -241,9 +214,7 @@ export function Footer() {
 
                 {/* Legal */}
                 <div className="mt-10 md:mt-0">
-                  <h3 className="text-sm font-semibold text-slate-900 tracking-wide">
-                    Legal
-                  </h3>
+                  <h3 className="text-sm font-semibold text-slate-900 tracking-wide">Legal</h3>
                   <ul className="mt-5 space-y-4">
                     <li>
                       <Link
@@ -273,9 +244,7 @@ export function Footer() {
 
         {/* Bottom Section */}
         <div className="py-8 flex flex-col items-center justify-between gap-4 md:flex-row">
-          <p className="text-sm text-slate-500">
-            © {currentYear} Lunaz. All rights reserved.
-          </p>
+          <p className="text-sm text-slate-500">© {currentYear} Lunaz. All rights reserved.</p>
 
           {/* Payment Methods / Trust Badges */}
           <div className="flex items-center gap-6">

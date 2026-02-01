@@ -14,7 +14,7 @@ const getConfigFn = getConfig;
 router.get('/', async (req, res, next) => {
   try {
     const withCounts = req.query.withCounts === 'true';
-    const data = withCounts 
+    const data = withCounts
       ? await categoryService.getCategoriesWithCounts()
       : await categoryService.getAllCategories();
     res.json({ data });

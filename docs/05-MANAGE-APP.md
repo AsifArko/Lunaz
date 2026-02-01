@@ -10,50 +10,50 @@
 
 ### 2.1 Auth
 
-| Route | Screen | Description |
-|-------|--------|-------------|
+| Route    | Screen      | Description                                                                  |
+| -------- | ----------- | ---------------------------------------------------------------------------- |
 | `/login` | Admin login | Email + password; backend validates role `admin`; JWT; redirect to dashboard |
 
 ### 2.2 Dashboard
 
-| Route | Screen | Description |
-|-------|--------|-------------|
+| Route               | Screen    | Description                                                                                    |
+| ------------------- | --------- | ---------------------------------------------------------------------------------------------- |
 | `/` or `/dashboard` | Dashboard | Key metrics: revenue (today/week/month), order count, top products; recent orders; quick links |
 
 ### 2.3 Products and catalog
 
-| Route | Screen | Description |
-|-------|--------|-------------|
-| `/products` | Product list | Table: name, SKU, category, price, status; search and filter; pagination; link to create/edit |
-| `/products/new` | Create product | Form: name, slug, description, category, base price, **variants** (size, SKU, price override, stock), status; **image upload** (multiple, S3 via backend) |
-| `/products/:id` | Edit product | Same form; load existing; update; **upload/remove images** |
-| `/categories` | Category list | List categories; CRUD |
-| `/categories/new` | Create category | Name, slug, parent, image optional |
-| `/categories/:id` | Edit category | Update category |
+| Route             | Screen          | Description                                                                                                                                               |
+| ----------------- | --------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/products`       | Product list    | Table: name, SKU, category, price, status; search and filter; pagination; link to create/edit                                                             |
+| `/products/new`   | Create product  | Form: name, slug, description, category, base price, **variants** (size, SKU, price override, stock), status; **image upload** (multiple, S3 via backend) |
+| `/products/:id`   | Edit product    | Same form; load existing; update; **upload/remove images**                                                                                                |
+| `/categories`     | Category list   | List categories; CRUD                                                                                                                                     |
+| `/categories/new` | Create category | Name, slug, parent, image optional                                                                                                                        |
+| `/categories/:id` | Edit category   | Update category                                                                                                                                           |
 
 ### 2.4 Orders and fulfilment
 
-| Route | Screen | Description |
-|-------|--------|-------------|
-| `/orders` | Order list | Table: order number, date, customer, total, status; filter by status/date; search; link to detail |
+| Route         | Screen       | Description                                                                                                                                                              |
+| ------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `/orders`     | Order list   | Table: order number, date, customer, total, status; filter by status/date; search; link to detail                                                                        |
 | `/orders/:id` | Order detail | Full order: items, quantities, variants, prices, shipping address; **update order status** (e.g. Pending → Confirmed → Processing → Shipped → Delivered); optional notes |
 
 ### 2.5 Sales and finance
 
-| Route | Screen | Description |
-|-------|--------|-------------|
-| `/transactions` | Transactions | List payment transactions: order, amount, method, status, date; filter by date/type |
-| `/payouts` | Payouts / cash outs | List payouts; amount, status, reference, date |
-| `/reports/sales` | Sales report | Revenue by period (day/week/month); chart or table; optional export (CSV) |
-| `/reports/orders` | Orders report | Orders by status; count; optional export |
+| Route             | Screen              | Description                                                                         |
+| ----------------- | ------------------- | ----------------------------------------------------------------------------------- |
+| `/transactions`   | Transactions        | List payment transactions: order, amount, method, status, date; filter by date/type |
+| `/payouts`        | Payouts / cash outs | List payouts; amount, status, reference, date                                       |
+| `/reports/sales`  | Sales report        | Revenue by period (day/week/month); chart or table; optional export (CSV)           |
+| `/reports/orders` | Orders report       | Orders by status; count; optional export                                            |
 
 ### 2.6 Customers and settings
 
-| Route | Screen | Description |
-|-------|--------|-------------|
-| `/customers` | Customer list | Email, name, order count, last order; search; link to detail |
-| `/customers/:id` | Customer detail | Profile; order history (read-only) |
-| `/settings` | Settings | Store name, contact email; shipping zones; tax rules; optional feature flags |
+| Route            | Screen          | Description                                                                  |
+| ---------------- | --------------- | ---------------------------------------------------------------------------- |
+| `/customers`     | Customer list   | Email, name, order count, last order; search; link to detail                 |
+| `/customers/:id` | Customer detail | Profile; order history (read-only)                                           |
+| `/settings`      | Settings        | Store name, contact email; shipping zones; tax rules; optional feature flags |
 
 ### 2.7 Layout and guard
 

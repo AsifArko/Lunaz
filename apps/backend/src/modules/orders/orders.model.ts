@@ -36,7 +36,11 @@ const orderSchema = new mongoose.Schema(
     shippingAddress: { type: orderAddressSchema, required: true },
     billingAddress: orderAddressSchema,
     paymentIntentId: String,
-    paymentStatus: { type: String, enum: Object.values(PaymentStatus), default: PaymentStatus.PENDING },
+    paymentStatus: {
+      type: String,
+      enum: Object.values(PaymentStatus),
+      default: PaymentStatus.PENDING,
+    },
     notes: String,
   },
   { timestamps: true }

@@ -46,11 +46,16 @@ export async function updateProfile(userId: string, input: UpdateProfileInput) {
   const update: Record<string, unknown> = {};
   if (input.name) update.name = input.name;
   if (input.email) {
-    const existing = await UserModel.findOne({ email: input.email.toLowerCase(), _id: { $ne: userId } });
+    const existing = await UserModel.findOne({
+      email: input.email.toLowerCase(),
+      _id: { $ne: userId },
+    });
     if (existing) throw createError('Email already in use', 409);
     update.email = input.email.toLowerCase();
   }
-  const user = await UserModel.findByIdAndUpdate(userId, { $set: update }, { new: true }).select('-passwordHash');
+  const user = await UserModel.findByIdAndUpdate(userId, { $set: update }, { new: true }).select(
+    '-passwordHash'
+  );
   if (!user) throw createError('User not found', 404);
   return getProfile(userId);
 }
@@ -144,7 +149,7 @@ export async function deleteAddress(userId: string, addressId: string) {
 
   const wasDefault = addr.isDefault;
   addr.deleteOne();
-  
+
   // If deleted was default, set first remaining as default
   if (wasDefault && user.addresses?.length) {
     user.addresses[0].isDefault = true;

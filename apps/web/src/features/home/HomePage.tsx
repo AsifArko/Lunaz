@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import type { Category, Product, PaginatedResponse } from "@lunaz/types";
+import { useState, useEffect, useRef } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import type { Category, Product, PaginatedResponse } from '@lunaz/types';
 import {
   Container,
   Card,
@@ -8,13 +8,13 @@ import {
   ProductCard,
   ProductCardSkeleton,
   type ProductCardProduct,
-} from "@lunaz/ui";
-import { api } from "../../api/client";
-import { Skeleton } from "../../components/Skeleton";
-import { HeroAnimation } from "../../components/HeroAnimation";
-import { PromoAnimation } from "../../components/PromoAnimation";
-import { useCart } from "../../context/CartContext";
-import { useToast } from "../../context/ToastContext";
+} from '@lunaz/ui';
+import { api } from '../../api/client';
+import { Skeleton } from '../../components/Skeleton';
+import { HeroAnimation } from '../../components/HeroAnimation';
+import { PromoAnimation } from '../../components/PromoAnimation';
+import { useCart } from '../../context/CartContext';
+import { useToast } from '../../context/ToastContext';
 
 interface GroupedCategory {
   parent: Category;
@@ -26,9 +26,7 @@ export function HomePage() {
   const { addItem } = useCart();
   const { addToast } = useToast();
 
-  const [groupedCategories, setGroupedCategories] = useState<GroupedCategory[]>(
-    []
-  );
+  const [groupedCategories, setGroupedCategories] = useState<GroupedCategory[]>([]);
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeParent, setActiveParent] = useState<string | null>(null);
@@ -38,8 +36,8 @@ export function HomePage() {
     async function fetchData() {
       try {
         const [catRes, prodRes] = await Promise.all([
-          api<PaginatedResponse<Category>>("/categories?limit=50"),
-          api<PaginatedResponse<Product>>("/products?status=published&limit=8"),
+          api<PaginatedResponse<Category>>('/categories?limit=50'),
+          api<PaginatedResponse<Product>>('/products?status=published&limit=8'),
         ]);
 
         // Group categories by parent
@@ -65,43 +63,35 @@ export function HomePage() {
     fetchData();
   }, []);
 
-  const activeGroup = groupedCategories.find(
-    (g) => g.parent.id === activeParent
-  );
+  const activeGroup = groupedCategories.find((g) => g.parent.id === activeParent);
 
-  const scrollSubcategories = (direction: "left" | "right") => {
+  const scrollSubcategories = (direction: 'left' | 'right') => {
     if (scrollContainerRef.current) {
       const scrollAmount = 300;
       scrollContainerRef.current.scrollBy({
-        left: direction === "left" ? -scrollAmount : scrollAmount,
-        behavior: "smooth",
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth',
       });
     }
   };
 
-  const handleAddToCart = (
-    e: React.MouseEvent,
-    cardProduct: ProductCardProduct
-  ) => {
+  const handleAddToCart = (e: React.MouseEvent, cardProduct: ProductCardProduct) => {
     e.preventDefault();
     e.stopPropagation();
     const product = featuredProducts.find((p) => p.id === cardProduct.id);
     if (product && product.variants.length > 0) {
       addItem(product, product.variants[0], 1);
-      addToast(`Added ${product.name} to cart`, "success");
+      addToast(`Added ${product.name} to cart`, 'success');
     }
   };
 
-  const handleBuyNow = (
-    e: React.MouseEvent,
-    cardProduct: ProductCardProduct
-  ) => {
+  const handleBuyNow = (e: React.MouseEvent, cardProduct: ProductCardProduct) => {
     e.preventDefault();
     e.stopPropagation();
     const product = featuredProducts.find((p) => p.id === cardProduct.id);
     if (product && product.variants.length > 0) {
       addItem(product, product.variants[0], 1);
-      navigate("/cart");
+      navigate('/cart');
     }
   };
 
@@ -121,14 +111,12 @@ export function HomePage() {
             {/* Tagline */}
             <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-6 rounded-md bg-white/5 border border-white/10 backdrop-blur-sm">
               <span className="w-1.5 h-1.5 rounded-sm bg-emerald-400 animate-pulse" />
-              <span className="heading-sub text-white/70">
-                Home Decor & Lifestyle
-              </span>
+              <span className="heading-sub text-white/70">Home Decor & Lifestyle</span>
             </div>
 
             {/* Main Heading */}
             <h1 className="heading-display text-4xl md:text-6xl text-white mb-6">
-              Elevate Your{" "}
+              Elevate Your{' '}
               <span className="text-accent bg-gradient-to-r from-white via-white to-white/60 bg-clip-text text-transparent">
                 Living Space
               </span>
@@ -136,8 +124,8 @@ export function HomePage() {
 
             {/* Description */}
             <p className="text-body text-lg text-white/60 mb-10 max-w-xl">
-              Discover curated décor pieces and lifestyle essentials that bring
-              sophistication to your home.
+              Discover curated décor pieces and lifestyle essentials that bring sophistication to
+              your home.
             </p>
 
             {/* CTA Buttons */}
@@ -165,12 +153,7 @@ export function HomePage() {
             <div className="mt-10 pt-6 border-t border-white/5">
               <div className="flex flex-wrap items-center gap-6 md:gap-10 text-white/40 text-xs">
                 <div className="flex items-center gap-1.5">
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -181,12 +164,7 @@ export function HomePage() {
                   <span>Free Shipping Over $100</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -197,12 +175,7 @@ export function HomePage() {
                   <span>Secure Checkout</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -232,12 +205,7 @@ export function HomePage() {
               className="text-slate-600 hover:text-slate-900 text-sm tracking-wide transition-colors flex items-center gap-2 font-medium"
             >
               View all
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -272,8 +240,8 @@ export function HomePage() {
                     onClick={() => setActiveParent(group.parent.id)}
                     className={`group relative flex items-center gap-4 px-5 py-3 rounded-xl transition-all duration-300 ${
                       activeParent === group.parent.id
-                        ? "bg-slate-900 text-white shadow-lg"
-                        : "bg-white text-slate-700 hover:bg-slate-100 shadow-sm border border-slate-200"
+                        ? 'bg-slate-900 text-white shadow-lg'
+                        : 'bg-white text-slate-700 hover:bg-slate-100 shadow-sm border border-slate-200'
                     }`}
                   >
                     {/* Category thumbnail */}
@@ -287,16 +255,12 @@ export function HomePage() {
                       ) : (
                         <div
                           className={`w-full h-full flex items-center justify-center ${
-                            activeParent === group.parent.id
-                              ? "bg-slate-700"
-                              : "bg-slate-100"
+                            activeParent === group.parent.id ? 'bg-slate-700' : 'bg-slate-100'
                           }`}
                         >
                           <span
                             className={`text-lg font-light ${
-                              activeParent === group.parent.id
-                                ? "text-slate-400"
-                                : "text-slate-400"
+                              activeParent === group.parent.id ? 'text-slate-400' : 'text-slate-400'
                             }`}
                           >
                             {group.parent.name.charAt(0)}
@@ -305,20 +269,14 @@ export function HomePage() {
                       )}
                     </div>
                     <div className="text-left">
-                      <h3 className="font-medium text-base">
-                        {group.parent.name}
-                      </h3>
+                      <h3 className="font-medium text-base">{group.parent.name}</h3>
                       <p
                         className={`text-xs ${
-                          activeParent === group.parent.id
-                            ? "text-slate-400"
-                            : "text-slate-500"
+                          activeParent === group.parent.id ? 'text-slate-400' : 'text-slate-500'
                         }`}
                       >
-                        {group.children.length}{" "}
-                        {group.children.length === 1
-                          ? "subcategory"
-                          : "subcategories"}
+                        {group.children.length}{' '}
+                        {group.children.length === 1 ? 'subcategory' : 'subcategories'}
                       </p>
                     </div>
                     {/* Active indicator */}
@@ -334,13 +292,11 @@ export function HomePage() {
                 <div className="relative">
                   {/* Section header */}
                   <div className="flex items-center justify-between mb-5">
-                    <p className="text-sm text-slate-500">
-                      Browse {activeGroup.parent.name}
-                    </p>
+                    <p className="text-sm text-slate-500">Browse {activeGroup.parent.name}</p>
                     <div className="flex items-center gap-2">
                       {/* Scroll buttons for desktop */}
                       <button
-                        onClick={() => scrollSubcategories("left")}
+                        onClick={() => scrollSubcategories('left')}
                         className="hidden md:flex w-8 h-8 items-center justify-center rounded-full bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300 transition-colors"
                         aria-label="Scroll left"
                       >
@@ -359,7 +315,7 @@ export function HomePage() {
                         </svg>
                       </button>
                       <button
-                        onClick={() => scrollSubcategories("right")}
+                        onClick={() => scrollSubcategories('right')}
                         className="hidden md:flex w-8 h-8 items-center justify-center rounded-full bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 hover:border-slate-300 transition-colors"
                         aria-label="Scroll right"
                       >
@@ -384,7 +340,7 @@ export function HomePage() {
                   <div
                     ref={scrollContainerRef}
                     className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide snap-x snap-mandatory"
-                    style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                   >
                     {/* "View All" card for parent category */}
                     <Link
@@ -450,16 +406,14 @@ export function HomePage() {
 
                   {/* Scroll indicator for mobile */}
                   <div className="flex justify-center gap-1.5 mt-4 md:hidden">
-                    {[activeGroup.parent, ...activeGroup.children].map(
-                      (_, idx) => (
-                        <div
-                          key={idx}
-                          className={`w-1.5 h-1.5 rounded-full transition-colors ${
-                            idx === 0 ? "bg-slate-400" : "bg-slate-200"
-                          }`}
-                        />
-                      )
-                    )}
+                    {[activeGroup.parent, ...activeGroup.children].map((_, idx) => (
+                      <div
+                        key={idx}
+                        className={`w-1.5 h-1.5 rounded-full transition-colors ${
+                          idx === 0 ? 'bg-slate-400' : 'bg-slate-200'
+                        }`}
+                      />
+                    ))}
                   </div>
                 </div>
               )}
@@ -486,12 +440,7 @@ export function HomePage() {
               className="text-slate-600 hover:text-slate-900 text-sm tracking-wide transition-colors flex items-center gap-2 font-medium"
             >
               View all
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
@@ -548,8 +497,8 @@ export function HomePage() {
               Complimentary Shipping
             </h2>
             <p className="text-body text-lg text-white/50 mb-10 max-w-xl">
-              Enjoy free delivery on all orders over $100. Experience premium
-              quality delivered right to your doorstep.
+              Enjoy free delivery on all orders over $100. Experience premium quality delivered
+              right to your doorstep.
             </p>
             <Link to="/products">
               <Button className="bg-slate-400 text-slate-900 hover:bg-slate-300 px-8 py-3 font-medium tracking-wide transition-all duration-300">

@@ -28,22 +28,22 @@ function sanitizeHeaders(headers: Record<string, unknown>): Record<string, strin
 // Sanitize request body - remove passwords and tokens
 function sanitizeBody(body: unknown): unknown {
   if (!body || typeof body !== 'object') return body;
-  
+
   const sanitized = { ...body } as Record<string, unknown>;
   const sensitiveFields = ['password', 'token', 'secret', 'apiKey', 'creditCard', 'cvv'];
-  
+
   for (const field of sensitiveFields) {
     if (field in sanitized) {
       sanitized[field] = '[REDACTED]';
     }
   }
-  
+
   // Truncate large bodies
   const bodyStr = JSON.stringify(sanitized);
   if (bodyStr.length > 10000) {
     return { _truncated: true, _size: bodyStr.length };
   }
-  
+
   return sanitized;
 }
 
@@ -97,9 +97,10 @@ export function serverLoggerMiddleware() {
     res.setHeader('X-Request-ID', requestId);
 
     // Parse client info
-    const clientIp = (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() || 
-                     req.socket.remoteAddress || 
-                     '0.0.0.0';
+    const clientIp =
+      (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() ||
+      req.socket.remoteAddress ||
+      '0.0.0.0';
     const userAgent = req.headers['user-agent'] || '';
     const parsedDevice = parseUserAgent(userAgent);
 
@@ -125,10 +126,13 @@ export function serverLoggerMiddleware() {
         const statusCode = res.statusCode;
 
         // Extract error from response body if it exists
-        let errorDetails: { name?: string; message?: string; stack?: string; code?: string } | undefined;
+        let errorDetails:
+          | { name?: string; message?: string; stack?: string; code?: string }
+          | undefined;
         if (statusCode >= 400 && responseBody) {
           try {
-            const parsed = typeof responseBody === 'string' ? JSON.parse(responseBody) : responseBody;
+            const parsed =
+              typeof responseBody === 'string' ? JSON.parse(responseBody) : responseBody;
             if (parsed?.error) {
               errorDetails = {
                 name: parsed.error.code || 'Error',
@@ -157,9 +161,13 @@ export function serverLoggerMiddleware() {
             query: req.query as Record<string, string>,
             body: sanitizeBody(req.body),
             contentType: req.headers['content-type'],
-            contentLength: req.headers['content-length'] ? parseInt(req.headers['content-length'] as string) : undefined,
+            contentLength: req.headers['content-length']
+              ? parseInt(req.headers['content-length'] as string)
+              : undefined,
             cookies: req.cookies ? Object.keys(req.cookies) : [],
-            authorization: req.headers.authorization ? req.headers.authorization.split(' ')[0] : undefined,
+            authorization: req.headers.authorization
+              ? req.headers.authorization.split(' ')[0]
+              : undefined,
           },
           response: {
             contentType: res.getHeader('content-type') as string,

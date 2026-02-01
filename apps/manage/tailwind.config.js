@@ -29,12 +29,12 @@ export default {
         },
       },
       boxShadow: {
-        'soft': '0 1px 2px 0 rgb(0 0 0 / 0.03)',
+        soft: '0 1px 2px 0 rgb(0 0 0 / 0.03)',
         'soft-md': '0 2px 4px -1px rgb(0 0 0 / 0.04), 0 1px 2px -1px rgb(0 0 0 / 0.03)',
         'soft-lg': '0 4px 6px -2px rgb(0 0 0 / 0.04), 0 2px 4px -2px rgb(0 0 0 / 0.03)',
       },
       borderRadius: {
-        'xl': '0.75rem',
+        xl: '0.75rem',
         '2xl': '1rem',
       },
       animation: {

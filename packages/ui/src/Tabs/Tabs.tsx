@@ -64,7 +64,12 @@ export interface TabsListProps extends HTMLAttributes<HTMLDivElement> {
   variant?: 'default' | 'pills' | 'underline';
 }
 
-export function TabsList({ variant = 'default', className = '', children, ...props }: TabsListProps) {
+export function TabsList({
+  variant = 'default',
+  className = '',
+  children,
+  ...props
+}: TabsListProps) {
   const variants = {
     default: 'border-b border-gray-200',
     pills: 'bg-gray-100 p-1 rounded-lg',

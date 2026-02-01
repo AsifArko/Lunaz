@@ -7,26 +7,52 @@ import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 
 // Type configuration
-const typeConfig: Record<string, {
-  label: string;
-  color: string;
-  bgColor: string;
-  textColor: string;
-}> = {
-  sale: { label: 'Sale', color: 'bg-emerald-500', bgColor: 'bg-emerald-50', textColor: 'text-emerald-700' },
+const typeConfig: Record<
+  string,
+  {
+    label: string;
+    color: string;
+    bgColor: string;
+    textColor: string;
+  }
+> = {
+  sale: {
+    label: 'Sale',
+    color: 'bg-emerald-500',
+    bgColor: 'bg-emerald-50',
+    textColor: 'text-emerald-700',
+  },
   refund: { label: 'Refund', color: 'bg-red-500', bgColor: 'bg-red-50', textColor: 'text-red-700' },
-  payout: { label: 'Payout', color: 'bg-blue-500', bgColor: 'bg-blue-50', textColor: 'text-blue-700' },
+  payout: {
+    label: 'Payout',
+    color: 'bg-blue-500',
+    bgColor: 'bg-blue-50',
+    textColor: 'text-blue-700',
+  },
 };
 
 // Status configuration
-const statusConfig: Record<string, {
-  label: string;
-  color: string;
-  bgColor: string;
-  textColor: string;
-}> = {
-  pending: { label: 'Pending', color: 'bg-amber-500', bgColor: 'bg-amber-50', textColor: 'text-amber-700' },
-  completed: { label: 'Completed', color: 'bg-emerald-500', bgColor: 'bg-emerald-50', textColor: 'text-emerald-700' },
+const statusConfig: Record<
+  string,
+  {
+    label: string;
+    color: string;
+    bgColor: string;
+    textColor: string;
+  }
+> = {
+  pending: {
+    label: 'Pending',
+    color: 'bg-amber-500',
+    bgColor: 'bg-amber-50',
+    textColor: 'text-amber-700',
+  },
+  completed: {
+    label: 'Completed',
+    color: 'bg-emerald-500',
+    bgColor: 'bg-emerald-50',
+    textColor: 'text-emerald-700',
+  },
   failed: { label: 'Failed', color: 'bg-red-500', bgColor: 'bg-red-50', textColor: 'text-red-700' },
 };
 
@@ -92,12 +118,20 @@ function FilterDropdown({
               setIsOpen(false);
             }}
             className={`w-full px-3 py-2 text-left text-xs transition-colors flex items-center justify-between ${
-              !value ? 'text-gray-900 bg-gray-50' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700'
+              !value
+                ? 'text-gray-900 bg-gray-50'
+                : 'text-gray-500 hover:bg-gray-50 hover:text-gray-700'
             }`}
           >
             <span>{placeholder}</span>
             {!value && (
-              <svg className="w-3 h-3 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+              <svg
+                className="w-3 h-3 text-gray-900"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                strokeWidth={2}
+              >
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
               </svg>
             )}
@@ -118,7 +152,13 @@ function FilterDropdown({
             >
               <span>{option.label}</span>
               {value === option.value && (
-                <svg className="w-3 h-3 text-gray-900" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                <svg
+                  className="w-3 h-3 text-gray-900"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  strokeWidth={2}
+                >
                   <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                 </svg>
               )}
@@ -170,13 +210,16 @@ export function TransactionsPage() {
         if (dateFrom) params.set('dateFrom', dateFrom);
         if (dateTo) params.set('dateTo', dateTo);
 
-        const res = await api<PaginatedResponse<Transaction>>(`/transactions?${params.toString()}`, { token });
+        const res = await api<PaginatedResponse<Transaction>>(
+          `/transactions?${params.toString()}`,
+          { token }
+        );
         setTransactions(res.data);
         setTotal(res.total);
         setTotalPages(res.totalPages);
 
         // Fetch order details for transactions
-        const orderIds = [...new Set(res.data.map(t => t.orderId).filter(Boolean))];
+        const orderIds = [...new Set(res.data.map((t) => t.orderId).filter(Boolean))];
         if (orderIds.length > 0) {
           const ordersMap: Record<string, Order> = {};
           await Promise.all(
@@ -215,14 +258,18 @@ export function TransactionsPage() {
 
   // Filter by status on frontend
   const filteredTransactions = status
-    ? transactions.filter(t => t.status === status)
+    ? transactions.filter((t) => t.status === status)
     : transactions;
 
   // Calculate stats
-  const salesCount = transactions.filter(t => t.type === 'sale').length;
-  const refundsCount = transactions.filter(t => t.type === 'refund').length;
-  const totalSales = transactions.filter(t => t.type === 'sale' && t.status === 'completed').reduce((sum, t) => sum + t.amount, 0);
-  const totalRefunds = transactions.filter(t => t.type === 'refund' && t.status === 'completed').reduce((sum, t) => sum + t.amount, 0);
+  const salesCount = transactions.filter((t) => t.type === 'sale').length;
+  const refundsCount = transactions.filter((t) => t.type === 'refund').length;
+  const totalSales = transactions
+    .filter((t) => t.type === 'sale' && t.status === 'completed')
+    .reduce((sum, t) => sum + t.amount, 0);
+  const totalRefunds = transactions
+    .filter((t) => t.type === 'refund' && t.status === 'completed')
+    .reduce((sum, t) => sum + t.amount, 0);
   const netAmount = totalSales - totalRefunds;
 
   const startItem = total > 0 ? (page - 1) * limit + 1 : 0;
@@ -236,7 +283,9 @@ export function TransactionsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-medium text-gray-900">Transactions</h1>
-          <p className="mt-1 text-sm text-gray-500">View all payment transactions and financial records</p>
+          <p className="mt-1 text-sm text-gray-500">
+            View all payment transactions and financial records
+          </p>
         </div>
       </div>
 
@@ -245,8 +294,18 @@ export function TransactionsPage() {
         <div className="bg-white rounded-xl border border-gray-100 p-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-gray-50 flex items-center justify-center">
-              <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" />
+              <svg
+                className="w-5 h-5 text-gray-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z"
+                />
               </svg>
             </div>
             <div>
@@ -259,8 +318,18 @@ export function TransactionsPage() {
         <div className="bg-white rounded-xl border border-gray-100 p-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-emerald-50 flex items-center justify-center">
-              <svg className="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" />
+              <svg
+                className="w-5 h-5 text-emerald-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941"
+                />
               </svg>
             </div>
             <div>
@@ -273,12 +342,24 @@ export function TransactionsPage() {
         <div className="bg-white rounded-xl border border-gray-100 p-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-red-50 flex items-center justify-center">
-              <svg className="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6L9 12.75l4.286-4.286a11.948 11.948 0 014.306 6.43l.776 2.898m0 0l3.182-5.511m-3.182 5.51l-5.511-3.181" />
+              <svg
+                className="w-5 h-5 text-red-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M2.25 6L9 12.75l4.286-4.286a11.948 11.948 0 014.306 6.43l.776 2.898m0 0l3.182-5.511m-3.182 5.51l-5.511-3.181"
+                />
               </svg>
             </div>
             <div>
-              <p className="text-[10px] font-medium text-gray-500 uppercase tracking-wide">Refunds</p>
+              <p className="text-[10px] font-medium text-gray-500 uppercase tracking-wide">
+                Refunds
+              </p>
               <p className="text-lg font-semibold text-red-600">{refundsCount}</p>
             </div>
           </div>
@@ -287,12 +368,24 @@ export function TransactionsPage() {
         <div className="bg-white rounded-xl border border-gray-100 p-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-gray-900 flex items-center justify-center">
-              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <svg
+                className="w-5 h-5 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
             </div>
             <div>
-              <p className="text-[10px] font-medium text-gray-500 uppercase tracking-wide">Net Amount</p>
+              <p className="text-[10px] font-medium text-gray-500 uppercase tracking-wide">
+                Net Amount
+              </p>
               <Price amount={netAmount} className="text-lg font-semibold text-gray-900" />
             </div>
           </div>
@@ -353,7 +446,13 @@ export function TransactionsPage() {
             className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors"
             title="Clear filters"
           >
-            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+            <svg
+              className="w-3.5 h-3.5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+            >
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
@@ -371,7 +470,14 @@ export function TransactionsPage() {
           <div className="p-12 text-center">
             <div className="inline-flex items-center gap-2 text-sm text-gray-500">
               <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                />
                 <path
                   className="opacity-75"
                   fill="currentColor"
@@ -384,8 +490,18 @@ export function TransactionsPage() {
         ) : filteredTransactions.length === 0 ? (
           <div className="p-12 text-center">
             <div className="w-12 h-12 mx-auto mb-4 bg-gray-50 rounded-full flex items-center justify-center">
-              <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" />
+              <svg
+                className="w-6 h-6 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z"
+                />
               </svg>
             </div>
             <p className="text-sm text-gray-500 mb-4">
@@ -439,7 +555,10 @@ export function TransactionsPage() {
                     return (
                       <tr key={txn.id} className="hover:bg-gray-50/50 transition-colors">
                         <td className="px-4 py-2">
-                          <span className="inline-flex px-1.5 py-0.5 text-[10px] font-mono text-gray-500 bg-gray-100 rounded" title={txn.id}>
+                          <span
+                            className="inline-flex px-1.5 py-0.5 text-[10px] font-mono text-gray-500 bg-gray-100 rounded"
+                            title={txn.id}
+                          >
                             ...{txn.id.slice(-6)}
                           </span>
                         </td>
@@ -486,7 +605,10 @@ export function TransactionsPage() {
                         </td>
                         <td className="px-4 py-2">
                           {txn.externalId ? (
-                            <span className="inline-flex px-1.5 py-0.5 text-[9px] font-mono text-gray-500 bg-gray-100 rounded" title={txn.externalId}>
+                            <span
+                              className="inline-flex px-1.5 py-0.5 text-[9px] font-mono text-gray-500 bg-gray-100 rounded"
+                              title={txn.externalId}
+                            >
                               {shortenId(txn.externalId, 10)}
                             </span>
                           ) : (
@@ -494,7 +616,9 @@ export function TransactionsPage() {
                           )}
                         </td>
                         <td className="px-4 py-2">
-                          <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded ${typeStyle.bgColor} ${typeStyle.textColor}`}>
+                          <span
+                            className={`inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded ${typeStyle.bgColor} ${typeStyle.textColor}`}
+                          >
                             <span className={`w-1 h-1 rounded-full ${typeStyle.color}`} />
                             {typeStyle.label}
                           </span>
@@ -516,7 +640,9 @@ export function TransactionsPage() {
                           />
                         </td>
                         <td className="px-4 py-2">
-                          <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded ${statusStyle.bgColor} ${statusStyle.textColor}`}>
+                          <span
+                            className={`inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded ${statusStyle.bgColor} ${statusStyle.textColor}`}
+                          >
                             <span className={`w-1 h-1 rounded-full ${statusStyle.color}`} />
                             {statusStyle.label}
                           </span>
@@ -529,8 +655,18 @@ export function TransactionsPage() {
                                 className="p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors"
                                 title="View Order"
                               >
-                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                                <svg
+                                  className="w-3.5 h-3.5"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                  strokeWidth={1.5}
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"
+                                  />
                                 </svg>
                               </Link>
                             )}
@@ -557,8 +693,18 @@ export function TransactionsPage() {
                     onClick={() => updateParams({ page: String(page - 1) })}
                     className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                   >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M15.75 19.5L8.25 12l7.5-7.5"
+                      />
                     </svg>
                   </button>
 
@@ -597,8 +743,18 @@ export function TransactionsPage() {
                     onClick={() => updateParams({ page: String(page + 1) })}
                     className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                   >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      strokeWidth={1.5}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M8.25 4.5l7.5 7.5-7.5 7.5"
+                      />
                     </svg>
                   </button>
                 </div>
