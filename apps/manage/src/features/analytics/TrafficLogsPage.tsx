@@ -209,25 +209,37 @@ function EventTypeBadge({ type }: { type: string }) {
   };
 
   return (
-    <span className={`px-2 py-0.5 text-xs font-medium rounded ${colors[type] || colors.custom}`}>
+    <span
+      className={`inline-flex px-1.5 py-0.5 text-[10px] font-medium rounded ${colors[type] || colors.custom}`}
+    >
       {type.replace(/_/g, ' ')}
     </span>
   );
 }
 
 function DeviceBadge({ type }: { type?: string }) {
-  if (!type) return <span className="text-sm text-gray-400">-</span>;
+  if (!type)
+    return (
+      <span className="inline-flex px-1.5 py-0.5 text-[10px] text-gray-400 bg-gray-50 rounded">
+        -
+      </span>
+    );
 
-  const icons: Record<string, string> = {
-    desktop: '🖥️',
-    mobile: '📱',
-    tablet: '📱',
-    bot: '🤖',
+  const config: Record<string, { icon: string; bg: string; text: string }> = {
+    desktop: { icon: '🖥️', bg: 'bg-blue-50', text: 'text-blue-600' },
+    mobile: { icon: '📱', bg: 'bg-purple-50', text: 'text-purple-600' },
+    tablet: { icon: '📱', bg: 'bg-indigo-50', text: 'text-indigo-600' },
+    bot: { icon: '🤖', bg: 'bg-gray-100', text: 'text-gray-600' },
   };
 
+  const style = config[type] || { icon: '', bg: 'bg-gray-50', text: 'text-gray-600' };
+
   return (
-    <span className="text-sm text-gray-700 capitalize">
-      {icons[type] || ''} {type}
+    <span
+      className={`inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded capitalize ${style.bg} ${style.text}`}
+    >
+      <span className="text-[8px]">{style.icon}</span>
+      {type}
     </span>
   );
 }
@@ -1234,57 +1246,102 @@ export function TrafficLogsPage() {
           <>
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-50">
-                  <tr className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    <th className="px-4 py-3">Timestamp</th>
-                    <th className="px-4 py-3">Event</th>
-                    <th className="px-4 py-3">Path</th>
-                    <th className="px-4 py-3">Visitor ID</th>
-                    <th className="px-4 py-3">IP</th>
-                    <th className="px-4 py-3">Device</th>
-                    <th className="px-4 py-3">Browser</th>
-                    <th className="px-4 py-3">OS</th>
+                <thead>
+                  <tr className="border-b border-gray-100 bg-gray-50/50">
+                    <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">
+                      Timestamp
+                    </th>
+                    <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">
+                      Event
+                    </th>
+                    <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">
+                      Path
+                    </th>
+                    <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">
+                      Visitor ID
+                    </th>
+                    <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">
+                      IP
+                    </th>
+                    <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">
+                      Device
+                    </th>
+                    <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">
+                      Browser
+                    </th>
+                    <th className="px-3 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">
+                      OS
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
                   {logs.map((log) => (
                     <tr
                       key={log.id}
-                      className="hover:bg-gray-50 cursor-pointer transition-colors duration-150"
+                      className="hover:bg-gray-50/50 cursor-pointer transition-colors"
                       onClick={() => setSelectedLog(log)}
                     >
-                      <td className="px-4 py-3 text-sm text-gray-500 whitespace-nowrap">
-                        {new Date(log.timestamp).toLocaleString()}
+                      <td className="px-3 py-2 whitespace-nowrap">
+                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-normal text-gray-600 bg-gray-100 rounded">
+                          <svg
+                            className="w-2.5 h-2.5 text-gray-400"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            strokeWidth={2}
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"
+                            />
+                          </svg>
+                          {new Date(log.timestamp).toLocaleString(undefined, {
+                            month: 'short',
+                            day: 'numeric',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            second: '2-digit',
+                          })}
+                        </span>
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-3 py-2">
                         <EventTypeBadge type={log.type} />
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-3 py-2">
                         <span
-                          className="text-sm text-gray-900 truncate block max-w-[180px]"
+                          className="inline-flex px-1.5 py-0.5 text-[10px] font-mono text-gray-700 bg-slate-100 rounded truncate max-w-[150px]"
                           title={log.page.path}
                         >
                           {log.page.path}
                         </span>
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-3 py-2">
                         <span
-                          className="text-sm text-gray-500 font-mono truncate block max-w-[100px]"
+                          className="inline-flex px-1.5 py-0.5 text-[10px] font-mono text-violet-600 bg-violet-50 rounded truncate max-w-[90px]"
                           title={log.visitorId}
                         >
-                          {log.visitorId.slice(0, 10)}...
+                          {log.visitorId.slice(0, 8)}...
                         </span>
                       </td>
-                      <td className="px-4 py-3">
-                        <span className="text-sm text-gray-500 font-mono">{log.ip || '-'}</span>
+                      <td className="px-3 py-2">
+                        <span className="inline-flex px-1.5 py-0.5 text-[10px] font-mono text-gray-500 bg-gray-50 rounded">
+                          {log.ip || '-'}
+                        </span>
                       </td>
-                      <td className="px-4 py-3">
+                      <td className="px-3 py-2">
                         <DeviceBadge type={log.device?.type} />
                       </td>
-                      <td className="px-4 py-3 text-sm text-gray-500">
-                        {log.device?.browser || '-'}
+                      <td className="px-3 py-2">
+                        <span className="inline-flex px-1.5 py-0.5 text-[10px] font-medium text-cyan-600 bg-cyan-50 rounded">
+                          {log.device?.browser || '-'}
+                        </span>
                       </td>
-                      <td className="px-4 py-3 text-sm text-gray-500">{log.device?.os || '-'}</td>
+                      <td className="px-3 py-2">
+                        <span className="inline-flex px-1.5 py-0.5 text-[10px] font-medium text-amber-600 bg-amber-50 rounded">
+                          {log.device?.os || '-'}
+                        </span>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -1292,27 +1349,140 @@ export function TrafficLogsPage() {
             </div>
 
             {/* Pagination */}
-            <div className="px-4 py-3 border-t border-gray-100 flex items-center justify-between">
-              <p className="text-sm text-gray-500">
-                Showing {logs.length} of {pagination.total} events
+            <div className="px-3 py-2 border-t border-gray-100 flex items-center justify-between">
+              <p className="text-[11px] text-gray-400">
+                {logs.length} of {pagination.total.toLocaleString()} events
               </p>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-0.5">
+                {/* First Page */}
+                <button
+                  onClick={() => handlePageChange(1)}
+                  disabled={pagination.page <= 1 || isRefreshing}
+                  className="p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  title="First page"
+                >
+                  <svg
+                    className="w-3.5 h-3.5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    strokeWidth={2}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M18.75 19.5l-7.5-7.5 7.5-7.5m-6 15L5.25 12l7.5-7.5"
+                    />
+                  </svg>
+                </button>
+                {/* Previous */}
                 <button
                   onClick={() => handlePageChange(pagination.page - 1)}
                   disabled={pagination.page <= 1 || isRefreshing}
-                  className="px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
+                  className="p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  title="Previous page"
                 >
-                  Previous
+                  <svg
+                    className="w-3.5 h-3.5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    strokeWidth={2}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M15.75 19.5L8.25 12l7.5-7.5"
+                    />
+                  </svg>
                 </button>
-                <span className="text-sm text-gray-500">
-                  Page {pagination.page} of {pagination.totalPages}
-                </span>
+
+                {/* Page Numbers */}
+                <div className="flex items-center gap-0.5 mx-1">
+                  {(() => {
+                    const pages: (number | string)[] = [];
+                    const totalPages = pagination.totalPages;
+                    const currentPage = pagination.page;
+
+                    if (totalPages <= 7) {
+                      for (let i = 1; i <= totalPages; i++) pages.push(i);
+                    } else {
+                      pages.push(1);
+                      if (currentPage > 3) pages.push('...');
+
+                      const start = Math.max(2, currentPage - 1);
+                      const end = Math.min(totalPages - 1, currentPage + 1);
+
+                      for (let i = start; i <= end; i++) pages.push(i);
+
+                      if (currentPage < totalPages - 2) pages.push('...');
+                      pages.push(totalPages);
+                    }
+
+                    return pages.map((page, idx) =>
+                      page === '...' ? (
+                        <span key={`ellipsis-${idx}`} className="px-1 text-[10px] text-gray-400">
+                          ...
+                        </span>
+                      ) : (
+                        <button
+                          key={page}
+                          onClick={() => handlePageChange(page as number)}
+                          disabled={isRefreshing}
+                          className={`min-w-[24px] h-6 text-[11px] font-medium rounded transition-colors ${
+                            page === currentPage
+                              ? 'bg-gray-900 text-white'
+                              : 'text-gray-500 hover:bg-gray-100'
+                          } disabled:cursor-not-allowed`}
+                        >
+                          {page}
+                        </button>
+                      )
+                    );
+                  })()}
+                </div>
+
+                {/* Next */}
                 <button
                   onClick={() => handlePageChange(pagination.page + 1)}
                   disabled={pagination.page >= pagination.totalPages || isRefreshing}
-                  className="px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-opacity"
+                  className="p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  title="Next page"
                 >
-                  Next
+                  <svg
+                    className="w-3.5 h-3.5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    strokeWidth={2}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M8.25 4.5l7.5 7.5-7.5 7.5"
+                    />
+                  </svg>
+                </button>
+                {/* Last Page */}
+                <button
+                  onClick={() => handlePageChange(pagination.totalPages)}
+                  disabled={pagination.page >= pagination.totalPages || isRefreshing}
+                  className="p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                  title="Last page"
+                >
+                  <svg
+                    className="w-3.5 h-3.5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    strokeWidth={2}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M5.25 4.5l7.5 7.5-7.5 7.5m6-15l7.5 7.5-7.5 7.5"
+                    />
+                  </svg>
                 </button>
               </div>
             </div>
