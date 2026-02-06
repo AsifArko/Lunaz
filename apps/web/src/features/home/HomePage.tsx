@@ -49,9 +49,10 @@ export function HomePage() {
         }));
 
         setGroupedCategories(grouped);
-        // Set first parent as active by default
+        // Set parent with most children as active by default
         if (grouped.length > 0) {
-          setActiveParent(grouped[0].parent.id);
+          const sorted = [...grouped].sort((a, b) => b.children.length - a.children.length);
+          setActiveParent(sorted[0].parent.id);
         }
         setFeaturedProducts(prodRes.data);
       } catch {
@@ -234,57 +235,61 @@ export function HomePage() {
             <div className="space-y-8">
               {/* Parent Category Tabs */}
               <div className="flex flex-wrap gap-3">
-                {groupedCategories.map((group) => (
-                  <button
-                    key={group.parent.id}
-                    onClick={() => setActiveParent(group.parent.id)}
-                    className={`group relative flex items-center gap-4 px-5 py-3 rounded-xl transition-all duration-300 ${
-                      activeParent === group.parent.id
-                        ? 'bg-slate-900 text-white shadow-lg'
-                        : 'bg-white text-slate-700 hover:bg-slate-100 shadow-sm border border-slate-200'
-                    }`}
-                  >
-                    {/* Category thumbnail */}
-                    <div className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0">
-                      {group.parent.imageUrl ? (
-                        <img
-                          src={group.parent.imageUrl}
-                          alt={group.parent.name}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div
-                          className={`w-full h-full flex items-center justify-center ${
-                            activeParent === group.parent.id ? 'bg-slate-700' : 'bg-slate-100'
-                          }`}
-                        >
-                          <span
-                            className={`text-lg font-light ${
-                              activeParent === group.parent.id ? 'text-slate-400' : 'text-slate-400'
+                {[...groupedCategories]
+                  .sort((a, b) => b.children.length - a.children.length)
+                  .map((group) => (
+                    <button
+                      key={group.parent.id}
+                      onClick={() => setActiveParent(group.parent.id)}
+                      className={`group relative flex items-center gap-4 px-5 py-3 rounded-xl transition-all duration-300 ${
+                        activeParent === group.parent.id
+                          ? 'bg-slate-900 text-white shadow-lg'
+                          : 'bg-white text-slate-700 hover:bg-slate-100 shadow-sm border border-slate-200'
+                      }`}
+                    >
+                      {/* Category thumbnail */}
+                      <div className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0">
+                        {group.parent.imageUrl ? (
+                          <img
+                            src={group.parent.imageUrl}
+                            alt={group.parent.name}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div
+                            className={`w-full h-full flex items-center justify-center ${
+                              activeParent === group.parent.id ? 'bg-slate-700' : 'bg-slate-100'
                             }`}
                           >
-                            {group.parent.name.charAt(0)}
-                          </span>
-                        </div>
+                            <span
+                              className={`text-lg font-light ${
+                                activeParent === group.parent.id
+                                  ? 'text-slate-400'
+                                  : 'text-slate-400'
+                              }`}
+                            >
+                              {group.parent.name.charAt(0)}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                      <div className="text-left">
+                        <h3 className="font-medium text-base">{group.parent.name}</h3>
+                        <p
+                          className={`text-xs ${
+                            activeParent === group.parent.id ? 'text-slate-400' : 'text-slate-500'
+                          }`}
+                        >
+                          {group.children.length}{' '}
+                          {group.children.length === 1 ? 'subcategory' : 'subcategories'}
+                        </p>
+                      </div>
+                      {/* Active indicator */}
+                      {activeParent === group.parent.id && (
+                        <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-3 h-3 bg-slate-900 rotate-45" />
                       )}
-                    </div>
-                    <div className="text-left">
-                      <h3 className="font-medium text-base">{group.parent.name}</h3>
-                      <p
-                        className={`text-xs ${
-                          activeParent === group.parent.id ? 'text-slate-400' : 'text-slate-500'
-                        }`}
-                      >
-                        {group.children.length}{' '}
-                        {group.children.length === 1 ? 'subcategory' : 'subcategories'}
-                      </p>
-                    </div>
-                    {/* Active indicator */}
-                    {activeParent === group.parent.id && (
-                      <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-3 h-3 bg-slate-900 rotate-45" />
-                    )}
-                  </button>
-                ))}
+                    </button>
+                  ))}
               </div>
 
               {/* Subcategories Section */}
@@ -491,14 +496,14 @@ export function HomePage() {
         <Container>
           <div className="relative z-10 text-left max-w-3xl">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-6 rounded-md bg-white/5 border border-white/10">
-              <span className="heading-sub text-white/60">Limited Time</span>
+              <span className="heading-sub text-white/60">Artisan Crafted</span>
             </div>
             <h2 className="heading-section text-4xl md:text-5xl text-white mb-5">
-              Complimentary Shipping
+              Handmade with Purpose
             </h2>
             <p className="text-body text-lg text-white/50 mb-10 max-w-xl">
-              Enjoy free delivery on all orders over $100. Experience premium quality delivered
-              right to your doorstep.
+              Each piece is thoughtfully crafted by skilled artisans, blending traditional
+              techniques with contemporary design for timeless quality.
             </p>
             <Link to="/products">
               <Button className="bg-slate-400 text-slate-900 hover:bg-slate-300 px-8 py-3 font-medium tracking-wide transition-all duration-300">

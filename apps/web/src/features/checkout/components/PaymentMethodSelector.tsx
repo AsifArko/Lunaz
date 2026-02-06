@@ -84,6 +84,8 @@ export function PaymentMethodSelector({
       }
     }
     fetchMethods();
+    // onSelect and selected are intentionally excluded - we only want to fetch and auto-select once on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (loading) {

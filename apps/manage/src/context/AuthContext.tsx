@@ -18,6 +18,7 @@ interface AuthContextValue extends AuthState {
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 const TOKEN_KEY = 'lunaz_admin_token';
+const REFRESH_TOKEN_KEY = 'lunaz_admin_refresh_token';
 const USER_KEY = 'lunaz_admin_user';
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -65,12 +66,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     localStorage.setItem(TOKEN_KEY, res.token);
+    if (res.refreshToken) localStorage.setItem(REFRESH_TOKEN_KEY, res.refreshToken);
     localStorage.setItem(USER_KEY, JSON.stringify(res.user));
     setState({ user: res.user, token: res.token, isLoading: false });
   }, []);
 
   const logout = useCallback(() => {
     localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(REFRESH_TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
     setState({ user: null, token: null, isLoading: false });
   }, []);

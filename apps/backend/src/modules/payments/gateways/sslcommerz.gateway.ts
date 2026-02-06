@@ -46,7 +46,6 @@ export class SSLCommerzGateway implements PaymentGateway {
     }
 
     const apiUrl = process.env.API_URL || '';
-    const webUrl = process.env.WEB_URL || '';
 
     this.baseUrl = config.sandbox
       ? 'https://sandbox.sslcommerz.com'

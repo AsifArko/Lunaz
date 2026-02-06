@@ -3,7 +3,7 @@ import { authMiddleware } from '../../middleware/auth.js';
 import { requireRole } from '../../middleware/requireRole.js';
 import { validateBody, validateQuery } from '../../middleware/validate.js';
 import { getConfig } from '../../config/index.js';
-import { UserRole } from '@lunaz/types';
+import { UserRole, LogLevel } from '@lunaz/types';
 import { analyticsService } from './analytics.service.js';
 import {
   collectEventsSchema,
@@ -473,7 +473,7 @@ router.get(
       const result = await analyticsService.getServerLogs({
         from: query.from ? new Date(query.from) : undefined,
         to: query.to ? new Date(query.to) : undefined,
-        level: query.level as any,
+        level: query.level as LogLevel | undefined,
         status: query.status,
         method: query.method,
         path: query.path,

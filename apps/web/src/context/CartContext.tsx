@@ -181,6 +181,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         }
       } catch (err) {
         // If backend fetch fails, just keep local cart
+        // eslint-disable-next-line no-console
         console.warn('Failed to sync cart with backend:', err);
       } finally {
         setIsLoading(false);
@@ -188,6 +189,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
 
     syncCart();
+    // items is intentionally excluded - we only want to sync on auth change, not on every item change
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated, token]);
 
   // Reset sync flag when user logs out

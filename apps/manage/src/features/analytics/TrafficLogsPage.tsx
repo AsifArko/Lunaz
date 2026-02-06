@@ -902,12 +902,15 @@ export function TrafficLogsPage() {
         });
         hasLoadedRef.current = true;
       } catch (err) {
+        // eslint-disable-next-line no-console
         console.error('Failed to fetch traffic logs:', err);
       } finally {
         setIsInitialLoad(false);
         setIsRefreshing(false);
       }
     },
+    // timeRangesData is a stable constant defined outside the component
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [token, filters]
   );
 

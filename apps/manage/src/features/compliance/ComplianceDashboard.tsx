@@ -40,6 +40,8 @@ export function ComplianceDashboard() {
 
   useEffect(() => {
     fetchDashboard();
+    // fetchDashboard depends on token which is stable from useAuth
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function fetchDashboard() {
@@ -52,6 +54,7 @@ export function ComplianceDashboard() {
         setData(json);
       }
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Failed to fetch dashboard:', error);
     } finally {
       setLoading(false);

@@ -1,17 +1,115 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import type { Order, PaginatedResponse } from '@lunaz/types';
-import { Card, Button, Price } from '@lunaz/ui';
+import { Price } from '@lunaz/ui';
 import { api } from '../../api/client';
 import { useAuth } from '../../context/AuthContext';
 
-const statusColors: Record<string, string> = {
-  pending: 'bg-yellow-100 text-yellow-800',
-  confirmed: 'bg-blue-100 text-blue-800',
-  processing: 'bg-indigo-100 text-indigo-800',
-  shipped: 'bg-purple-100 text-purple-800',
-  delivered: 'bg-green-100 text-green-800',
-  cancelled: 'bg-red-100 text-red-800',
+// Icons
+const PackageIcon = () => (
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={1.5}
+      d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+    />
+  </svg>
+);
+
+const ChevronRightIcon = () => (
+  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5l7 7-7 7" />
+  </svg>
+);
+
+const ClockIcon = () => (
+  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={1.5}
+      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+    />
+  </svg>
+);
+
+const CheckCircleIcon = () => (
+  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={1.5}
+      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+    />
+  </svg>
+);
+
+const TruckIcon = () => (
+  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={1.5}
+      d="M5 17a2 2 0 002 2h2a2 2 0 002-2m-6 0V5a2 2 0 012-2h6a2 2 0 012 2v12m-6 0h6m6 0a2 2 0 002-2v-5a2 2 0 00-2-2h-2l-3-5H9"
+    />
+  </svg>
+);
+
+const XCircleIcon = () => (
+  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={1.5}
+      d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+    />
+  </svg>
+);
+
+const ShoppingBagIcon = () => (
+  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={1.5}
+      d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+    />
+  </svg>
+);
+
+// Status configuration with gray tones and icons
+const statusConfig: Record<string, { label: string; icon: React.ReactNode; classes: string }> = {
+  pending: {
+    label: 'Pending',
+    icon: <ClockIcon />,
+    classes: 'bg-gray-100 text-gray-600 border-gray-200',
+  },
+  confirmed: {
+    label: 'Confirmed',
+    icon: <CheckCircleIcon />,
+    classes: 'bg-gray-100 text-gray-700 border-gray-200',
+  },
+  processing: {
+    label: 'Processing',
+    icon: <PackageIcon />,
+    classes: 'bg-gray-200 text-gray-700 border-gray-300',
+  },
+  shipped: {
+    label: 'Shipped',
+    icon: <TruckIcon />,
+    classes: 'bg-gray-800 text-white border-gray-800',
+  },
+  delivered: {
+    label: 'Delivered',
+    icon: <CheckCircleIcon />,
+    classes: 'bg-gray-900 text-white border-gray-900',
+  },
+  cancelled: {
+    label: 'Cancelled',
+    icon: <XCircleIcon />,
+    classes: 'bg-gray-50 text-gray-500 border-gray-200',
+  },
 };
 
 export function OrdersPage() {
@@ -37,11 +135,23 @@ export function OrdersPage() {
 
   if (isLoading) {
     return (
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900 mb-6">Order History</h1>
-        <div className="animate-pulse space-y-4">
-          <div className="h-24 bg-gray-200 rounded-lg" />
-          <div className="h-24 bg-gray-200 rounded-lg" />
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div className="h-7 w-32 bg-gray-200 rounded animate-pulse" />
+        </div>
+        <div className="space-y-3">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="bg-white rounded-xl border border-gray-200 p-5 animate-pulse">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-gray-100 rounded-lg" />
+                <div className="flex-1 space-y-2">
+                  <div className="h-4 w-32 bg-gray-100 rounded" />
+                  <div className="h-3 w-24 bg-gray-100 rounded" />
+                </div>
+                <div className="h-6 w-20 bg-gray-100 rounded-full" />
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     );
@@ -49,84 +159,164 @@ export function OrdersPage() {
 
   if (error) {
     return (
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900 mb-6">Order History</h1>
-        <Card className="text-center py-8">
-          <p className="text-red-600">{error}</p>
-        </Card>
+      <div className="space-y-6">
+        <div>
+          <h2 className="text-lg font-semibold text-gray-900">Order History</h2>
+          <p className="text-sm text-gray-500 mt-0.5">View and track your orders</p>
+        </div>
+        <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
+          <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+            <span className="text-gray-400">
+              <XCircleIcon />
+            </span>
+          </div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">Unable to load orders</h3>
+          <p className="text-sm text-gray-500">{error}</p>
+        </div>
       </div>
     );
   }
 
   if (orders.length === 0) {
     return (
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900 mb-6">Order History</h1>
-        <Card className="text-center py-8">
+      <div className="space-y-6">
+        <div>
+          <h2 className="text-lg font-semibold text-gray-900">Order History</h2>
+          <p className="text-sm text-gray-500 mt-0.5">View and track your orders</p>
+        </div>
+        <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
           <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
-            <svg
-              className="w-8 h-8 text-gray-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-              />
-            </svg>
+            <span className="text-gray-400">
+              <ShoppingBagIcon />
+            </span>
           </div>
-          <h2 className="text-lg font-semibold text-gray-900 mb-2">No orders yet</h2>
-          <p className="text-gray-600 mb-4">Start shopping to see your orders here.</p>
-          <Link to="/products">
-            <Button>Browse Products</Button>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">No orders yet</h3>
+          <p className="text-sm text-gray-500 mb-6 max-w-sm mx-auto">
+            When you place your first order, it will appear here for you to track.
+          </p>
+          <Link
+            to="/products"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-gray-900 text-white text-sm font-medium rounded-lg hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-200"
+          >
+            Start Shopping
+            <ChevronRightIcon />
           </Link>
-        </Card>
+        </div>
       </div>
     );
   }
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Order History</h1>
-      <div className="space-y-4">
-        {orders.map((order) => (
-          <Link key={order.id} to={`/account/orders/${order.id}`} className="block">
-            <Card className="hover:shadow-md transition-shadow">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                  <div className="flex items-center gap-3 mb-2">
-                    <span className="font-semibold text-gray-900">Order #{order.orderNumber}</span>
-                    <span
-                      className={`text-xs px-2 py-1 rounded-full font-medium ${statusColors[order.status] || 'bg-gray-100 text-gray-800'}`}
-                    >
-                      {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-                    </span>
+    <div className="space-y-6">
+      {/* Header */}
+      <div>
+        <h2 className="text-lg font-semibold text-gray-900">Order History</h2>
+        <p className="text-sm text-gray-500 mt-0.5">
+          {orders.length} order{orders.length === 1 ? '' : 's'} placed
+        </p>
+      </div>
+
+      {/* Orders List */}
+      <div className="space-y-3">
+        {orders.map((order) => {
+          const status = statusConfig[order.status] || statusConfig.pending;
+          const itemCount = order.items.length;
+          const firstItem = order.items[0];
+
+          return (
+            <Link
+              key={order.id}
+              to={`/account/orders/${order.id}`}
+              className="block bg-white rounded-xl border border-gray-200 overflow-hidden hover:border-gray-300 hover:shadow-sm transition-all duration-200 group"
+            >
+              <div className="p-5">
+                <div className="flex items-start gap-4">
+                  {/* Order Icon/Image */}
+                  <div className="w-14 h-14 rounded-lg bg-gray-100 flex items-center justify-center shrink-0 overflow-hidden">
+                    {firstItem?.imageUrl ? (
+                      <img src={firstItem.imageUrl} alt="" className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="text-gray-400">
+                        <PackageIcon />
+                      </span>
+                    )}
                   </div>
-                  <p className="text-sm text-gray-500">
-                    {new Date(order.createdAt).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                    })}
-                  </p>
-                  <p className="text-sm text-gray-600 mt-1">
-                    {order.items.length} {order.items.length === 1 ? 'item' : 'items'}
-                  </p>
-                </div>
-                <div className="text-right">
-                  <Price
-                    amount={order.total}
-                    currency={order.currency}
-                    className="text-lg font-semibold text-gray-900"
-                  />
+
+                  {/* Order Details */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <h3 className="text-sm font-semibold text-gray-900">
+                          Order #{order.orderNumber}
+                        </h3>
+                        <p className="text-xs text-gray-500 mt-0.5">
+                          {new Date(order.createdAt).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric',
+                          })}
+                        </p>
+                      </div>
+                      <span
+                        className={`inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full border ${status.classes}`}
+                      >
+                        {status.icon}
+                        {status.label}
+                      </span>
+                    </div>
+
+                    {/* Items Summary */}
+                    <div className="mt-3 flex items-center justify-between">
+                      <p className="text-sm text-gray-600">
+                        {itemCount} {itemCount === 1 ? 'item' : 'items'}
+                        {itemCount > 1 && firstItem && (
+                          <span className="text-gray-400">
+                            {' '}
+                            · {firstItem.productName}
+                            {itemCount > 1 && ` + ${itemCount - 1} more`}
+                          </span>
+                        )}
+                      </p>
+                      <div className="flex items-center gap-2">
+                        <Price
+                          amount={order.total}
+                          currency={order.currency}
+                          className="text-sm font-semibold text-gray-900"
+                        />
+                        <span className="text-gray-300 group-hover:text-gray-500 transition-colors">
+                          <ChevronRightIcon />
+                        </span>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </Card>
-          </Link>
-        ))}
+
+              {/* Progress Bar for non-delivered/non-cancelled orders */}
+              {order.status !== 'delivered' && order.status !== 'cancelled' && (
+                <div className="px-5 pb-4">
+                  <div className="h-1 bg-gray-100 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-gray-400 rounded-full transition-all duration-500"
+                      style={{
+                        width:
+                          order.status === 'pending'
+                            ? '20%'
+                            : order.status === 'confirmed'
+                              ? '40%'
+                              : order.status === 'processing'
+                                ? '60%'
+                                : order.status === 'shipped'
+                                  ? '80%'
+                                  : '100%',
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
+            </Link>
+          );
+        })}
       </div>
     </div>
   );

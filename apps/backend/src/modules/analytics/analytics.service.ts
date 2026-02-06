@@ -18,6 +18,8 @@ import type {
   GeoData,
   DeviceData,
   ReferrerData,
+  TrafficLog,
+  ServerLog,
 } from '@lunaz/types';
 import {
   TrafficLogModel,
@@ -358,6 +360,7 @@ export const analyticsService = {
       session.isBounce = session.pageViews <= 1;
       session.endedAt = new Date();
       session.duration = (session.endedAt.getTime() - session.startedAt.getTime()) / 1000;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       if (userId) session.userId = userId as any;
       await session.save();
     } else {
@@ -908,7 +911,13 @@ export const analyticsService = {
     search?: string;
     page?: number;
     limit?: number;
-  }): Promise<{ data: any[]; total: number; page: number; limit: number; totalPages: number }> {
+  }): Promise<{
+    data: TrafficLog[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  }> {
     const filter: Record<string, unknown> = {};
     const page = query.page || 1;
     const limit = Math.min(query.limit || 10, 100);
@@ -942,7 +951,7 @@ export const analyticsService = {
     ]);
 
     return {
-      data: data.map((d: any) => ({
+      data: data.map((d) => ({
         id: d._id.toString(),
         timestamp: d.timestamp.toISOString(),
         visitorId: d.visitorId,
@@ -978,7 +987,13 @@ export const analyticsService = {
     search?: string;
     page?: number;
     limit?: number;
-  }): Promise<{ data: any[]; total: number; page: number; limit: number; totalPages: number }> {
+  }): Promise<{
+    data: ServerLog[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  }> {
     const filter: Record<string, unknown> = {};
     const page = query.page || 1;
     const limit = Math.min(query.limit || 50, 100);

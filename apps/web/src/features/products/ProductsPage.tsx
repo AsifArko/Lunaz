@@ -174,6 +174,9 @@ export function ProductsPage() {
       newParams.set('page', '1'); // Reset to page 1 when filters change
       setSearchParams(newParams);
     }
+    // searchParams and setSearchParams are stable from useSearchParams hook
+    // minPrice/maxPrice raw values excluded since we use debounced versions
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [debouncedMinPrice, debouncedMaxPrice]);
 
   // Fetch and organize categories

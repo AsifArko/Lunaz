@@ -45,6 +45,7 @@ export function SettingsProvider({ children }: SettingsProviderProps) {
       // Use defaults if fetch fails
       setSettings(DEFAULT_STORE_SETTINGS);
       setOriginalSettings(DEFAULT_STORE_SETTINGS);
+      // eslint-disable-next-line no-console
       console.error('Failed to fetch settings:', err);
     } finally {
       setIsLoading(false);

@@ -161,6 +161,8 @@ export function CertificatesPage() {
 
   useEffect(() => {
     fetchCertificates();
+    // fetchCertificates depends on token which is stable from useAuth
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter]);
 
   async function fetchCertificates() {
@@ -178,6 +180,7 @@ export function CertificatesPage() {
         setCertificates(json.data);
       }
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Failed to fetch certificates:', error);
     } finally {
       setLoading(false);

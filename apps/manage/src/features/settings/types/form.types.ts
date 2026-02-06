@@ -1,5 +1,3 @@
-import type { ReactNode } from 'react';
-
 export interface BaseInputProps {
   value: string | number;
   onChange: (value: string | number) => void;

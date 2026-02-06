@@ -605,6 +605,7 @@ export function AnalyticsPage() {
       setFunnel(funnelRes);
       setRecentSessions(sessionsRes);
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.error('Failed to fetch analytics:', err);
     } finally {
       setIsLoading(false);

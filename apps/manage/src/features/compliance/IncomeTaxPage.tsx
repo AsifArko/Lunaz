@@ -171,6 +171,8 @@ export function IncomeTaxPage() {
   useEffect(() => {
     fetchRecords();
     fetchSummary();
+    // fetchRecords and fetchSummary depend on token which is stable from useAuth
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter]);
 
   async function fetchRecords() {
@@ -188,6 +190,7 @@ export function IncomeTaxPage() {
         setRecords(json.data);
       }
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Failed to fetch records:', error);
     } finally {
       setLoading(false);
@@ -204,6 +207,7 @@ export function IncomeTaxPage() {
         setSummary(json);
       }
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Failed to fetch summary:', error);
     }
   }

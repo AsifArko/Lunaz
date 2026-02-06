@@ -156,6 +156,7 @@ export function SpeedInsightsPage() {
       setOverview(overviewRes);
       setPages(pagesRes);
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.error('Failed to fetch speed insights:', err);
     } finally {
       setIsLoading(false);

@@ -17,6 +17,7 @@ This directory contains the detailed specification and design documents for the 
 | [08-FEATURES-MATRIX.md](./08-FEATURES-MATRIX.md)             | Feature checklist, priorities, and phases                                                                |
 | [09-ANALYTICS-AND-LOGGING.md](./09-ANALYTICS-AND-LOGGING.md) | Analytics tracking, server logging, and monitoring                                                       |
 | [10-CI-CD-INTEGRATION.md](./10-CI-CD-INTEGRATION.md)         | CI/CD pipeline, secure workflow, and deployment automation                                               |
+| [14-AUTHENTICATION.md](./14-AUTHENTICATION.md)               | Authentication — JWT, refresh tokens, OAuth, sessions, auth logs, and security                           |
 
 ## Quick Reference
 

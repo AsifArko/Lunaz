@@ -16,7 +16,8 @@ export function useSettingsForm<T extends Record<string, unknown>>(
     setValues((prev) => ({ ...prev, [field]: value }));
     // Clear error when value changes
     setErrors((prev) => {
-      const { [field]: _, ...rest } = prev;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { [field]: _removed, ...rest } = prev;
       return rest as Partial<Record<keyof T, string>>;
     });
   }, []);
@@ -31,7 +32,8 @@ export function useSettingsForm<T extends Record<string, unknown>>(
 
   const clearError = useCallback((field: keyof T) => {
     setErrors((prev) => {
-      const { [field]: _, ...rest } = prev;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { [field]: _removed, ...rest } = prev;
       return rest as Partial<Record<keyof T, string>>;
     });
   }, []);
@@ -49,6 +51,7 @@ export function useSettingsForm<T extends Record<string, unknown>>(
         try {
           await onSubmit(values);
         } catch (error) {
+          // eslint-disable-next-line no-console
           console.error('Form submission error:', error);
         } finally {
           setIsSubmitting(false);
@@ -71,11 +74,13 @@ export function useSettingsForm<T extends Record<string, unknown>>(
     (field: keyof T) => {
       setValues((prev) => ({ ...prev, [field]: initialValues[field] }));
       setErrors((prev) => {
-        const { [field]: _, ...rest } = prev;
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { [field]: _removedError, ...rest } = prev;
         return rest as Partial<Record<keyof T, string>>;
       });
       setTouchedState((prev) => {
-        const { [field]: _, ...rest } = prev;
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { [field]: _removedTouched, ...rest } = prev;
         return rest as Partial<Record<keyof T, boolean>>;
       });
     },

@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt';
 import mongoose from 'mongoose';
 import { UserModel } from '../auth/auth.model.js';
+import { OAUTH_PENDING_PHONE } from '../auth/auth.service.js';
 import type {
   UpdateProfileInput,
   ChangePasswordInput,
@@ -21,7 +22,10 @@ export async function getProfile(userId: string) {
     id: user._id.toString(),
     email: user.email,
     name: user.name,
-    phone: (user as unknown as { phone?: string }).phone || '',
+    phone: (() => {
+      const p = (user as unknown as { phone?: string }).phone;
+      return p === OAUTH_PENDING_PHONE || !p ? '' : p;
+    })(),
     role: user.role,
     emailVerified: user.emailVerified,
     addresses: (user.addresses ?? []).map((a) => {
@@ -65,8 +69,11 @@ export async function updateProfile(userId: string, input: UpdateProfileInput) {
 export async function changePassword(userId: string, input: ChangePasswordInput) {
   const user = await UserModel.findById(userId);
   if (!user) throw createError('User not found', 404);
-  const valid = await bcrypt.compare(input.currentPassword, user.passwordHash);
-  if (!valid) throw createError('Current password is incorrect', 401);
+  if (user.passwordHash) {
+    if (!input.currentPassword) throw createError('Current password is required', 400);
+    const valid = await bcrypt.compare(input.currentPassword, user.passwordHash);
+    if (!valid) throw createError('Current password is incorrect', 401);
+  }
   user.passwordHash = await bcrypt.hash(input.newPassword, 10);
   await user.save();
   return { success: true };

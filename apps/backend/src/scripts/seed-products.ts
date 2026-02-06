@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /**
  * Seed script to create HomeDecor and Lifestyle categories and products.
  *
