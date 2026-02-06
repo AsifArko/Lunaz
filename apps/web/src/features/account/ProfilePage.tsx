@@ -50,6 +50,12 @@ const XIcon = () => (
   </svg>
 );
 
+/** OAuth users have a placeholder phone until set; show empty in the UI. */
+function normalizePhoneForDisplay(phone: string | undefined): string {
+  if (phone == null || phone === '' || phone === '__OAUTH_PENDING__') return '';
+  return phone;
+}
+
 const LoadingSpinner = () => (
   <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
@@ -117,6 +123,7 @@ export function ProfilePage() {
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
@@ -124,6 +131,7 @@ export function ProfilePage() {
   // Original values for comparison
   const [originalName, setOriginalName] = useState('');
   const [originalEmail, setOriginalEmail] = useState('');
+  const [originalPhone, setOriginalPhone] = useState('');
 
   // Password change
   const [showPasswordForm, setShowPasswordForm] = useState(false);
@@ -139,8 +147,10 @@ export function ProfilePage() {
         const userData = await api<User>('/users/me', { token });
         setName(userData.name);
         setEmail(userData.email);
+        setPhone(normalizePhoneForDisplay(userData.phone));
         setOriginalName(userData.name);
         setOriginalEmail(userData.email);
+        setOriginalPhone(normalizePhoneForDisplay(userData.phone));
       } catch {
         addToast('Failed to load profile', 'error');
       } finally {
@@ -154,8 +164,8 @@ export function ProfilePage() {
 
   // Track changes
   useEffect(() => {
-    setHasChanges(name !== originalName || email !== originalEmail);
-  }, [name, email, originalName, originalEmail]);
+    setHasChanges(name !== originalName || email !== originalEmail || phone !== originalPhone);
+  }, [name, email, phone, originalName, originalEmail, originalPhone]);
 
   const handleSaveProfile = async (e: FormEvent) => {
     e.preventDefault();
@@ -165,11 +175,16 @@ export function ProfilePage() {
     try {
       await api('/users/me', {
         method: 'PATCH',
-        body: JSON.stringify({ name, email }),
+        body: JSON.stringify({
+          name,
+          email,
+          ...(phone.trim() && { phone: phone.trim() }),
+        }),
         token,
       });
       setOriginalName(name);
       setOriginalEmail(email);
+      setOriginalPhone(phone);
       addToast('Profile updated successfully', 'success');
     } catch (err) {
       addToast(err instanceof Error ? err.message : 'Failed to update profile', 'error');
@@ -274,6 +289,15 @@ export function ProfilePage() {
               placeholder="Enter your email"
               required
             />
+            <div className="md:col-span-1">
+              <InputField
+                label="Phone Number"
+                type="tel"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="e.g. 01XXXXXXXXX or +8801XXXXXXXXX"
+              />
+            </div>
           </div>
           <div className="flex items-center gap-3 pt-2">
             <button
@@ -290,6 +314,7 @@ export function ProfilePage() {
                 onClick={() => {
                   setName(originalName);
                   setEmail(originalEmail);
+                  setPhone(originalPhone);
                 }}
                 className="px-4 py-2.5 text-gray-600 text-sm font-medium hover:text-gray-900 transition-colors"
               >

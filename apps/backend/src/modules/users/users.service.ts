@@ -1,6 +1,7 @@
 import bcrypt from 'bcrypt';
 import mongoose from 'mongoose';
 import { UserModel } from '../auth/auth.model.js';
+import { OAUTH_PENDING_PHONE } from '../auth/auth.service.js';
 import type {
   UpdateProfileInput,
   ChangePasswordInput,
@@ -21,7 +22,10 @@ export async function getProfile(userId: string) {
     id: user._id.toString(),
     email: user.email,
     name: user.name,
-    phone: (user as unknown as { phone?: string }).phone || '',
+    phone: (() => {
+      const p = (user as unknown as { phone?: string }).phone;
+      return p === OAUTH_PENDING_PHONE || !p ? '' : p;
+    })(),
     role: user.role,
     emailVerified: user.emailVerified,
     addresses: (user.addresses ?? []).map((a) => {
