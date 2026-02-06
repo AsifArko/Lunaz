@@ -3,6 +3,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Spinner } from '@lunaz/ui';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
+import { AuthBackground, PRESET_SUBTLE } from '../../components/AuthBackground';
 
 // Icons
 const GoogleIcon = () => (
@@ -169,8 +170,11 @@ export function RegisterPage() {
     'w-full h-[42px] px-3.5 text-[14px] text-gray-900 placeholder-gray-400 bg-gray-50/50 border-0 rounded-xl outline-none transition-all hover:bg-gray-50 focus:bg-white focus:ring-1 focus:ring-gray-200';
 
   return (
-    <div className="min-h-[75vh] flex items-center justify-center py-12 px-4">
-      <div className="w-full max-w-[380px]">
+    <div className="relative min-h-[75vh] flex items-center justify-center py-12 px-4 overflow-hidden">
+      {/* Canvas Animation Background */}
+      <AuthBackground config={PRESET_SUBTLE} />
+
+      <div className="relative z-10 w-full max-w-[380px]">
         {/* Header */}
         <div className="text-center mb-7">
           <h1 className="text-[22px] font-semibold text-gray-900">Create your account</h1>

@@ -38,6 +38,48 @@ export const validateTokenSchema = z.object({
   }),
 });
 
+export const refreshSchema = z.object({
+  body: z.object({
+    refreshToken: z.string().min(1),
+  }),
+});
+
+export const logoutSchema = z.object({
+  body: z.object({
+    refreshToken: z.string().min(1),
+  }),
+});
+
+/** Direct body schema (no top-level "body" wrapper) so validateBody parses req.body as-is after merge. */
+export const oauthGoogleSchema = z
+  .object({
+    credential: z.string().min(1).optional(),
+    code: z.string().min(1).optional(),
+    redirectUri: z.string().min(1).optional(),
+    redirect_uri: z.string().min(1).optional(),
+    phone: z.string().optional(),
+  })
+  .transform((b) => ({
+    ...b,
+    redirectUri: b.redirectUri ?? b.redirect_uri,
+  }))
+  .refine(
+    (data) =>
+      (data.credential != null && data.credential !== '') ||
+      (data.code != null &&
+        data.code !== '' &&
+        data.redirectUri != null &&
+        data.redirectUri !== ''),
+    { message: 'Either credential or (code + redirectUri) is required' }
+  );
+
+export const oauthFacebookSchema = z.object({
+  body: z.object({
+    credential: z.string().min(1),
+    phone: z.string().optional(),
+  }),
+});
+
 export type RegisterInput = z.infer<typeof registerSchema>['body'];
 export type LoginInput = z.infer<typeof loginSchema>['body'];
 export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>['body'];

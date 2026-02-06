@@ -1,25 +1,43 @@
-import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+  type ReactNode,
+} from 'react';
 import type { UserSummary, LoginRequest, RegisterRequest, LoginResponse } from '@lunaz/types';
-import { api } from '../api/client';
+import { api, setAuthProvider } from '../api/client';
 
 interface AuthState {
   user: UserSummary | null;
   token: string | null;
+  refreshToken: string | null;
   isLoading: boolean;
 }
+
+/** Response from POST /auth/oauth/google (and similar) */
+type OAuthLoginResponse = LoginResponse & { requiresPhone?: boolean };
 
 interface AuthContextValue extends AuthState {
   login: (data: LoginRequest) => Promise<void>;
   register: (data: RegisterRequest) => Promise<void>;
-  loginWithGoogle: () => Promise<void>;
-  loginWithFacebook: () => Promise<void>;
+  loginWithGoogle: (phone?: string) => Promise<void>;
+  loginWithFacebook: (phone?: string) => Promise<void>;
+  /** Call after OAuth callback (e.g. code exchange) to persist tokens and update state */
+  completeOAuthLogin: (response: OAuthLoginResponse) => void;
   logout: () => void;
   isAuthenticated: boolean;
+  /** True when OAuth returned requiresPhone; frontend should collect phone and PATCH /users/me */
+  requiresPhone: boolean;
+  clearRequiresPhone: () => void;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 const TOKEN_KEY = 'lunaz_token';
+const REFRESH_TOKEN_KEY = 'lunaz_refresh_token';
 const USER_KEY = 'lunaz_user';
 
 // OAuth configuration
@@ -30,185 +48,192 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<AuthState>({
     user: null,
     token: null,
+    refreshToken: null,
     isLoading: true,
   });
+  const [requiresPhone, setRequiresPhone] = useState(false);
+  const stateRef = useRef(state);
+  stateRef.current = state;
+
+  const persistAuth = useCallback((user: UserSummary, token: string, refreshToken: string) => {
+    localStorage.setItem(TOKEN_KEY, token);
+    localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
+    localStorage.setItem(USER_KEY, JSON.stringify(user));
+    setState((s) => ({ ...s, user, token, refreshToken, isLoading: false }));
+  }, []);
+
+  const clearAuth = useCallback(() => {
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(REFRESH_TOKEN_KEY);
+    localStorage.removeItem(USER_KEY);
+    setState({ user: null, token: null, refreshToken: null, isLoading: false });
+  }, []);
+
+  // Register auth provider for API client (refresh on 401)
+  useEffect(() => {
+    setAuthProvider(
+      () => ({
+        token: stateRef.current.token,
+        refreshToken: stateRef.current.refreshToken,
+      }),
+      {
+        onTokensRefreshed: (tokens) => {
+          localStorage.setItem(TOKEN_KEY, tokens.token);
+          localStorage.setItem(REFRESH_TOKEN_KEY, tokens.refreshToken);
+          setState((s) =>
+            s.user ? { ...s, token: tokens.token, refreshToken: tokens.refreshToken } : s
+          );
+        },
+        onRefreshFailed: () => {
+          clearAuth();
+        },
+      }
+    );
+  }, [clearAuth]);
 
   // Load persisted auth state on mount
   useEffect(() => {
     const token = localStorage.getItem(TOKEN_KEY);
+    const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
     const userJson = localStorage.getItem(USER_KEY);
-    if (token && userJson) {
+    if (token && refreshToken && userJson) {
       try {
         const user = JSON.parse(userJson) as UserSummary;
-        setState({ user, token, isLoading: false });
+        setState({ user, token, refreshToken, isLoading: false });
       } catch {
-        localStorage.removeItem(TOKEN_KEY);
-        localStorage.removeItem(USER_KEY);
-        setState({ user: null, token: null, isLoading: false });
+        clearAuth();
       }
     } else {
-      setState({ user: null, token: null, isLoading: false });
+      setState((s) => ({ ...s, user: null, token: null, refreshToken: null, isLoading: false }));
     }
-  }, []);
+  }, [clearAuth]);
 
-  // Handle OAuth callback response
+  // Handle OAuth callback response (backend may return requiresPhone for new users)
   const handleOAuthResponse = useCallback(
-    async (provider: 'google' | 'facebook', credential: string) => {
-      const res = await api<LoginResponse>(`/auth/oauth/${provider}`, {
-        method: 'POST',
-        body: JSON.stringify({ credential }),
-      });
-      localStorage.setItem(TOKEN_KEY, res.token);
-      localStorage.setItem(USER_KEY, JSON.stringify(res.user));
-      setState({ user: res.user, token: res.token, isLoading: false });
+    async (provider: 'google' | 'facebook', credential: string, phone?: string) => {
+      const res = await api<LoginResponse & { requiresPhone?: boolean }>(
+        `/auth/oauth/${provider}`,
+        {
+          method: 'POST',
+          body: JSON.stringify({ credential, phone: phone || undefined }),
+        }
+      );
+      persistAuth(res.user, res.token, res.refreshToken);
+      setRequiresPhone(Boolean(res.requiresPhone));
     },
-    []
+    [persistAuth]
   );
 
-  const login = useCallback(async (data: LoginRequest) => {
-    const res = await api<LoginResponse>('/auth/login', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    });
-    localStorage.setItem(TOKEN_KEY, res.token);
-    localStorage.setItem(USER_KEY, JSON.stringify(res.user));
-    setState({ user: res.user, token: res.token, isLoading: false });
-  }, []);
-
-  const register = useCallback(
-    async (data: RegisterRequest) => {
-      await api<{ message: string }>('/auth/register', {
+  const login = useCallback(
+    async (data: LoginRequest) => {
+      const res = await api<LoginResponse>('/auth/login', {
         method: 'POST',
         body: JSON.stringify(data),
       });
-      // After successful registration, log the user in
-      await login({ email: data.email, password: data.password });
+      persistAuth(res.user, res.token, res.refreshToken);
     },
-    [login]
+    [persistAuth]
   );
 
-  // Google OAuth login using Google Identity Services
-  const loginWithGoogle = useCallback(async () => {
-    return new Promise<void>((resolve, reject) => {
-      if (!GOOGLE_CLIENT_ID) {
-        reject(new Error('Google OAuth is not configured'));
-        return;
-      }
+  const register = useCallback(
+    async (data: RegisterRequest) => {
+      const res = await api<LoginResponse>('/auth/register', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      });
+      persistAuth(res.user, res.token, res.refreshToken);
+    },
+    [persistAuth]
+  );
 
-      // Load Google Identity Services script if not loaded
-      if (!window.google?.accounts?.id) {
-        const script = document.createElement('script');
-        script.src = 'https://accounts.google.com/gsi/client';
-        script.async = true;
-        script.defer = true;
-        script.onload = () => initializeGoogleAuth(resolve, reject);
-        script.onerror = () => reject(new Error('Failed to load Google OAuth'));
-        document.head.appendChild(script);
-      } else {
-        initializeGoogleAuth(resolve, reject);
-      }
+  // Google OAuth login — redirect flow only (avoids FedCM/One Tap CORS errors on localhost)
+  const loginWithGoogle = useCallback(async (_phone?: string) => {
+    if (!GOOGLE_CLIENT_ID) {
+      throw new Error('Google OAuth is not configured');
+    }
+    const authUrl = new URL('https://accounts.google.com/o/oauth2/v2/auth');
+    authUrl.searchParams.set('client_id', GOOGLE_CLIENT_ID);
+    authUrl.searchParams.set('redirect_uri', `${window.location.origin}/auth/google/callback`);
+    authUrl.searchParams.set('response_type', 'code');
+    authUrl.searchParams.set('scope', 'openid email profile');
+    authUrl.searchParams.set('access_type', 'offline');
+    authUrl.searchParams.set('prompt', 'consent');
+    window.location.href = authUrl.toString();
+  }, []);
 
-      function initializeGoogleAuth(res: () => void, rej: (error: Error) => void) {
-        try {
-          window.google.accounts.id.initialize({
-            client_id: GOOGLE_CLIENT_ID,
-            callback: async (response: { credential: string }) => {
-              try {
-                await handleOAuthResponse('google', response.credential);
-                res();
-              } catch (err) {
-                rej(err instanceof Error ? err : new Error('Google login failed'));
+  const loginWithFacebook = useCallback(
+    async (phone?: string) => {
+      return new Promise<void>((resolve, reject) => {
+        if (!FACEBOOK_APP_ID) {
+          reject(new Error('Facebook OAuth is not configured'));
+          return;
+        }
+
+        if (!window.FB) {
+          window.fbAsyncInit = function () {
+            window.FB.init({
+              appId: FACEBOOK_APP_ID,
+              cookie: true,
+              xfbml: true,
+              version: 'v18.0',
+            });
+            initiateFacebookLogin(resolve, reject);
+          };
+
+          const script = document.createElement('script');
+          script.src = 'https://connect.facebook.net/en_US/sdk.js';
+          script.async = true;
+          script.defer = true;
+          script.onerror = () => reject(new Error('Failed to load Facebook SDK'));
+          document.head.appendChild(script);
+        } else {
+          initiateFacebookLogin(resolve, reject);
+        }
+
+        function initiateFacebookLogin(res: () => void, rej: (error: Error) => void) {
+          window.FB.login(
+            async (response: { authResponse?: { accessToken: string } }) => {
+              if (response.authResponse) {
+                try {
+                  await handleOAuthResponse('facebook', response.authResponse.accessToken, phone);
+                  res();
+                } catch (err) {
+                  rej(err instanceof Error ? err : new Error('Facebook login failed'));
+                }
+              } else {
+                rej(new Error('Facebook login was cancelled'));
               }
             },
-            auto_select: false,
-            cancel_on_tap_outside: true,
-          });
-
-          // Prompt the Google One Tap UI
-          window.google.accounts.id.prompt(
-            (notification: { isNotDisplayed: () => boolean; isSkippedMoment: () => boolean }) => {
-              if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-                // Fall back to popup if One Tap is not available
-                window.google.accounts.id.renderButton(document.createElement('div'), {
-                  type: 'standard',
-                });
-                // Use redirect flow as fallback
-                const authUrl = new URL('https://accounts.google.com/o/oauth2/v2/auth');
-                authUrl.searchParams.set('client_id', GOOGLE_CLIENT_ID);
-                authUrl.searchParams.set(
-                  'redirect_uri',
-                  `${window.location.origin}/auth/google/callback`
-                );
-                authUrl.searchParams.set('response_type', 'code');
-                authUrl.searchParams.set('scope', 'openid email profile');
-                authUrl.searchParams.set('access_type', 'offline');
-                authUrl.searchParams.set('prompt', 'consent');
-                window.location.href = authUrl.toString();
-              }
-            }
+            { scope: 'email,public_profile' }
           );
-        } catch (err) {
-          rej(err instanceof Error ? err : new Error('Failed to initialize Google OAuth'));
         }
+      });
+    },
+    [handleOAuthResponse]
+  );
+
+  const logout = useCallback(async () => {
+    const refreshToken = stateRef.current.refreshToken;
+    if (refreshToken) {
+      try {
+        await api('/auth/logout', {
+          method: 'POST',
+          body: JSON.stringify({ refreshToken }),
+        });
+      } catch {
+        // ignore
       }
-    });
-  }, [handleOAuthResponse]);
+    }
+    clearAuth();
+  }, [clearAuth]);
 
-  // Facebook OAuth login
-  const loginWithFacebook = useCallback(async () => {
-    return new Promise<void>((resolve, reject) => {
-      if (!FACEBOOK_APP_ID) {
-        reject(new Error('Facebook OAuth is not configured'));
-        return;
-      }
-
-      // Load Facebook SDK if not loaded
-      if (!window.FB) {
-        window.fbAsyncInit = function () {
-          window.FB.init({
-            appId: FACEBOOK_APP_ID,
-            cookie: true,
-            xfbml: true,
-            version: 'v18.0',
-          });
-          initiateFacebookLogin(resolve, reject);
-        };
-
-        const script = document.createElement('script');
-        script.src = 'https://connect.facebook.net/en_US/sdk.js';
-        script.async = true;
-        script.defer = true;
-        script.onerror = () => reject(new Error('Failed to load Facebook SDK'));
-        document.head.appendChild(script);
-      } else {
-        initiateFacebookLogin(resolve, reject);
-      }
-
-      function initiateFacebookLogin(res: () => void, rej: (error: Error) => void) {
-        window.FB.login(
-          async (response: { authResponse?: { accessToken: string } }) => {
-            if (response.authResponse) {
-              try {
-                await handleOAuthResponse('facebook', response.authResponse.accessToken);
-                res();
-              } catch (err) {
-                rej(err instanceof Error ? err : new Error('Facebook login failed'));
-              }
-            } else {
-              rej(new Error('Facebook login was cancelled'));
-            }
-          },
-          { scope: 'email,public_profile' }
-        );
-      }
-    });
-  }, [handleOAuthResponse]);
-
-  const logout = useCallback(() => {
-    localStorage.removeItem(TOKEN_KEY);
-    localStorage.removeItem(USER_KEY);
-    setState({ user: null, token: null, isLoading: false });
-  }, []);
+  const completeOAuthLogin = useCallback(
+    (response: OAuthLoginResponse) => {
+      persistAuth(response.user, response.token, response.refreshToken);
+      setRequiresPhone(Boolean(response.requiresPhone));
+    },
+    [persistAuth]
+  );
 
   const value: AuthContextValue = {
     ...state,
@@ -216,8 +241,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     register,
     loginWithGoogle,
     loginWithFacebook,
+    completeOAuthLogin,
     logout,
     isAuthenticated: !!state.user,
+    requiresPhone,
+    clearRequiresPhone: () => setRequiresPhone(false),
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

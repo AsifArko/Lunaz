@@ -65,8 +65,11 @@ export async function updateProfile(userId: string, input: UpdateProfileInput) {
 export async function changePassword(userId: string, input: ChangePasswordInput) {
   const user = await UserModel.findById(userId);
   if (!user) throw createError('User not found', 404);
-  const valid = await bcrypt.compare(input.currentPassword, user.passwordHash);
-  if (!valid) throw createError('Current password is incorrect', 401);
+  if (user.passwordHash) {
+    if (!input.currentPassword) throw createError('Current password is required', 400);
+    const valid = await bcrypt.compare(input.currentPassword, user.passwordHash);
+    if (!valid) throw createError('Current password is incorrect', 401);
+  }
   user.passwordHash = await bcrypt.hash(input.newPassword, 10);
   await user.save();
   return { success: true };

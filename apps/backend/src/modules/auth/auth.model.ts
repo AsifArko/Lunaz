@@ -18,12 +18,15 @@ const addressSchema = new mongoose.Schema(
 const userSchema = new mongoose.Schema(
   {
     email: { type: String, required: true, unique: true, lowercase: true },
-    passwordHash: { type: String, required: true },
+    passwordHash: { type: String, required: false },
     name: { type: String, required: true },
     phone: { type: String, required: true },
     role: { type: String, enum: Object.values(UserRole), default: UserRole.CUSTOMER },
     emailVerified: { type: Boolean, default: false },
     addresses: [addressSchema],
+    // OAuth provider IDs (optional; at least one of passwordHash or these must be set)
+    googleId: { type: String, default: null, sparse: true, unique: true },
+    facebookId: { type: String, default: null, sparse: true, unique: true },
     // Password reset
     resetPasswordToken: { type: String, default: null },
     resetPasswordExpires: { type: Date, default: null },

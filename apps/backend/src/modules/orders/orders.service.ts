@@ -4,6 +4,7 @@ import { OrderModel } from './orders.model.js';
 import { CartModel } from '../cart/cart.model.js';
 import { ProductModel } from '../products/products.model.js';
 import { UserModel } from '../auth/auth.model.js';
+import { OAUTH_PENDING_PHONE } from '../auth/auth.service.js';
 import type { CreateOrderInput, UpdateOrderStatusInput } from './orders.validation.js';
 
 function createError(message: string, statusCode: number): Error & { statusCode: number } {
@@ -42,6 +43,15 @@ async function generateOrderNumber(): Promise<string> {
 }
 
 export async function createOrder(userId: string, input: CreateOrderInput) {
+  const userDoc = await UserModel.findById(userId).select('phone').lean();
+  const phone = userDoc && (userDoc as { phone?: string }).phone;
+  if (phone === OAUTH_PENDING_PHONE) {
+    throw createError(
+      'Please add your phone number in Account → Profile to place orders (required for order management).',
+      400
+    );
+  }
+
   // Get user's cart
   const cart = await CartModel.findOne({ userId });
   if (!cart || !cart.items.length) {
@@ -111,8 +121,8 @@ export async function createOrder(userId: string, input: CreateOrderInput) {
   await CartModel.findOneAndUpdate({ userId }, { $set: { items: [] } });
 
   // Fetch customer name for the response
-  const user = await UserModel.findById(userId, { name: 1 }).lean();
-  const customerName = user?.name as string | undefined;
+  const userProfile = await UserModel.findById(userId, { name: 1 }).lean();
+  const customerName = userProfile?.name as string | undefined;
 
   return formatOrder(order.toObject(), customerName);
 }

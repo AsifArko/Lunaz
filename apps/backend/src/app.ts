@@ -19,19 +19,50 @@ import { analyticsRoutes } from './modules/analytics/analytics.routes.js';
 import { paymentsRoutes } from './modules/payments/payments.routes.js';
 import { complianceRoutes } from './modules/compliance/index.js';
 
+/** Build CORS allowed origins: config URLs plus 127.0.0.1 variants so both localhost and 127.0.0.1 work */
+function getAllowedOrigins(webUrl: string, manageUrl: string): string[] {
+  const origins = new Set([webUrl, manageUrl]);
+  try {
+    const web = new URL(webUrl);
+    const manage = new URL(manageUrl);
+    if (web.hostname === 'localhost') {
+      web.hostname = '127.0.0.1';
+      origins.add(web.origin);
+    }
+    if (manage.hostname === 'localhost') {
+      manage.hostname = '127.0.0.1';
+      origins.add(manage.origin);
+    }
+  } catch {
+    // ignore
+  }
+  return Array.from(origins);
+}
+
 export function createApp() {
   const config = getConfig();
   const app = express();
 
   // Security
   app.use(helmet());
+  const allowedOrigins = getAllowedOrigins(config.FRONTEND_WEB_URL, config.FRONTEND_MANAGE_URL);
   app.use(
     cors({
-      origin: [config.FRONTEND_WEB_URL, config.FRONTEND_MANAGE_URL],
+      origin: (origin, cb) => {
+        // Allow requests with no origin (e.g. Postman) or from allowed list; reflect origin so browser accepts response
+        if (!origin || allowedOrigins.includes(origin)) {
+          cb(null, origin || allowedOrigins[0]);
+          return;
+        }
+        cb(null, false);
+      },
       credentials: true,
+      methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+      allowedHeaders: ['Content-Type', 'Authorization'],
     })
   );
   app.use(express.json());
+  app.use(express.urlencoded({ extended: true }));
 
   // Server logging middleware (logs all requests to MongoDB)
   app.use(serverLoggerMiddleware());
