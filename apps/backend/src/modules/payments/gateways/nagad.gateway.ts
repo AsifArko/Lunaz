@@ -278,7 +278,7 @@ export class NagadGateway implements PaymentGateway {
 
     return {
       transactionId: refundResult.refundTrxId || `NAGAD_REFUND_${Date.now()}`,
-      originalTransactionId: payment.nagad?.issuerPaymentRefNo,
+      originalTransactionId: payment.nagad?.issuerPaymentRefNo ?? undefined,
     };
   }
 }

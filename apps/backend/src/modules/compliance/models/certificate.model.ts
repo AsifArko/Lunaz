@@ -114,8 +114,11 @@ certificateSchema.virtual('daysUntilExpiry').get(function () {
 
 // Virtual for expiry status
 certificateSchema.virtual('expiryStatus').get(function () {
-  const days = this.daysUntilExpiry;
-  if (days === null) return 'no_expiry';
+  if (!this.expiryDate) return 'no_expiry';
+  const now = new Date();
+  const expiry = new Date(this.expiryDate);
+  const diffTime = expiry.getTime() - now.getTime();
+  const days = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   if (days < 0) return 'expired';
   if (days <= 7) return 'critical';
   if (days <= 30) return 'warning';

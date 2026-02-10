@@ -271,7 +271,11 @@ export async function initiatePayment(
     total: order.total,
     currency: order.currency,
     userId: order.userId.toString(),
-    shippingAddress: order.shippingAddress,
+    shippingAddress: {
+      ...order.shippingAddress,
+      line2: order.shippingAddress.line2 ?? undefined,
+      state: order.shippingAddress.state ?? undefined,
+    },
   };
 
   // Initiate with gateway
