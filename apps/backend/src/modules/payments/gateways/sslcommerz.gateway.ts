@@ -3,6 +3,7 @@ import { PaymentModel, type PaymentDocument } from '../payments.model.js';
 import { OrderModel } from '../../orders/orders.model.js';
 import { UserModel } from '../../auth/auth.model.js';
 import { getSettings } from '../../settings/settings.model.js';
+import { getConfig } from '../../../config/index.js';
 import type { PaymentGateway, CreatePaymentResult, RefundResult, OrderInfo } from './index.js';
 
 interface SSLCommerzConfig {
@@ -39,23 +40,44 @@ export class SSLCommerzGateway implements PaymentGateway {
     if (this.initialized) return;
 
     const settings = await getSettings();
-    const config = settings.payments?.sslcommerz as SSLCommerzConfig | undefined;
+    const dbConfig = settings.payments?.sslcommerz as SSLCommerzConfig | undefined;
 
-    if (!config) {
-      throw new Error('SSLCommerz configuration not found');
+    let storeId = (dbConfig?.storeId as string) || '';
+    let storePassword = (dbConfig?.storePassword as string) || '';
+    let sandbox = dbConfig?.sandbox ?? true;
+    let apiUrl = 'http://localhost:4000';
+    try {
+      const config = getConfig() as unknown as Record<string, string | undefined>;
+      storeId = storeId || config.SSLCOMMERZ_STORE_ID || '';
+      storePassword = storePassword || config.SSLCOMMERZ_STORE_PASSWORD || '';
+      sandbox = dbConfig?.sandbox ?? config.SSLCOMMERZ_SANDBOX !== 'false';
+      apiUrl = config.API_URL || process.env.API_URL || apiUrl;
+    } catch {
+      storeId = storeId || process.env.SSLCOMMERZ_STORE_ID || '';
+      storePassword = storePassword || process.env.SSLCOMMERZ_STORE_PASSWORD || '';
+      sandbox = dbConfig?.sandbox ?? process.env.SSLCOMMERZ_SANDBOX !== 'false';
+      apiUrl = process.env.API_URL || apiUrl;
     }
 
-    const apiUrl = process.env.API_URL || '';
+    // Always fall back to process.env (in case getConfig() didn't include optional keys)
+    storeId = storeId || process.env.SSLCOMMERZ_STORE_ID || '';
+    storePassword = storePassword || process.env.SSLCOMMERZ_STORE_PASSWORD || '';
 
-    this.baseUrl = config.sandbox
-      ? 'https://sandbox.sslcommerz.com'
-      : 'https://securepay.sslcommerz.com';
-    this.storeId = config.storeId || '';
-    this.storePassword = config.storePassword || '';
-    this.successUrl = config.successUrl || `${apiUrl}/api/v1/payments/sslcommerz/success`;
-    this.failUrl = config.failUrl || `${apiUrl}/api/v1/payments/sslcommerz/fail`;
-    this.cancelUrl = config.cancelUrl || `${apiUrl}/api/v1/payments/sslcommerz/cancel`;
-    this.ipnUrl = config.ipnUrl || `${apiUrl}/api/v1/payments/sslcommerz/ipn`;
+    if (!storeId || !storePassword) {
+      throw new Error(
+        'SSLCommerz configuration not found. Set storeId/storePassword in Settings or use SSLCOMMERZ_STORE_ID and SSLCOMMERZ_STORE_PASSWORD in .env'
+      );
+    }
+
+    this.baseUrl = sandbox ? 'https://sandbox.sslcommerz.com' : 'https://securepay.sslcommerz.com';
+    this.storeId = storeId;
+    this.storePassword = storePassword;
+    this.successUrl =
+      (dbConfig?.successUrl as string) || `${apiUrl}/api/v1/payments/sslcommerz/success`;
+    this.failUrl = (dbConfig?.failUrl as string) || `${apiUrl}/api/v1/payments/sslcommerz/fail`;
+    this.cancelUrl =
+      (dbConfig?.cancelUrl as string) || `${apiUrl}/api/v1/payments/sslcommerz/cancel`;
+    this.ipnUrl = (dbConfig?.ipnUrl as string) || `${apiUrl}/api/v1/payments/sslcommerz/ipn`;
     this.initialized = true;
   }
 
@@ -136,6 +158,7 @@ export class SSLCommerzGateway implements PaymentGateway {
 
     const ipnData = data as {
       value_a?: string;
+      value_b?: string;
       val_id?: string;
       tran_id?: string;
       card_type?: string;
@@ -147,13 +170,29 @@ export class SSLCommerzGateway implements PaymentGateway {
       status?: string;
     };
 
-    // Validate IPN
-    const validationResult = await this.validateTransaction(ipnData.val_id || '');
-
     const payment = await PaymentModel.findById(ipnData.value_a);
     if (!payment) {
       throw new Error('Payment not found');
     }
+
+    // Idempotent: already paid (e.g. IPN already processed)
+    if (payment.status === PaymentStatus.PAID) {
+      return payment;
+    }
+
+    const valId = (ipnData.val_id || '').trim();
+    if (!valId) {
+      // No validation ID (e.g. user cancelled before completing) – leave as initiated/failed
+      if (ipnData.status === 'FAILED' || ipnData.status === 'cancel') {
+        payment.status = PaymentStatus.FAILED;
+        payment.failureReason = ipnData.status || 'Cancelled or failed';
+        payment.gatewayResponse = ipnData;
+        await payment.save();
+      }
+      return payment;
+    }
+
+    const validationResult = await this.validateTransaction(valId);
 
     if (validationResult.status === 'VALID' || validationResult.status === 'VALIDATED') {
       payment.status = PaymentStatus.PAID;
@@ -169,7 +208,6 @@ export class SSLCommerzGateway implements PaymentGateway {
       payment.gatewayTransactionId = ipnData.bank_tran_id;
       payment.gatewayResponse = ipnData;
 
-      // Update order
       await OrderModel.findByIdAndUpdate(payment.orderId, {
         paymentStatus: PaymentStatus.PAID,
         paidAt: new Date(),

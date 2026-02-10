@@ -165,7 +165,19 @@ export function CheckoutPage() {
         };
       }
 
-      // Step 1: Create order
+      // Sync cart to backend so order creation sees the same items (backend builds order from server cart)
+      const cartPayload = items.map((item) => ({
+        productId: item.productId,
+        variantId: item.variantId,
+        quantity: item.quantity,
+      }));
+      await api('/cart', {
+        method: 'PUT',
+        body: JSON.stringify({ items: cartPayload }),
+        token,
+      });
+
+      // Step 1: Create order (uses server-side cart we just synced)
       const order = await api<Order>('/orders', {
         method: 'POST',
         body: JSON.stringify({ shippingAddress }),
@@ -184,27 +196,42 @@ export function CheckoutPage() {
         token,
       });
 
-      // Clear cart
-      clearCart();
-
       // Handle payment response based on method
       if (paymentResponse.redirectUrl) {
-        // Redirect to payment gateway (bKash, Nagad, Card)
-        addToast('Redirecting to payment gateway...', 'info');
+        // Redirect to payment gateway (SSLCommerz: card, bKash, Nagad, bank)
+        clearCart();
+        addToast('Redirecting to payment page to enter card or bKash details...', 'info');
         window.location.href = paymentResponse.redirectUrl;
-      } else if (selectedPaymentMethod === 'bank_transfer' && paymentResponse.bankDetails) {
-        // Show bank transfer details
+        return;
+      }
+
+      if (selectedPaymentMethod === 'bank_transfer' && paymentResponse.bankDetails) {
+        clearCart();
         setBankTransferInfo(paymentResponse);
         setCheckoutStep('bank_transfer');
-      } else if (selectedPaymentMethod === 'cod') {
-        // Cash on delivery - redirect to confirmation
+        return;
+      }
+
+      if (selectedPaymentMethod === 'cod') {
+        clearCart();
         addToast('Order placed successfully! Pay on delivery.', 'success');
         navigate(`/account/orders/${order.id}?confirmed=1`);
-      } else {
-        // Default: redirect to order page
-        addToast('Order placed successfully!', 'success');
-        navigate(`/account/orders/${order.id}?confirmed=1`);
+        return;
       }
+
+      // Card/bKash/Nagad was selected but no redirect URL – don't confirm order
+      if (selectedPaymentMethod === 'card') {
+        addToast(
+          'Payment gateway did not respond. Please try again or choose another payment method.',
+          'error'
+        );
+        setCheckoutStep('details');
+        return;
+      }
+
+      clearCart();
+      addToast('Order placed successfully!', 'success');
+      navigate(`/account/orders/${order.id}?confirmed=1`);
     } catch (err) {
       addToast(err instanceof Error ? err.message : 'Failed to place order', 'error');
       setCheckoutStep('details');
@@ -444,6 +471,12 @@ export function CheckoutPage() {
                   onSelect={setSelectedPaymentMethod}
                   disabled={isPlacingOrder}
                 />
+                {selectedPaymentMethod === 'card' && (
+                  <p className="mt-3 text-sm text-gray-600 bg-blue-50 border border-blue-100 rounded-lg p-3">
+                    After you click <strong>Place Order</strong>, you&apos;ll be redirected to the
+                    payment page to enter your card number, bKash/Nagad number, or choose your bank.
+                  </p>
+                )}
               </Card>
             </div>
 

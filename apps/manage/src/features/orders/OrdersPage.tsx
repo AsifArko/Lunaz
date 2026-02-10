@@ -1,9 +1,10 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import type { Order, PaginatedResponse, OrderStatus } from '@lunaz/types';
 import { api } from '../../api/client';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
+import { CreateManualOrderModal } from './CreateManualOrderModal';
 
 const statusColors: Record<string, { bg: string; text: string; dot: string }> = {
   pending: { bg: 'bg-amber-50', text: 'text-amber-700', dot: 'bg-amber-500' },
@@ -234,6 +235,7 @@ export function OrdersPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [searchInput, setSearchInput] = useState('');
+  const [manualOrderModalOpen, setManualOrderModalOpen] = useState(false);
 
   const page = parseInt(searchParams.get('page') || '1', 10);
   const status = searchParams.get('status') || '';
@@ -266,34 +268,34 @@ export function OrdersPage() {
     return () => clearTimeout(timer);
   }, [searchInput, search, searchParams, setSearchParams]);
 
-  useEffect(() => {
-    async function fetchOrders() {
-      if (!token) return;
-      setIsLoading(true);
+  const fetchOrders = useCallback(async () => {
+    if (!token) return;
+    setIsLoading(true);
+    try {
+      const params = new URLSearchParams();
+      params.set('page', page.toString());
+      params.set('limit', limit.toString());
+      params.set('sort', 'createdAt');
+      params.set('order', 'desc');
+      if (status) params.set('status', status);
+      if (search) params.set('search', search);
+      if (startDate) params.set('startDate', startDate);
+      if (endDate) params.set('endDate', endDate);
 
-      try {
-        const params = new URLSearchParams();
-        params.set('page', page.toString());
-        params.set('limit', limit.toString());
-        params.set('sort', 'createdAt');
-        params.set('order', 'desc');
-        if (status) params.set('status', status);
-        if (search) params.set('search', search);
-        if (startDate) params.set('startDate', startDate);
-        if (endDate) params.set('endDate', endDate);
-
-        const res = await api<PaginatedResponse<Order>>(`/orders?${params.toString()}`, { token });
-        setOrders(res.data);
-        setTotal(res.total);
-        setTotalPages(res.totalPages);
-      } catch {
-        addToast('Failed to load orders', 'error');
-      } finally {
-        setIsLoading(false);
-      }
+      const res = await api<PaginatedResponse<Order>>(`/orders?${params.toString()}`, { token });
+      setOrders(res.data);
+      setTotal(res.total);
+      setTotalPages(res.totalPages);
+    } catch {
+      addToast('Failed to load orders', 'error');
+    } finally {
+      setIsLoading(false);
     }
-    fetchOrders();
   }, [token, page, status, search, startDate, endDate, addToast]);
+
+  useEffect(() => {
+    fetchOrders();
+  }, [fetchOrders]);
 
   const updateParams = (updates: Record<string, string>) => {
     const newParams = new URLSearchParams(searchParams);
@@ -337,7 +339,26 @@ export function OrdersPage() {
           <h1 className="text-xl font-medium text-gray-900">Orders</h1>
           <p className="mt-1 text-sm text-gray-500">Manage and track customer orders</p>
         </div>
+        <button
+          type="button"
+          onClick={() => setManualOrderModalOpen(true)}
+          className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-gray-900 hover:bg-gray-800 rounded-lg transition-colors shadow-sm"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+          </svg>
+          Add order
+        </button>
       </div>
+
+      <CreateManualOrderModal
+        open={manualOrderModalOpen}
+        onClose={() => setManualOrderModalOpen(false)}
+        onSuccess={() => {
+          setManualOrderModalOpen(false);
+          fetchOrders();
+        }}
+      />
 
       {/* Stats */}
       <div className="flex items-center gap-6">

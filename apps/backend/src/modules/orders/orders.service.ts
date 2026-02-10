@@ -1,11 +1,16 @@
 import mongoose from 'mongoose';
 import { OrderStatus, PaymentStatus } from '@lunaz/types';
+import { UserRole } from '@lunaz/types';
 import { OrderModel } from './orders.model.js';
 import { CartModel } from '../cart/cart.model.js';
 import { ProductModel } from '../products/products.model.js';
 import { UserModel } from '../auth/auth.model.js';
 import { OAUTH_PENDING_PHONE } from '../auth/auth.service.js';
-import type { CreateOrderInput, UpdateOrderStatusInput } from './orders.validation.js';
+import type {
+  CreateOrderInput,
+  CreateManualOrderInput,
+  UpdateOrderStatusInput,
+} from './orders.validation.js';
 
 function createError(message: string, statusCode: number): Error & { statusCode: number } {
   const err = new Error(message) as Error & { statusCode: number };
@@ -124,6 +129,84 @@ export async function createOrder(userId: string, input: CreateOrderInput) {
   const userProfile = await UserModel.findById(userId, { name: 1 }).lean();
   const customerName = userProfile?.name as string | undefined;
 
+  return formatOrder(order.toObject(), customerName);
+}
+
+export async function createManualOrder(_adminId: string, input: CreateManualOrderInput) {
+  const userId = input.userId;
+
+  const userDoc = await UserModel.findById(userId).select('role name').lean();
+  if (!userDoc) throw createError('Customer not found', 404);
+  if ((userDoc as { role: string }).role !== UserRole.CUSTOMER) {
+    throw createError('User is not a customer', 400);
+  }
+
+  const productIds = [...new Set(input.items.map((i) => i.productId))];
+  const products = await ProductModel.find({ _id: { $in: productIds } }).lean();
+  const productMap = new Map(products.map((p) => [p._id.toString(), p]));
+
+  const orderItems = [];
+  let subtotal = 0;
+
+  for (const item of input.items) {
+    const product = productMap.get(item.productId);
+    if (!product) throw createError(`Product ${item.productId} not found`, 400);
+
+    const variant = (
+      product.variants as { id: string; name: string; priceOverride?: number }[]
+    ).find((v) => v.id === item.variantId);
+    if (!variant) {
+      throw createError(
+        `Variant ${item.variantId} not found for product ${(product as { name: string }).name}`,
+        400
+      );
+    }
+
+    const unitPrice = variant.priceOverride ?? (product as { basePrice: number }).basePrice;
+    const total = unitPrice * item.quantity;
+    subtotal += total;
+
+    orderItems.push({
+      productId: new mongoose.Types.ObjectId(item.productId),
+      variantId: item.variantId,
+      productName: (product as { name: string }).name,
+      variantName: variant.name,
+      quantity: item.quantity,
+      unitPrice,
+      total,
+      imageUrl: (
+        (product as { images?: { url: string }[] }).images?.[0] as { url: string } | undefined
+      )?.url,
+    });
+  }
+
+  const shippingAmount = Number(input.shippingAmount) || 0;
+  const taxAmount = 0;
+  const totalAmount = subtotal + shippingAmount + taxAmount;
+
+  const orderNumber = await generateOrderNumber();
+  const hasTransactionId = Boolean(input.transactionId?.trim());
+
+  const order = await OrderModel.create({
+    orderNumber,
+    userId: new mongoose.Types.ObjectId(userId),
+    status: OrderStatus.PENDING,
+    items: orderItems,
+    subtotal,
+    shippingAmount,
+    taxAmount,
+    total: totalAmount,
+    currency: 'BDT',
+    shippingAddress: input.shippingAddress,
+    billingAddress: input.billingAddress,
+    paymentMethod: input.paymentMethod,
+    paymentIntentId: input.transactionId?.trim() || undefined,
+    paymentStatus: hasTransactionId ? PaymentStatus.COMPLETED : PaymentStatus.PENDING,
+    paidAt: hasTransactionId ? new Date() : undefined,
+    notes: input.notes,
+  });
+
+  const customerName = (userDoc as { name?: string }).name;
   return formatOrder(order.toObject(), customerName);
 }
 

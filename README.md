@@ -17,6 +17,11 @@ Lifestyle and home décor e-commerce — Web (customer storefront), Manage (admi
 - Node.js 20+
 - MongoDB (local or URI in env)
 
+## Running locally (deploy / testing)
+
+- **Full stack in one command:** `docker compose up --build` then `make docker-seed-admin`. See [docs/LOCAL-DEPLOYMENT.md](docs/LOCAL-DEPLOYMENT.md).
+- **DB in Docker, apps with npm:** `make docker-up-db`, then in three terminals run `npm run dev:backend`, `npm run dev:web`, `npm run dev:manage` (same doc).
+
 ## Quick start (local)
 
 1. Copy env and set MongoDB:

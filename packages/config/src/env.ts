@@ -15,6 +15,12 @@ export const backendEnvSchema = z.object({
   AWS_SECRET_ACCESS_KEY: z.string().optional(),
   FRONTEND_WEB_URL: z.string().url().default('http://localhost:3000'),
   FRONTEND_MANAGE_URL: z.string().url().default('http://localhost:3001'),
+  // Payment gateways – backend base URL for SSLCommerz callbacks
+  API_URL: z.string().optional(),
+  // SSLCommerz (required for "Card / bKash / Nagad / Bank" at checkout)
+  SSLCOMMERZ_STORE_ID: z.string().optional(),
+  SSLCOMMERZ_STORE_PASSWORD: z.string().optional(),
+  SSLCOMMERZ_SANDBOX: z.string().optional(),
   // Stripe (optional)
   STRIPE_SECRET_KEY: z.string().optional(),
   STRIPE_WEBHOOK_SECRET: z.string().optional(),

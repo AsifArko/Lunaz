@@ -44,6 +44,7 @@ help:
 	@echo "  Docker:"
 	@echo "    make docker-build    Build all Docker images"
 	@echo "    make docker-up       Start all containers (docker compose up)"
+	@echo "    make docker-up-db    Start only MongoDB + MinIO (for npm run dev:*)"
 	@echo "    make docker-down     Stop all containers"
 	@echo "    make docker-logs     View container logs"
 	@echo "    make docker-clean    Remove containers, images, and volumes"
@@ -207,6 +208,10 @@ docker-build:
 
 docker-up:
 	docker compose up -d
+
+# Start only MongoDB and MinIO (for local dev with npm run dev:backend, dev:web, dev:manage)
+docker-up-db:
+	docker compose up -d mongodb minio minio-init
 
 docker-up-build:
 	docker compose up -d --build
