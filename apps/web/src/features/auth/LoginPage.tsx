@@ -27,11 +27,12 @@ const GoogleIcon = () => (
   </svg>
 );
 
-const FacebookIcon = () => (
-  <svg className="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="#1877F2">
-    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-  </svg>
-);
+// Facebook OAuth — commented out for now; re-enable when ready
+// const FacebookIcon = () => (
+//   <svg className="w-[18px] h-[18px]" viewBox="0 0 24 24" fill="#1877F2">
+//     <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+//   </svg>
+// );
 
 export function LoginPage() {
   const navigate = useNavigate();
@@ -39,7 +40,7 @@ export function LoginPage() {
   const {
     login,
     loginWithGoogle,
-    loginWithFacebook,
+    // loginWithFacebook, — used when Facebook OAuth button is enabled
     isAuthenticated,
     isLoading: authLoading,
   } = useAuth();
@@ -96,19 +97,20 @@ export function LoginPage() {
     }
   };
 
-  const handleFacebookLogin = async () => {
-    setOauthLoading('facebook');
-    setError(null);
-    try {
-      await loginWithFacebook();
-      addToast('Welcome back!', 'success');
-      navigate(redirect, { replace: true });
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Facebook sign-in failed');
-    } finally {
-      setOauthLoading(null);
-    }
-  };
+  // Facebook OAuth — commented out for now; re-enable when ready
+  // const handleFacebookLogin = async () => {
+  //   setOauthLoading('facebook');
+  //   setError(null);
+  //   try {
+  //     await loginWithFacebook();
+  //     addToast('Welcome back!', 'success');
+  //     navigate(redirect, { replace: true });
+  //   } catch (err) {
+  //     setError(err instanceof Error ? err.message : 'Facebook sign-in failed');
+  //   } finally {
+  //     setOauthLoading(null);
+  //   }
+  // };
 
   return (
     <div className="relative min-h-[75vh] flex items-center justify-center py-12 px-4 overflow-hidden">
@@ -125,7 +127,7 @@ export function LoginPage() {
         {/* Card */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-[0_2px_8px_rgba(0,0,0,0.04)] p-6">
           {/* OAuth */}
-          <div className="grid grid-cols-2 gap-2.5">
+          <div className="grid grid-cols-1 gap-2.5">
             <button
               type="button"
               onClick={handleGoogleLogin}
@@ -135,7 +137,8 @@ export function LoginPage() {
               {oauthLoading === 'google' ? <Spinner size="sm" /> : <GoogleIcon />}
               <span>Google</span>
             </button>
-            <button
+            {/* Facebook OAuth — commented out for now; re-enable when ready */}
+            {/* <button
               type="button"
               onClick={handleFacebookLogin}
               disabled={isLoading || oauthLoading !== null}
@@ -143,7 +146,7 @@ export function LoginPage() {
             >
               {oauthLoading === 'facebook' ? <Spinner size="sm" /> : <FacebookIcon />}
               <span>Facebook</span>
-            </button>
+            </button> */}
           </div>
 
           {/* Divider */}

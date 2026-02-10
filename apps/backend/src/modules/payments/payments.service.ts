@@ -2,6 +2,7 @@ import { PaymentMethod, PaymentStatus, type Payment } from '@lunaz/types';
 import { PaymentModel, type PaymentDocument } from './payments.model.js';
 import { OrderModel } from '../orders/orders.model.js';
 import { getSettings } from '../settings/settings.model.js';
+import { getConfig } from '../../config/index.js';
 import {
   BkashGateway,
   NagadGateway,
@@ -98,17 +99,49 @@ export function formatPayment(payment: PaymentDocument): Payment {
 }
 
 /**
+ * Check if SSLCommerz is configured and enabled (DB or env for sandbox).
+ * Reads from config and process.env so credentials are found regardless of .env load path.
+ */
+export async function isSSLCommerzEnabled(): Promise<boolean> {
+  let storeId: string | undefined = process.env.SSLCOMMERZ_STORE_ID;
+  let storePassword: string | undefined = process.env.SSLCOMMERZ_STORE_PASSWORD;
+  try {
+    const config = getConfig() as unknown as Record<string, string | undefined>;
+    storeId = storeId || config.SSLCOMMERZ_STORE_ID;
+    storePassword = storePassword || config.SSLCOMMERZ_STORE_PASSWORD;
+  } catch {
+    // use process.env only
+  }
+
+  const settings = await getSettings();
+  storeId = settings.payments?.sslcommerz?.storeId || storeId;
+  storePassword = settings.payments?.sslcommerz?.storePassword || storePassword;
+
+  const hasCredentials = !!(storeId && storePassword);
+  const dbEnabled = settings.payments?.sslcommerz?.enabled === true;
+  const envCreds = !!(
+    (process.env.SSLCOMMERZ_STORE_ID && process.env.SSLCOMMERZ_STORE_PASSWORD) ||
+    (storeId && storePassword)
+  );
+  return hasCredentials && (dbEnabled || envCreds);
+}
+
+/**
  * Check if a payment method is enabled.
  */
 export async function isPaymentMethodEnabled(method: PaymentMethod): Promise<boolean> {
   const settings = await getSettings();
-  const enabledMethods = settings.payments?.enabledMethods || [];
 
+  // CARD (SSLCommerz) is allowed whenever it's configured – no DB allow-list gate
+  if (method === PaymentMethod.CARD) {
+    return await isSSLCommerzEnabled();
+  }
+
+  const enabledMethods = settings.payments?.enabledMethods || [];
   if (!enabledMethods.includes(method)) {
     return false;
   }
 
-  // Check individual method settings
   switch (method) {
     case PaymentMethod.BKASH:
       return settings.payments?.bkash?.enabled ?? false;
@@ -116,8 +149,6 @@ export async function isPaymentMethodEnabled(method: PaymentMethod): Promise<boo
       return settings.payments?.nagad?.enabled ?? false;
     case PaymentMethod.BANK_TRANSFER:
       return settings.payments?.bankTransfer?.enabled ?? true;
-    case PaymentMethod.CARD:
-      return settings.payments?.sslcommerz?.enabled ?? false;
     case PaymentMethod.CASH_ON_DELIVERY:
       return settings.payments?.cod?.enabled ?? true;
     default:
@@ -159,11 +190,12 @@ export async function getEnabledPaymentMethods() {
     });
   }
 
-  if (settings.payments?.sslcommerz?.enabled) {
+  if (await isSSLCommerzEnabled()) {
     methods.push({
       id: PaymentMethod.CARD,
-      name: 'Card Payment',
-      description: 'Credit/Debit card via SSLCommerz',
+      name: 'Card / bKash / Nagad / Bank',
+      description:
+        'Pay with card, mobile banking (bKash, Nagad, Rocket, Tap, Upay), or internet banking via SSLCommerz',
       enabled: true,
     });
   }

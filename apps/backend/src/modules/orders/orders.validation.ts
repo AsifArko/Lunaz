@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { OrderStatus } from '@lunaz/types';
+import { OrderStatus, PaymentMethod } from '@lunaz/types';
 
 const addressSchema = z.object({
   name: z.string().min(1),
@@ -11,10 +11,31 @@ const addressSchema = z.object({
   country: z.string().min(1), // Accept full country names or codes
 });
 
+const manualOrderItemSchema = z.object({
+  productId: z.string().min(1),
+  variantId: z.string().min(1),
+  quantity: z.number().int().min(1),
+});
+
 export const createOrderSchema = z.object({
   body: z.object({
     shippingAddress: addressSchema,
     billingAddress: addressSchema.optional(),
+    notes: z.string().optional(),
+  }),
+});
+
+const paymentMethodValues = Object.values(PaymentMethod) as [string, ...string[]];
+
+export const createManualOrderSchema = z.object({
+  body: z.object({
+    userId: z.string().min(1),
+    items: z.array(manualOrderItemSchema).min(1, 'At least one item is required'),
+    shippingAddress: addressSchema,
+    billingAddress: addressSchema.optional(),
+    shippingAmount: z.number().min(0).optional(),
+    transactionId: z.string().optional(),
+    paymentMethod: z.enum(paymentMethodValues).optional(),
     notes: z.string().optional(),
   }),
 });
@@ -34,4 +55,5 @@ export const updateOrderStatusSchema = z.object({
 });
 
 export type CreateOrderInput = z.infer<typeof createOrderSchema>['body'];
+export type CreateManualOrderInput = z.infer<typeof createManualOrderSchema>['body'];
 export type UpdateOrderStatusInput = z.infer<typeof updateOrderStatusSchema>['body'];

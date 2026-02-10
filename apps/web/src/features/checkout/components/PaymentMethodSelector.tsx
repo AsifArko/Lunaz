@@ -71,11 +71,28 @@ export function PaymentMethodSelector({
     async function fetchMethods() {
       try {
         const response = await api<{ methods: PaymentMethodInfo[] }>('/payments/methods');
-        setMethods(response.methods);
+        let list = response.methods || [];
+
+        // In development: if backend didn't return SSLCommerz (e.g. backend not restarted after adding .env),
+        // still show it so the option is visible. Place Order will work once backend has SSLCOMMERZ_* in env.
+        if (import.meta.env.DEV && !list.some((m) => m.id === 'card')) {
+          list = [
+            ...list,
+            {
+              id: 'card' as PaymentMethod,
+              name: 'Card / bKash / Nagad / Bank',
+              description:
+                'Pay with card, mobile banking (bKash, Nagad, Rocket, Tap, Upay), or internet banking via SSLCommerz',
+              enabled: true,
+            },
+          ];
+        }
+
+        setMethods(list);
 
         // Auto-select first method if none selected
-        if (!selected && response.methods.length > 0) {
-          onSelect(response.methods[0].id);
+        if (!selected && list.length > 0) {
+          onSelect(list[0].id);
         }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load payment methods');

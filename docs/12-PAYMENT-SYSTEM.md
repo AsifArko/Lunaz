@@ -1635,12 +1635,36 @@ router.get('/pending-bank-transfers', authMiddleware, adminMiddleware, async (re
 
 ### 11.1 SSLCommerz Overview
 
-SSLCommerz is Bangladesh's leading payment gateway supporting:
+SSLCommerz is Bangladesh's leading payment gateway. **One integration** gives your store:
 
-- Visa, Mastercard, Amex
-- Local bank cards
-- Mobile banking (bKash, Nagad - alternative integration)
-- Net banking
+- **Cards:** Visa, Mastercard, Amex, DBBL Nexus, QCash, TakaPay
+- **Mobile banking:** bKash, Nagad, Rocket, Tap, Upay, Ok Wallet, M-Cash, Islamic Wallet, MYCash, Meghna Pay
+- **Internet banking:** Citytouch, Cellfin, EBL SKY, Sonali Bank, MTB, Bank Asia, and more
+- **E-Wallet:** Pay Rainbow, iPay, Dmoney, Pocket
+
+Customers choose their channel on the SSLCommerz hosted page after clicking "Place Order".
+
+### 11.1.1 Sandbox quick start
+
+1. **Create a sandbox account:** [developer.sslcommerz.com/registration](https://developer.sslcommerz.com/registration/)
+2. **Get Store ID and Store Password** from the SSLCommerz developer/sandbox panel.
+3. **Configure `.env`** (no DB change needed):
+
+   ```env
+   API_URL=http://localhost:4000
+   SSLCOMMERZ_SANDBOX=true
+   SSLCOMMERZ_STORE_ID=your_sandbox_store_id
+   SSLCOMMERZ_STORE_PASSWORD=your_sandbox_store_password
+   ```
+
+4. Restart the backend. The "Card / bKash / Nagad / Bank" option will appear at checkout.
+5. **Test cards (sandbox):**
+   - VISA: `4111111111111111` | Exp: 12/26 | CVV: 111
+   - Mastercard: `5111111111111111` | Exp: 12/26 | CVV: 111
+   - Amex: `371111111111111` | Exp: 12/26 | CVV: 111
+   - Mobile OTP: `111111` or `123456`
+
+For production, set Store ID/Password in **Manage → Settings → Payments** (or use env) and set `SSLCOMMERZ_SANDBOX=false`.
 
 ### 11.2 SSLCommerz Gateway Implementation
 

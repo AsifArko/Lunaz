@@ -16,6 +16,10 @@ import * as paymentService from './payments.service.js';
 const router = Router();
 const getConfigFn = getConfig;
 
+function getWebUrl(): string {
+  return getConfigFn().FRONTEND_WEB_URL || process.env.WEB_URL || 'http://localhost:3000';
+}
+
 // ==================== Public Routes (Webhooks/Callbacks) ====================
 
 // bKash callback (redirect after payment)
@@ -27,15 +31,14 @@ router.get('/bkash/callback', async (req, res) => {
       status,
     });
 
-    const webUrl = process.env.WEB_URL || '';
+    const webUrl = getWebUrl();
     if (payment.status === PaymentStatus.PAID) {
       res.redirect(`${webUrl}/checkout/success?orderId=${payment.orderId}`);
     } else {
       res.redirect(`${webUrl}/checkout/failed?orderId=${payment.orderId}`);
     }
   } catch (error) {
-    const webUrl = process.env.WEB_URL || '';
-    res.redirect(`${webUrl}/checkout/error`);
+    res.redirect(`${getWebUrl()}/checkout/error`);
   }
 });
 
@@ -44,15 +47,14 @@ router.get('/nagad/callback', async (req, res) => {
   try {
     const payment = await paymentService.handleCallback(PaymentMethod.NAGAD, req.query);
 
-    const webUrl = process.env.WEB_URL || '';
+    const webUrl = getWebUrl();
     if (payment.status === PaymentStatus.PAID) {
       res.redirect(`${webUrl}/checkout/success?orderId=${payment.orderId}`);
     } else {
       res.redirect(`${webUrl}/checkout/failed?orderId=${payment.orderId}`);
     }
   } catch (error) {
-    const webUrl = process.env.WEB_URL || '';
-    res.redirect(`${webUrl}/checkout/error`);
+    res.redirect(`${getWebUrl()}/checkout/error`);
   }
 });
 
@@ -68,36 +70,56 @@ router.post('/sslcommerz/ipn', async (req, res) => {
   }
 });
 
-// SSLCommerz success redirect
+// SSLCommerz success redirect (POST from gateway; GET for backwards compatibility)
+function sslSuccessRedirect(orderId: string, payment: { status: string }) {
+  const webUrl = getWebUrl();
+  if (payment.status === PaymentStatus.PAID) {
+    return `${webUrl}/checkout/success?orderId=${orderId}`;
+  }
+  return `${webUrl}/checkout/failed?orderId=${orderId}`;
+}
+
 router.post('/sslcommerz/success', async (req, res) => {
   try {
-    const { value_b: orderId } = req.body;
+    const orderId = req.body?.value_b || req.body?.orderId;
     const payment = await paymentService.handleCallback(PaymentMethod.CARD, req.body);
-
-    const webUrl = process.env.WEB_URL || '';
-    if (payment.status === PaymentStatus.PAID) {
-      res.redirect(`${webUrl}/checkout/success?orderId=${orderId}`);
-    } else {
-      res.redirect(`${webUrl}/checkout/failed?orderId=${orderId}`);
-    }
+    res.redirect(sslSuccessRedirect(orderId || payment.orderId?.toString(), payment));
   } catch (error) {
-    const webUrl = process.env.WEB_URL || '';
-    res.redirect(`${webUrl}/checkout/error`);
+    res.redirect(`${getWebUrl()}/checkout/error`);
+  }
+});
+
+router.get('/sslcommerz/success', async (req, res) => {
+  try {
+    const orderId = (req.query?.value_b || req.query?.orderId) as string | undefined;
+    const payment = await paymentService.handleCallback(PaymentMethod.CARD, req.query);
+    const oid = orderId || (payment.orderId && payment.orderId.toString());
+    res.redirect(sslSuccessRedirect(oid || '', payment));
+  } catch (error) {
+    res.redirect(`${getWebUrl()}/checkout/error`);
   }
 });
 
 // SSLCommerz fail redirect
-router.post('/sslcommerz/fail', async (req, res) => {
-  const { value_b: orderId } = req.body;
-  const webUrl = process.env.WEB_URL || '';
-  res.redirect(`${webUrl}/checkout/failed?orderId=${orderId}`);
+router.post('/sslcommerz/fail', (req, res) => {
+  const orderId = req.body?.value_b || req.body?.orderId;
+  res.redirect(`${getWebUrl()}/checkout/failed${orderId ? `?orderId=${orderId}` : ''}`);
+});
+
+router.get('/sslcommerz/fail', (req, res) => {
+  const orderId = req.query?.value_b || req.query?.orderId;
+  res.redirect(`${getWebUrl()}/checkout/failed${orderId ? `?orderId=${orderId}` : ''}`);
 });
 
 // SSLCommerz cancel redirect
-router.post('/sslcommerz/cancel', async (req, res) => {
-  const { value_b: orderId } = req.body;
-  const webUrl = process.env.WEB_URL || '';
-  res.redirect(`${webUrl}/checkout/cancelled?orderId=${orderId}`);
+router.post('/sslcommerz/cancel', (req, res) => {
+  const orderId = req.body?.value_b || req.body?.orderId;
+  res.redirect(`${getWebUrl()}/checkout/cancelled${orderId ? `?orderId=${orderId}` : ''}`);
+});
+
+router.get('/sslcommerz/cancel', (req, res) => {
+  const orderId = req.query?.value_b || req.query?.orderId;
+  res.redirect(`${getWebUrl()}/checkout/cancelled${orderId ? `?orderId=${orderId}` : ''}`);
 });
 
 // ==================== Public API Routes ====================

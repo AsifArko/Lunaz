@@ -4,8 +4,18 @@ import { requireRole } from '../../middleware/requireRole.js';
 import { validateBody } from '../../middleware/validate.js';
 import { getConfig } from '../../config/index.js';
 import { UserRole } from '@lunaz/types';
-import { createOrderSchema, updateOrderStatusSchema } from './orders.validation.js';
-import { createOrder, listOrders, getOrder, updateOrderStatus } from './orders.service.js';
+import {
+  createOrderSchema,
+  createManualOrderSchema,
+  updateOrderStatusSchema,
+} from './orders.validation.js';
+import {
+  createOrder,
+  createManualOrder,
+  listOrders,
+  getOrder,
+  updateOrderStatus,
+} from './orders.service.js';
 
 const router = Router();
 const getConfigFn = getConfig;
@@ -21,6 +31,21 @@ router.post(
   async (req, res, next) => {
     try {
       const order = await createOrder(req.user!.id, req.body);
+      res.status(201).json(order);
+    } catch (e) {
+      next(e);
+    }
+  }
+);
+
+// POST /orders/manual — admin create manual order (e.g. phone orders)
+router.post(
+  '/manual',
+  requireRole(UserRole.ADMIN),
+  validateBody(createManualOrderSchema),
+  async (req, res, next) => {
+    try {
+      const order = await createManualOrder(req.user!.id, req.body);
       res.status(201).json(order);
     } catch (e) {
       next(e);
