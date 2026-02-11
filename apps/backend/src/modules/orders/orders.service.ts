@@ -78,9 +78,13 @@ export async function createOrder(userId: string, input: CreateOrderInput) {
       throw createError(`Product ${cartItem.productId} not found`, 400);
     }
 
-    const variant = product.variants.find((v: { id: string }) => v.id === cartItem.variantId);
+    const variants = product.variants ?? [];
+    const variant = variants.find((v: { id?: string }) => v?.id === cartItem.variantId);
     if (!variant) {
-      throw createError(`Variant ${cartItem.variantId} not found for product ${product.name}`, 400);
+      throw createError(
+        `Variant ${cartItem.variantId} not found for product ${(product as { name: string }).name}. Ensure the product has variants.`,
+        400
+      );
     }
 
     const unitPrice = variant.priceOverride ?? product.basePrice;
