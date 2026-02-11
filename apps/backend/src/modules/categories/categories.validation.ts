@@ -1,5 +1,16 @@
 import { z } from 'zod';
 
+/** Accepts http/https URL or data URL (base64 image). */
+const imageUrlSchema = z
+  .string()
+  .optional()
+  .nullable()
+  .refine(
+    (val) =>
+      !val || val.startsWith('http://') || val.startsWith('https://') || val.startsWith('data:'),
+    'Must be a valid URL or base64 data URL'
+  );
+
 export const createCategorySchema = z.object({
   body: z.object({
     name: z.string().min(1),
@@ -8,7 +19,7 @@ export const createCategorySchema = z.object({
       .min(1)
       .regex(/^[a-z0-9-]+$/, 'Slug must be lowercase alphanumeric with dashes'),
     parentId: z.string().optional().nullable(),
-    imageUrl: z.string().url().optional().nullable(),
+    imageUrl: imageUrlSchema,
     order: z.number().int().optional(),
   }),
 });
@@ -22,7 +33,7 @@ export const updateCategorySchema = z.object({
       .regex(/^[a-z0-9-]+$/)
       .optional(),
     parentId: z.string().optional().nullable(),
-    imageUrl: z.string().url().optional().nullable(),
+    imageUrl: imageUrlSchema,
     order: z.number().int().optional(),
   }),
 });

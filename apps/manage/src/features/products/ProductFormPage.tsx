@@ -770,9 +770,9 @@ export function ProductFormPage() {
         productId = created.id;
       }
 
-      for (const file of newImages) {
+      if (newImages.length > 0) {
         const formData = new FormData();
-        formData.append('image', file);
+        newImages.forEach((file) => formData.append('images', file));
 
         await fetch(`${import.meta.env.VITE_API_URL ?? '/api/v1'}/products/${productId}/images`, {
           method: 'POST',

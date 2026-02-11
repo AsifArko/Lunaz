@@ -11,7 +11,7 @@ export interface ProductVariant {
   attributes?: Record<string, string>;
 }
 
-/** Product image (S3 URL). */
+/** Product image (base64 data URL stored in document). */
 export interface ProductImage {
   id: string;
   url: string;

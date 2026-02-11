@@ -85,9 +85,24 @@ const ProductModel = mongoose.model('Product', productSchema);
 // Helper to generate unique IDs
 const generateId = () => Math.random().toString(36).substring(2, 11);
 
-// Placeholder image URLs (using picsum for demo purposes)
-const getPlaceholderImage = (seed: number, width = 800, height = 600) =>
+// Placeholder image URLs (picsum) — fetched and stored as base64 during seed
+const getPlaceholderImageUrl = (seed: number, width = 800, height = 600) =>
   `https://picsum.photos/seed/${seed}/${width}/${height}`;
+
+const TINY_PLACEHOLDER =
+  'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
+
+async function fetchImageAsBase64(url: string): Promise<string> {
+  try {
+    const res = await fetch(url);
+    if (!res.ok) return TINY_PLACEHOLDER;
+    const buf = Buffer.from(await res.arrayBuffer());
+    const contentType = res.headers.get('content-type') || 'image/jpeg';
+    return `data:${contentType};base64,${buf.toString('base64')}`;
+  } catch {
+    return TINY_PLACEHOLDER;
+  }
+}
 
 // ============================================================================
 // SEED DATA
@@ -128,43 +143,33 @@ const categories: CategorySeed[] = [
   {
     name: 'Home Decor',
     slug: 'home-decor',
-    imageUrl: getPlaceholderImage(100),
+    imageUrl: getPlaceholderImageUrl(100),
     order: 1,
     subcategories: [
-      {
-        name: 'Wall Art',
-        slug: 'wall-art',
-        imageUrl: getPlaceholderImage(101),
-        order: 1,
-      },
+      { name: 'Wall Art', slug: 'wall-art', imageUrl: getPlaceholderImageUrl(101), order: 1 },
       {
         name: 'Candles & Holders',
         slug: 'candles-holders',
-        imageUrl: getPlaceholderImage(102),
+        imageUrl: getPlaceholderImageUrl(102),
         order: 2,
       },
       {
         name: 'Vases & Planters',
         slug: 'vases-planters',
-        imageUrl: getPlaceholderImage(103),
+        imageUrl: getPlaceholderImageUrl(103),
         order: 3,
       },
       {
         name: 'Cushions & Throws',
         slug: 'cushions-throws',
-        imageUrl: getPlaceholderImage(104),
+        imageUrl: getPlaceholderImageUrl(104),
         order: 4,
       },
-      {
-        name: 'Mirrors',
-        slug: 'mirrors',
-        imageUrl: getPlaceholderImage(105),
-        order: 5,
-      },
+      { name: 'Mirrors', slug: 'mirrors', imageUrl: getPlaceholderImageUrl(105), order: 5 },
       {
         name: 'Rugs & Carpets',
         slug: 'rugs-carpets',
-        imageUrl: getPlaceholderImage(106),
+        imageUrl: getPlaceholderImageUrl(106),
         order: 6,
       },
     ],
@@ -172,39 +177,29 @@ const categories: CategorySeed[] = [
   {
     name: 'Lifestyle',
     slug: 'lifestyle',
-    imageUrl: getPlaceholderImage(200),
+    imageUrl: getPlaceholderImageUrl(200),
     order: 2,
     subcategories: [
       {
         name: 'Journals & Stationery',
         slug: 'journals-stationery',
-        imageUrl: getPlaceholderImage(201),
+        imageUrl: getPlaceholderImageUrl(201),
         order: 1,
       },
-      {
-        name: 'Wellness',
-        slug: 'wellness',
-        imageUrl: getPlaceholderImage(202),
-        order: 2,
-      },
+      { name: 'Wellness', slug: 'wellness', imageUrl: getPlaceholderImageUrl(202), order: 2 },
       {
         name: 'Bags & Accessories',
         slug: 'bags-accessories',
-        imageUrl: getPlaceholderImage(203),
+        imageUrl: getPlaceholderImageUrl(203),
         order: 3,
       },
       {
         name: 'Kitchen & Dining',
         slug: 'kitchen-dining',
-        imageUrl: getPlaceholderImage(204),
+        imageUrl: getPlaceholderImageUrl(204),
         order: 4,
       },
-      {
-        name: 'Gift Sets',
-        slug: 'gift-sets',
-        imageUrl: getPlaceholderImage(205),
-        order: 5,
-      },
+      { name: 'Gift Sets', slug: 'gift-sets', imageUrl: getPlaceholderImageUrl(205), order: 5 },
     ],
   },
 ];
@@ -822,11 +817,12 @@ async function seedCategories(): Promise<Map<string, mongoose.Types.ObjectId>> {
   const categoryMap = new Map<string, mongoose.Types.ObjectId>();
 
   for (const cat of categories) {
-    // Create parent category
+    const imageUrl = cat.imageUrl ? await fetchImageAsBase64(cat.imageUrl) : null;
+
     const parent = await CategoryModel.create({
       name: cat.name,
       slug: cat.slug,
-      imageUrl: cat.imageUrl,
+      imageUrl,
       order: cat.order,
       parentId: null,
     });
@@ -834,13 +830,13 @@ async function seedCategories(): Promise<Map<string, mongoose.Types.ObjectId>> {
     categoryMap.set(cat.slug, parent._id as mongoose.Types.ObjectId);
     console.log(`   ✅ Created category: ${cat.name}`);
 
-    // Create subcategories
     if (cat.subcategories) {
       for (const sub of cat.subcategories) {
+        const subImageUrl = sub.imageUrl ? await fetchImageAsBase64(sub.imageUrl) : null;
         const child = await CategoryModel.create({
           name: sub.name,
           slug: sub.slug,
-          imageUrl: sub.imageUrl,
+          imageUrl: subImageUrl,
           order: sub.order,
           parentId: parent._id,
         });
@@ -876,10 +872,14 @@ async function createProducts(categoryMap: Map<string, mongoose.Types.ObjectId>)
       attributes: v.attributes || {},
     }));
 
-    // Generate placeholder images
-    const images = Array.from({ length: product.imageCount }, (_, idx) => ({
+    // Fetch placeholder images and store as base64
+    const imageUrls = Array.from({ length: product.imageCount }, () =>
+      getPlaceholderImageUrl(imageSeed++)
+    );
+    const imageDataUrls = await Promise.all(imageUrls.map(fetchImageAsBase64));
+    const images = imageDataUrls.map((url, idx) => ({
       id: generateId(),
-      url: getPlaceholderImage(imageSeed++),
+      url,
       order: idx,
     }));
 

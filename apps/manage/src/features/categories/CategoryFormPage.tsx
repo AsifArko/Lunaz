@@ -391,6 +391,14 @@ export function CategoryFormPage() {
 
   const currentImageUrl = imageFile ? URL.createObjectURL(imageFile) : imageUrl;
 
+  const fileToBase64 = (file: File): Promise<string> =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!token) return;
@@ -403,11 +411,18 @@ export function CategoryFormPage() {
     setIsSaving(true);
 
     try {
+      let resolvedImageUrl: string | undefined;
+      if (imageFile) {
+        resolvedImageUrl = await fileToBase64(imageFile);
+      } else if (imageUrl) {
+        resolvedImageUrl = imageUrl;
+      }
+
       const categoryData = {
         name,
         slug,
         parentId: parentId || undefined,
-        imageUrl: imageUrl || undefined,
+        imageUrl: resolvedImageUrl,
         order: order ? parseInt(order, 10) : undefined,
       };
 

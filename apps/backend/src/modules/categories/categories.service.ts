@@ -3,6 +3,26 @@ import { CategoryModel } from './categories.model.js';
 import type { Category, CategoryWithChildren } from '@lunaz/types';
 
 /**
+ * If imageUrl is an http(s) URL, fetch the image and convert to base64 data URL.
+ * If it's already a data URL, return as-is. Otherwise return null.
+ */
+async function resolveImageToBase64(imageUrl: string | null | undefined): Promise<string | null> {
+  if (!imageUrl || typeof imageUrl !== 'string') return null;
+  if (imageUrl.startsWith('data:')) return imageUrl;
+  if (!imageUrl.startsWith('http://') && !imageUrl.startsWith('https://')) return null;
+
+  try {
+    const response = await fetch(imageUrl);
+    if (!response.ok) return null;
+    const buffer = Buffer.from(await response.arrayBuffer());
+    const contentType = response.headers.get('content-type') || 'image/jpeg';
+    return `data:${contentType};base64,${buffer.toString('base64')}`;
+  } catch {
+    return null;
+  }
+}
+
+/**
  * Convert MongoDB document to Category type.
  */
 export function toCategory(doc: Record<string, unknown>): Category {
@@ -88,6 +108,7 @@ export async function hasChildren(categoryId: string): Promise<boolean> {
 
 /**
  * Create a new category.
+ * If imageUrl is an http(s) URL, it is fetched and stored as base64.
  */
 export async function createCategory(data: {
   name: string;
@@ -96,12 +117,17 @@ export async function createCategory(data: {
   imageUrl?: string | null;
   order?: number;
 }): Promise<Category> {
-  const created = await CategoryModel.create(data);
+  const imageUrl = await resolveImageToBase64(data.imageUrl);
+  const created = await CategoryModel.create({
+    ...data,
+    imageUrl: imageUrl ?? data.imageUrl ?? null,
+  });
   return toCategory(created.toObject());
 }
 
 /**
  * Update a category.
+ * If imageUrl is an http(s) URL, it is fetched and stored as base64.
  */
 export async function updateCategory(
   id: string,
@@ -113,7 +139,11 @@ export async function updateCategory(
     order: number;
   }>
 ): Promise<Category | null> {
-  const doc = await CategoryModel.findByIdAndUpdate(id, { $set: data }, { new: true });
+  const update: Record<string, unknown> = { ...data };
+  if (data.imageUrl !== undefined) {
+    update.imageUrl = (await resolveImageToBase64(data.imageUrl)) ?? data.imageUrl ?? null;
+  }
+  const doc = await CategoryModel.findByIdAndUpdate(id, { $set: update }, { new: true });
   return doc ? toCategory(doc.toObject()) : null;
 }
 

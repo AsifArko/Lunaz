@@ -14,8 +14,6 @@ import {
   updateProductSchema,
   listProductsQuerySchema,
 } from './products.validation.js';
-import { uploadToS3, deleteFromS3, generateImageKey, extractKeyFromUrl } from '../../lib/s3.js';
-
 const router = Router();
 const getConfigFn = getConfig;
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } }); // 10MB
@@ -180,7 +178,7 @@ router.patch(
   }
 );
 
-// DELETE /products/:id — admin delete (also deletes images from S3)
+// DELETE /products/:id — admin delete (images stored in document, no external cleanup)
 router.delete(
   '/:id',
   authMiddleware(getConfigFn),
@@ -192,21 +190,6 @@ router.delete(
         res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Product not found' } });
         return;
       }
-
-      // Delete images from S3
-      for (const img of doc.images) {
-        const key = extractKeyFromUrl(img.url);
-        if (key) {
-          try {
-            await deleteFromS3(key);
-          } catch {
-            // Log but don't fail on S3 errors
-            // eslint-disable-next-line no-console
-            console.error(`Failed to delete image from S3: ${key}`);
-          }
-        }
-      }
-
       await doc.deleteOne();
       res.status(204).send();
     } catch (e) {
@@ -215,7 +198,7 @@ router.delete(
   }
 );
 
-// POST /products/:id/images — admin upload image(s)
+// POST /products/:id/images — admin upload image(s) — stored as base64 in document
 router.post(
   '/:id/images',
   authMiddleware(getConfigFn),
@@ -240,13 +223,12 @@ router.post(
 
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
-        const ext = file.originalname.split('.').pop() ?? 'jpg';
-        const key = generateImageKey(req.params.id, ext);
-        const url = await uploadToS3(key, file.buffer, file.mimetype);
+        const mimetype = file.mimetype || 'image/jpeg';
+        const dataUrl = `data:${mimetype};base64,${file.buffer.toString('base64')}`;
 
         const image = {
           id: randomUUID(),
-          url,
+          url: dataUrl,
           order: currentMaxOrder + i + 1,
         };
         doc.images.push(image);
@@ -261,7 +243,7 @@ router.post(
   }
 );
 
-// POST /products/:id/images/url — admin add image via URL
+// POST /products/:id/images/url — admin add image via URL (fetched and stored as base64)
 router.post(
   '/:id/images/url',
   authMiddleware(getConfigFn),
@@ -280,7 +262,6 @@ router.post(
         return;
       }
 
-      // Basic URL validation
       try {
         new URL(url);
       } catch {
@@ -288,10 +269,21 @@ router.post(
         return;
       }
 
+      const response = await fetch(url);
+      if (!response.ok) {
+        res
+          .status(400)
+          .json({ error: { code: 'FETCH_FAILED', message: 'Failed to fetch image from URL' } });
+        return;
+      }
+      const buffer = Buffer.from(await response.arrayBuffer());
+      const contentType = response.headers.get('content-type') || 'image/jpeg';
+      const dataUrl = `data:${contentType};base64,${buffer.toString('base64')}`;
+
       const currentMaxOrder = doc.images.reduce((max, img) => Math.max(max, img.order), 0);
       const image = {
         id: randomUUID(),
-        url,
+        url: dataUrl,
         order: currentMaxOrder + 1,
       };
       doc.images.push(image);
@@ -321,17 +313,6 @@ router.delete(
       if (imgIndex === -1) {
         res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Image not found' } });
         return;
-      }
-
-      const img = doc.images[imgIndex];
-      const key = extractKeyFromUrl(img.url);
-      if (key) {
-        try {
-          await deleteFromS3(key);
-        } catch {
-          // eslint-disable-next-line no-console
-          console.error(`Failed to delete image from S3: ${key}`);
-        }
       }
 
       doc.images.splice(imgIndex, 1);
