@@ -1,6 +1,6 @@
 # Lunaz — Deploy to Fly.io
 
-This project deploys **backend**, **web**, and **manage** as a single Fly.io app using the root `Dockerfile`. Nginx listens on port 8080, serves the web app at `/`, the admin panel at `/manage`, and proxies `/api` to the Node backend.
+This project deploys **backend**, **web**, and **manage** as a single Fly.io app using the root `Dockerfile`. Node serves everything on port 8080: the web app at `/`, the admin panel at `/manage`, and the API at `/api`.
 
 ## Prerequisites
 
@@ -65,5 +65,5 @@ By default the frontends use the relative path `/api/v1`, which works when serve
 ## Troubleshooting
 
 - **App won’t start:** Check `fly logs`. Ensure `MONGODB_URI` and `JWT_SECRET` are set.
-- **502 / API errors:** Backend may still be starting; the entrypoint waits 2s. If MongoDB is slow, increase the sleep in `docker-entrypoint.sh` or use a health check that waits for the backend.
+- **502 / API errors:** Check `fly logs` for startup errors. Ensure `MONGODB_URI` and `JWT_SECRET` are set. The app is a single Node process; if it fails to start, the whole service returns 502.
 - **Admin panel 404:** Use the trailing slash: `https://your-app.fly.dev/manage/`.

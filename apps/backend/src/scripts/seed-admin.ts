@@ -54,8 +54,8 @@ async function seedAdmin() {
   }
 
   // Default credentials (override with env vars)
-  const email = process.env.ADMIN_EMAIL || 'admin@lunaz.local';
-  const password = process.env.ADMIN_PASSWORD || 'Admin123!';
+  const email = process.env.ADMIN_EMAIL || 'sajia@lunaz.dev';
+  const password = process.env.ADMIN_PASSWORD || 'r3@d3n15710n';
   const name = process.env.ADMIN_NAME || 'Admin';
 
   console.log('🔌 Connecting to MongoDB...');

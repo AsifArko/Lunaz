@@ -8,18 +8,18 @@ primary_region = 'ewr'
   dockerfile = "Dockerfile"
 
 [env]
-  # Backend listens on 4000 internally; nginx proxies /api to it
-  PORT = "4000"
+  PORT = "8080"
   NODE_ENV = "production"
+  FRONTEND_WEB_URL = "https://lunaz.fly.dev"
+  FRONTEND_MANAGE_URL = "https://lunaz.fly.dev/manage"
   # Set these via: fly secrets set MONGODB_URI=... JWT_SECRET=...
-  # Optional: FRONTEND_WEB_URL, FRONTEND_MANAGE_URL (default to https://lunaz.fly.dev and https://lunaz.fly.dev/manage)
 
 [http_service]
   internal_port = 8080
   force_https = true
   auto_stop_machines = 'stop'
   auto_start_machines = true
-  min_machines_running = 0
+  min_machines_running = 1
   processes = ['app']
 
 [[vm]]

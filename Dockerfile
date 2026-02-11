@@ -97,13 +97,10 @@ RUN npm run build --workspace=@lunaz/types && \
     npm run build --workspace=manage -- --base=/manage/
 
 # -----------------------------------------------------------------------------
-# Stage 5: Production (Node + Nginx, single entrypoint)
+# Stage 5: Production (Node only, no Nginx — single process on 8080)
 # -----------------------------------------------------------------------------
 FROM node:20-alpine AS production
 WORKDIR /app
-
-# Install nginx (main config fix: conf.d must be inside http {} on Alpine)
-RUN apk add --no-cache nginx
 
 # Backend runtime: production deps only
 COPY package.json package-lock.json ./
@@ -120,24 +117,18 @@ COPY --from=builder-backend /app/packages/types/package.json ./node_modules/@lun
 COPY --from=builder-backend /app/packages/config/dist ./node_modules/@lunaz/config/dist
 COPY --from=builder-backend /app/packages/config/package.json ./node_modules/@lunaz/config/
 
-# Static assets: web at /, manage at /manage
-RUN mkdir -p /usr/share/nginx/html
-COPY --from=builder-web /app/apps/web/dist /usr/share/nginx/html
-COPY --from=builder-manage /app/apps/manage/dist /usr/share/nginx/html/manage
-
-# Nginx: use our main config so conf.d is included inside http {} (Alpine fix)
-RUN rm -f /etc/nginx/conf.d/default.conf
-COPY nginx-fly-main.conf /etc/nginx/nginx.conf
-COPY nginx-fly.conf /etc/nginx/conf.d/default.conf
-COPY docker-entrypoint.sh /docker-entrypoint.sh
-RUN chmod +x /docker-entrypoint.sh
+# Static assets: web at /, manage at /manage (Node serves via STATIC_DIR)
+RUN mkdir -p /app/public
+COPY --from=builder-web /app/apps/web/dist /app/public
+COPY --from=builder-manage /app/apps/manage/dist /app/public/manage
 
 ENV NODE_ENV=production
-ENV PORT=4000
+ENV PORT=8080
+ENV STATIC_DIR=/app/public
 
 EXPOSE 8080
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
     CMD wget -q --spider http://localhost:8080/health || exit 1
 
-ENTRYPOINT ["/docker-entrypoint.sh"]
+CMD ["node", "dist/index.js"]
