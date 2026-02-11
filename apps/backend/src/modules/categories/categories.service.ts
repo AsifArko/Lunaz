@@ -2,36 +2,32 @@ import mongoose from 'mongoose';
 import { CategoryModel } from './categories.model.js';
 import type { Category, CategoryWithChildren } from '@lunaz/types';
 
-/**
- * If imageUrl is an http(s) URL, fetch the image and convert to base64 data URL.
- * If it's already a data URL, return as-is. Otherwise return null.
- */
-async function resolveImageToBase64(imageUrl: string | null | undefined): Promise<string | null> {
-  if (!imageUrl || typeof imageUrl !== 'string') return null;
-  if (imageUrl.startsWith('data:')) return imageUrl;
-  if (!imageUrl.startsWith('http://') && !imageUrl.startsWith('https://')) return null;
-
-  try {
-    const response = await fetch(imageUrl);
-    if (!response.ok) return null;
-    const buffer = Buffer.from(await response.arrayBuffer());
-    const contentType = response.headers.get('content-type') || 'image/jpeg';
-    return `data:${contentType};base64,${buffer.toString('base64')}`;
-  } catch {
-    return null;
-  }
-}
+type ImageDoc = { id: string; url: string; order: number };
 
 /**
  * Convert MongoDB document to Category type.
+ * Supports legacy imageUrl field for backward compatibility.
  */
 export function toCategory(doc: Record<string, unknown>): Category {
+  const rawImages = doc.images as ImageDoc[] | undefined;
+  const legacyImageUrl = doc.imageUrl as string | undefined;
+
+  let images: ImageDoc[] = [];
+  if (rawImages && Array.isArray(rawImages) && rawImages.length > 0) {
+    images = rawImages.map((img) => ({ id: img.id, url: img.url, order: img.order }));
+  } else if (legacyImageUrl) {
+    images = [{ id: 'legacy', url: legacyImageUrl, order: 0 }];
+  }
+
+  const firstUrl = images[0]?.url ?? legacyImageUrl ?? null;
+
   return {
     id: (doc._id as mongoose.Types.ObjectId).toString(),
     name: doc.name as string,
     slug: doc.slug as string,
     parentId: doc.parentId ? (doc.parentId as mongoose.Types.ObjectId).toString() : null,
-    imageUrl: (doc.imageUrl as string) ?? null,
+    images,
+    imageUrl: firstUrl,
     order: doc.order as number | undefined,
     createdAt: (doc.createdAt as Date)?.toISOString?.() ?? new Date().toISOString(),
     updatedAt: (doc.updatedAt as Date)?.toISOString?.() ?? new Date().toISOString(),
@@ -108,26 +104,23 @@ export async function hasChildren(categoryId: string): Promise<boolean> {
 
 /**
  * Create a new category.
- * If imageUrl is an http(s) URL, it is fetched and stored as base64.
+ * Images are added via POST /categories/:id/images and POST /categories/:id/images/url.
  */
 export async function createCategory(data: {
   name: string;
   slug: string;
   parentId?: string | null;
-  imageUrl?: string | null;
   order?: number;
 }): Promise<Category> {
-  const imageUrl = await resolveImageToBase64(data.imageUrl);
   const created = await CategoryModel.create({
     ...data,
-    imageUrl: imageUrl ?? data.imageUrl ?? null,
+    images: [],
   });
   return toCategory(created.toObject());
 }
 
 /**
  * Update a category.
- * If imageUrl is an http(s) URL, it is fetched and stored as base64.
  */
 export async function updateCategory(
   id: string,
@@ -135,15 +128,10 @@ export async function updateCategory(
     name: string;
     slug: string;
     parentId: string | null;
-    imageUrl: string | null;
     order: number;
   }>
 ): Promise<Category | null> {
-  const update: Record<string, unknown> = { ...data };
-  if (data.imageUrl !== undefined) {
-    update.imageUrl = (await resolveImageToBase64(data.imageUrl)) ?? data.imageUrl ?? null;
-  }
-  const doc = await CategoryModel.findByIdAndUpdate(id, { $set: update }, { new: true });
+  const doc = await CategoryModel.findByIdAndUpdate(id, { $set: data }, { new: true });
   return doc ? toCategory(doc.toObject()) : null;
 }
 

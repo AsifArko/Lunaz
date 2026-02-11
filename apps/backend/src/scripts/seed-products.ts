@@ -25,6 +25,12 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.resolve(__dirname, '../../../../.env') });
 
 // Import models (recreate schemas to avoid import issues in standalone script)
+const categoryImageSchema = new mongoose.Schema({
+  id: { type: String, required: true },
+  url: { type: String, required: true },
+  order: { type: Number, required: true },
+});
+
 const categorySchema = new mongoose.Schema(
   {
     name: { type: String, required: true },
@@ -34,7 +40,7 @@ const categorySchema = new mongoose.Schema(
       ref: 'Category',
       default: null,
     },
-    imageUrl: String,
+    images: [categoryImageSchema],
     order: Number,
   },
   { timestamps: true }
@@ -817,12 +823,14 @@ async function seedCategories(): Promise<Map<string, mongoose.Types.ObjectId>> {
   const categoryMap = new Map<string, mongoose.Types.ObjectId>();
 
   for (const cat of categories) {
-    const imageUrl = cat.imageUrl ? await fetchImageAsBase64(cat.imageUrl) : null;
+    const images = cat.imageUrl
+      ? [{ id: generateId(), url: await fetchImageAsBase64(cat.imageUrl), order: 0 }]
+      : [];
 
     const parent = await CategoryModel.create({
       name: cat.name,
       slug: cat.slug,
-      imageUrl,
+      images,
       order: cat.order,
       parentId: null,
     });
@@ -832,11 +840,13 @@ async function seedCategories(): Promise<Map<string, mongoose.Types.ObjectId>> {
 
     if (cat.subcategories) {
       for (const sub of cat.subcategories) {
-        const subImageUrl = sub.imageUrl ? await fetchImageAsBase64(sub.imageUrl) : null;
+        const subImages = sub.imageUrl
+          ? [{ id: generateId(), url: await fetchImageAsBase64(sub.imageUrl), order: 0 }]
+          : [];
         const child = await CategoryModel.create({
           name: sub.name,
           slug: sub.slug,
-          imageUrl: subImageUrl,
+          images: subImages,
           order: sub.order,
           parentId: parent._id,
         });

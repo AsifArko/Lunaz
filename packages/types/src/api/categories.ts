@@ -21,12 +21,11 @@ export interface CategoryTreeResponse {
   categories: CategoryWithChildren[];
 }
 
-/** POST /categories — create category */
+/** POST /categories — create category. Images added via POST /categories/:id/images and /images/url */
 export interface CreateCategoryRequest {
   name: string;
   slug: string;
   parentId?: Id | null;
-  imageUrl?: string | null;
   order?: number;
 }
 

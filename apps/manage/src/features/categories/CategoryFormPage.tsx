@@ -284,9 +284,10 @@ export function CategoryFormPage() {
   const [name, setName] = useState('');
   const [slug, setSlug] = useState('');
   const [parentId, setParentId] = useState('');
+  const [existingImages, setExistingImages] = useState<{ id: string; url: string }[]>([]);
+  const [newImages, setNewImages] = useState<File[]>([]);
   const [imageUrl, setImageUrl] = useState('');
-  const [imageUrlInput, setImageUrlInput] = useState('');
-  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imageUrlsToAdd, setImageUrlsToAdd] = useState<string[]>([]);
   const [order, setOrder] = useState('');
   const [isDragging, setIsDragging] = useState(false);
 
@@ -313,8 +314,7 @@ export function CategoryFormPage() {
         setName(category.name);
         setSlug(category.slug);
         setParentId(category.parentId || '');
-        setImageUrl(category.imageUrl || '');
-        setImageUrlInput(category.imageUrl || '');
+        setExistingImages((category.images ?? []).map((img) => ({ id: img.id, url: img.url })));
         setOrder(category.order?.toString() || '');
       } catch {
         addToast('Failed to load category', 'error');
@@ -342,12 +342,8 @@ export function CategoryFormPage() {
 
   // Image handling
   const handleImageSelect = (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setImageFile(file);
-      setImageUrl('');
-      setImageUrlInput('');
-    }
+    const files = Array.from(e.target.files || []);
+    setNewImages((prev) => [...prev, ...files]);
     e.target.value = '';
   };
 
@@ -364,40 +360,40 @@ export function CategoryFormPage() {
   const handleDrop = (e: DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
-    const file = e.dataTransfer.files[0];
-    if (file && file.type.startsWith('image/')) {
-      setImageFile(file);
-      setImageUrl('');
-      setImageUrlInput('');
-    }
+    const files = Array.from(e.dataTransfer.files).filter((f) => f.type.startsWith('image/'));
+    setNewImages((prev) => [...prev, ...files]);
   };
 
   const handleAddImageUrl = () => {
-    if (!imageUrlInput.trim()) return;
+    if (!imageUrl.trim()) return;
     try {
-      new URL(imageUrlInput);
-      setImageUrl(imageUrlInput.trim());
-      setImageFile(null);
+      new URL(imageUrl);
+      setImageUrlsToAdd((prev) => [...prev, imageUrl.trim()]);
+      setImageUrl('');
     } catch {
       addToast('Please enter a valid URL', 'error');
     }
   };
 
-  const removeImage = () => {
-    setImageFile(null);
-    setImageUrl('');
-    setImageUrlInput('');
+  const removeNewImage = (index: number) => {
+    setNewImages((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const currentImageUrl = imageFile ? URL.createObjectURL(imageFile) : imageUrl;
+  const removeImageUrl = (index: number) => {
+    setImageUrlsToAdd((prev) => prev.filter((_, i) => i !== index));
+  };
 
-  const fileToBase64 = (file: File): Promise<string> =>
-    new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
+  const removeExistingImage = async (imageId: string) => {
+    if (!token || !id) return;
+
+    try {
+      await api(`/categories/${id}/images/${imageId}`, { method: 'DELETE', token });
+      setExistingImages((prev) => prev.filter((img) => img.id !== imageId));
+      addToast('Image removed', 'success');
+    } catch {
+      addToast('Failed to remove image', 'error');
+    }
+  };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -411,20 +407,14 @@ export function CategoryFormPage() {
     setIsSaving(true);
 
     try {
-      let resolvedImageUrl: string | undefined;
-      if (imageFile) {
-        resolvedImageUrl = await fileToBase64(imageFile);
-      } else if (imageUrl) {
-        resolvedImageUrl = imageUrl;
-      }
-
       const categoryData = {
         name,
         slug,
         parentId: parentId || undefined,
-        imageUrl: resolvedImageUrl,
         order: order ? parseInt(order, 10) : undefined,
       };
+
+      let categoryId = id;
 
       if (isEdit) {
         await api(`/categories/${id}`, {
@@ -432,16 +422,43 @@ export function CategoryFormPage() {
           body: JSON.stringify(categoryData),
           token,
         });
-        addToast('Category updated successfully', 'success');
       } else {
-        await api('/categories', {
+        const created = await api<Category>('/categories', {
           method: 'POST',
           body: JSON.stringify(categoryData),
           token,
         });
-        addToast('Category created successfully', 'success');
+        categoryId = created.id;
       }
 
+      // Upload new images (files)
+      if (newImages.length > 0 && categoryId) {
+        const formData = new FormData();
+        newImages.forEach((file) => formData.append('images', file));
+
+        await fetch(
+          `${import.meta.env.VITE_API_URL ?? '/api/v1'}/categories/${categoryId}/images`,
+          {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${token}` },
+            body: formData,
+          }
+        );
+      }
+
+      // Add images via URL
+      for (const url of imageUrlsToAdd) {
+        await api(`/categories/${categoryId}/images/url`, {
+          method: 'POST',
+          body: JSON.stringify({ url }),
+          token,
+        });
+      }
+
+      addToast(
+        isEdit ? 'Category updated successfully' : 'Category created successfully',
+        'success'
+      );
       navigate('/categories');
     } catch (err) {
       addToast(err instanceof Error ? err.message : 'Failed to save category', 'error');
@@ -647,94 +664,156 @@ export function CategoryFormPage() {
               }
             >
               <div className="space-y-4">
-                {/* Image Preview */}
-                {currentImageUrl && (
-                  <div className="relative inline-block">
-                    <img
-                      src={currentImageUrl}
-                      alt="Category preview"
-                      className="w-32 h-32 object-cover rounded-xl border border-gray-200"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src =
-                          'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" fill="%23f3f4f6"><rect width="128" height="128"/><text x="64" y="64" text-anchor="middle" dy=".3em" font-size="12" fill="%239ca3af">Invalid URL</text></svg>';
-                      }}
-                    />
-                    <button
-                      type="button"
-                      onClick={removeImage}
-                      className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center shadow-lg hover:bg-red-600 transition-colors"
-                    >
-                      <svg
-                        className="w-3 h-3"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        strokeWidth={2.5}
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M6 18L18 6M6 6l12 12"
+                {/* Existing + New + URL images */}
+                {(existingImages.length > 0 ||
+                  newImages.length > 0 ||
+                  imageUrlsToAdd.length > 0) && (
+                  <div className="flex flex-wrap gap-3">
+                    {existingImages.map((img) => (
+                      <div key={img.id} className="relative group">
+                        <img
+                          src={img.url}
+                          alt=""
+                          className="w-24 h-24 object-cover rounded-lg border border-gray-200"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src =
+                              'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" fill="%23ccc"><rect width="96" height="96"/><text x="48" y="48" text-anchor="middle" dy=".3em" font-size="10">Invalid</text></svg>';
+                          }}
                         />
-                      </svg>
-                    </button>
-                    {imageFile && (
-                      <span className="absolute bottom-2 left-2 px-2 py-0.5 text-[10px] font-medium text-white bg-gray-900/70 rounded">
-                        New
-                      </span>
-                    )}
+                        {isEdit && (
+                          <button
+                            type="button"
+                            onClick={() => removeExistingImage(img.id)}
+                            className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <svg
+                              className="w-3 h-3"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M6 18L18 6M6 6l12 12"
+                              />
+                            </svg>
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                    {newImages.map((file, index) => (
+                      <div key={`new-${index}`} className="relative group">
+                        <img
+                          src={URL.createObjectURL(file)}
+                          alt=""
+                          className="w-24 h-24 object-cover rounded-lg border border-gray-200"
+                        />
+                        <span className="absolute bottom-1 left-1 px-1.5 py-0.5 text-[10px] font-medium text-white bg-gray-900/70 rounded">
+                          New
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => removeNewImage(index)}
+                          className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <svg
+                            className="w-3 h-3"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M6 18L18 6M6 6l12 12"
+                            />
+                          </svg>
+                        </button>
+                      </div>
+                    ))}
+                    {imageUrlsToAdd.map((url, index) => (
+                      <div key={`url-${index}`} className="relative group">
+                        <img
+                          src={url}
+                          alt=""
+                          className="w-24 h-24 object-cover rounded-lg border border-gray-200"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src =
+                              'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="96" height="96" fill="%23ccc"><rect width="96" height="96"/><text x="48" y="48" text-anchor="middle" dy=".3em" font-size="10">Invalid</text></svg>';
+                          }}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeImageUrl(index)}
+                          className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <svg
+                            className="w-3 h-3"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M6 18L18 6M6 6l12 12"
+                            />
+                          </svg>
+                        </button>
+                      </div>
+                    ))}
                   </div>
                 )}
 
                 {/* Upload Zone */}
-                {!currentImageUrl && (
-                  <div
-                    className={`relative border-2 border-dashed rounded-xl p-8 text-center transition-all cursor-pointer
-                      ${
-                        isDragging
-                          ? 'border-gray-400 bg-gray-50'
-                          : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50/50'
+                <div
+                  className={`relative border-2 border-dashed rounded-xl p-8 text-center transition-all cursor-pointer
+                    ${
+                      isDragging
+                        ? 'border-gray-400 bg-gray-50'
+                        : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50/50'
+                    }`}
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleImageSelect}
+                    className="hidden"
+                  />
+                  <div className="flex flex-col items-center">
+                    <div
+                      className={`w-12 h-12 rounded-full flex items-center justify-center mb-3 transition-colors ${
+                        isDragging ? 'bg-gray-200' : 'bg-gray-100'
                       }`}
-                    onDragOver={handleDragOver}
-                    onDragLeave={handleDragLeave}
-                    onDrop={handleDrop}
-                    onClick={() => fileInputRef.current?.click()}
-                  >
-                    <input
-                      ref={fileInputRef}
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageSelect}
-                      className="hidden"
-                    />
-                    <div className="flex flex-col items-center">
-                      <div
-                        className={`w-12 h-12 rounded-full flex items-center justify-center mb-3 transition-colors ${
-                          isDragging ? 'bg-gray-200' : 'bg-gray-100'
-                        }`}
+                    >
+                      <svg
+                        className={`w-6 h-6 ${isDragging ? 'text-gray-600' : 'text-gray-400'}`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        strokeWidth={1.5}
                       >
-                        <svg
-                          className={`w-6 h-6 ${isDragging ? 'text-gray-600' : 'text-gray-400'}`}
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                          strokeWidth={1.5}
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"
-                          />
-                        </svg>
-                      </div>
-                      <p className="text-sm font-medium text-gray-700 mb-1">
-                        {isDragging ? 'Drop image here' : 'Drag and drop an image'}
-                      </p>
-                      <p className="text-xs text-gray-500">or click to browse</p>
-                      <p className="mt-2 text-[10px] text-gray-400">PNG, JPG, GIF up to 5MB</p>
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"
+                        />
+                      </svg>
                     </div>
+                    <p className="text-sm font-medium text-gray-700 mb-1">
+                      {isDragging ? 'Drop images here' : 'Drag and drop images'}
+                    </p>
+                    <p className="text-xs text-gray-500">or click to browse</p>
+                    <p className="mt-2 text-[10px] text-gray-400">PNG, JPG, GIF up to 5MB</p>
                   </div>
-                )}
+                </div>
 
                 {/* URL Input */}
                 <div className="pt-2">
@@ -762,8 +841,8 @@ export function CategoryFormPage() {
                       </div>
                       <input
                         type="url"
-                        value={imageUrlInput}
-                        onChange={(e) => setImageUrlInput(e.target.value)}
+                        value={imageUrl}
+                        onChange={(e) => setImageUrl(e.target.value)}
                         placeholder="https://example.com/image.jpg"
                         className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900/10 focus:border-gray-400 transition-all"
                         onKeyDown={(e) => {
