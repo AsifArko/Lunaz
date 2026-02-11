@@ -125,7 +125,7 @@ router.get('/sslcommerz/cancel', (req, res) => {
 // ==================== Public API Routes ====================
 
 // GET /payments/methods — available payment methods (public)
-router.get('/methods', async (req, res, next) => {
+router.get('/methods', async (_req, res, next) => {
   try {
     const methods = await paymentService.getEnabledPaymentMethods();
     res.json({ methods });
@@ -234,7 +234,7 @@ router.get(
 );
 
 // GET /payments/pending-bank-transfers — get pending bank transfers (admin)
-router.get('/pending-bank-transfers', requireRole(UserRole.ADMIN), async (req, res, next) => {
+router.get('/pending-bank-transfers', requireRole(UserRole.ADMIN), async (_req, res, next) => {
   try {
     const payments = await paymentService.getPendingBankTransfers();
     res.json({ payments });

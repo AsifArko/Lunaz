@@ -56,7 +56,7 @@ export async function listTaxRecords(req: Request, res: Response, next: NextFunc
 
 export async function createTaxRecord(req: Request, res: Response, next: NextFunction) {
   try {
-    const userId = req.user!._id;
+    const userId = new mongoose.Types.ObjectId(req.user!.id);
     const record = await TaxRecordModel.create({
       ...req.body,
       createdBy: userId,
@@ -96,7 +96,7 @@ export async function getTaxRecord(req: Request, res: Response, next: NextFuncti
 
 export async function updateTaxRecord(req: Request, res: Response, next: NextFunction) {
   try {
-    const userId = req.user!._id;
+    const userId = new mongoose.Types.ObjectId(req.user!.id);
     const record = await TaxRecordModel.findById(req.params.id);
 
     if (!record) {
@@ -140,7 +140,7 @@ export async function deleteTaxRecord(req: Request, res: Response, next: NextFun
 
 export async function addTaxPayment(req: Request, res: Response, next: NextFunction) {
   try {
-    const userId = req.user!._id;
+    const userId = new mongoose.Types.ObjectId(req.user!.id);
     const record = await TaxRecordModel.findById(req.params.id);
 
     if (!record) {
@@ -169,7 +169,7 @@ export async function addTaxPayment(req: Request, res: Response, next: NextFunct
 
 export async function removeTaxPayment(req: Request, res: Response, next: NextFunction) {
   try {
-    const userId = req.user!._id;
+    const userId = new mongoose.Types.ObjectId(req.user!.id);
     const record = await TaxRecordModel.findById(req.params.id);
 
     if (!record) {
@@ -196,7 +196,7 @@ export async function removeTaxPayment(req: Request, res: Response, next: NextFu
 
 export async function fileTaxRecord(req: Request, res: Response, next: NextFunction) {
   try {
-    const userId = req.user!._id;
+    const userId = new mongoose.Types.ObjectId(req.user!.id);
     const record = await TaxRecordModel.findById(req.params.id);
 
     if (!record) {
@@ -226,7 +226,7 @@ export async function fileTaxRecord(req: Request, res: Response, next: NextFunct
   }
 }
 
-export async function getTaxSummary(req: Request, res: Response, next: NextFunction) {
+export async function getTaxSummary(_req: Request, res: Response, next: NextFunction) {
   try {
     const currentYear = new Date().getFullYear();
     const fiscalYear = `${currentYear - 1}-${currentYear}`;
@@ -261,7 +261,7 @@ export async function getTaxSummary(req: Request, res: Response, next: NextFunct
 // BUSINESS AUTHENTICITY
 // ============================================
 
-export async function getAuthenticity(req: Request, res: Response, next: NextFunction) {
+export async function getAuthenticity(_req: Request, res: Response, next: NextFunction) {
   try {
     const record = await getBusinessAuthenticity();
     res.json(record || {});
@@ -272,7 +272,7 @@ export async function getAuthenticity(req: Request, res: Response, next: NextFun
 
 export async function createAuthenticity(req: Request, res: Response, next: NextFunction) {
   try {
-    const userId = req.user!._id;
+    const userId = new mongoose.Types.ObjectId(req.user!.id);
     const existing = await getBusinessAuthenticity();
 
     if (existing) {
@@ -302,7 +302,7 @@ export async function createAuthenticity(req: Request, res: Response, next: Next
 
 export async function updateAuthenticity(req: Request, res: Response, next: NextFunction) {
   try {
-    const userId = req.user!._id;
+    const userId = new mongoose.Types.ObjectId(req.user!.id);
     let record = await getBusinessAuthenticity();
 
     if (!record) {
@@ -335,7 +335,7 @@ export async function updateAuthenticity(req: Request, res: Response, next: Next
 
 export async function addDirector(req: Request, res: Response, next: NextFunction) {
   try {
-    const userId = req.user!._id;
+    const userId = new mongoose.Types.ObjectId(req.user!.id);
     const record = await getBusinessAuthenticity();
 
     if (!record) {
@@ -364,7 +364,7 @@ export async function addDirector(req: Request, res: Response, next: NextFunctio
 
 export async function updateDirector(req: Request, res: Response, next: NextFunction) {
   try {
-    const userId = req.user!._id;
+    const userId = new mongoose.Types.ObjectId(req.user!.id);
     const record = await getBusinessAuthenticity();
 
     if (!record) {
@@ -388,7 +388,7 @@ export async function updateDirector(req: Request, res: Response, next: NextFunc
 
 export async function removeDirector(req: Request, res: Response, next: NextFunction) {
   try {
-    const userId = req.user!._id;
+    const userId = new mongoose.Types.ObjectId(req.user!.id);
     const record = await getBusinessAuthenticity();
 
     if (!record) {
@@ -422,7 +422,7 @@ export async function removeDirector(req: Request, res: Response, next: NextFunc
 
 export async function addTaxIdentifier(req: Request, res: Response, next: NextFunction) {
   try {
-    const userId = req.user!._id;
+    const userId = new mongoose.Types.ObjectId(req.user!.id);
     const record = await getBusinessAuthenticity();
 
     if (!record) {
@@ -441,7 +441,7 @@ export async function addTaxIdentifier(req: Request, res: Response, next: NextFu
 
 export async function updateTaxIdentifier(req: Request, res: Response, next: NextFunction) {
   try {
-    const userId = req.user!._id;
+    const userId = new mongoose.Types.ObjectId(req.user!.id);
     const record = await getBusinessAuthenticity();
 
     if (!record) {
@@ -465,7 +465,7 @@ export async function updateTaxIdentifier(req: Request, res: Response, next: Nex
 
 export async function removeTaxIdentifier(req: Request, res: Response, next: NextFunction) {
   try {
-    const userId = req.user!._id;
+    const userId = new mongoose.Types.ObjectId(req.user!.id);
     const record = await getBusinessAuthenticity();
 
     if (!record) {
@@ -534,7 +534,7 @@ export async function listCertificates(req: Request, res: Response, next: NextFu
 
 export async function createCertificate(req: Request, res: Response, next: NextFunction) {
   try {
-    const userId = req.user!._id;
+    const userId = new mongoose.Types.ObjectId(req.user!.id);
     const certificate = await CertificateModel.create({
       ...req.body,
       createdBy: userId,
@@ -575,7 +575,7 @@ export async function getCertificate(req: Request, res: Response, next: NextFunc
 
 export async function updateCertificate(req: Request, res: Response, next: NextFunction) {
   try {
-    const userId = req.user!._id;
+    const userId = new mongoose.Types.ObjectId(req.user!.id);
     const certificate = await CertificateModel.findById(req.params.id);
 
     if (!certificate) {
@@ -607,7 +607,7 @@ export async function deleteCertificate(req: Request, res: Response, next: NextF
 
 export async function renewCertificate(req: Request, res: Response, next: NextFunction) {
   try {
-    const userId = req.user!._id;
+    const userId = new mongoose.Types.ObjectId(req.user!.id);
     const certificate = await CertificateModel.findById(req.params.id);
 
     if (!certificate) {
@@ -694,7 +694,7 @@ export async function listDocuments(req: Request, res: Response, next: NextFunct
 
 export async function createDocument(req: Request, res: Response, next: NextFunction) {
   try {
-    const userId = req.user!._id;
+    const userId = new mongoose.Types.ObjectId(req.user!.id);
 
     // Add initial version
     const documentData = {
@@ -747,7 +747,7 @@ export async function getDocument(req: Request, res: Response, next: NextFunctio
 
 export async function updateDocument(req: Request, res: Response, next: NextFunction) {
   try {
-    const userId = req.user!._id;
+    const userId = new mongoose.Types.ObjectId(req.user!.id);
     const document = await LegalDocumentModel.findById(req.params.id);
 
     if (!document) {
@@ -789,7 +789,7 @@ export async function deleteDocument(req: Request, res: Response, next: NextFunc
 
 export async function addDocumentVersion(req: Request, res: Response, next: NextFunction) {
   try {
-    const userId = req.user!._id;
+    const userId = new mongoose.Types.ObjectId(req.user!.id);
     const document = await LegalDocumentModel.findById(req.params.id);
 
     if (!document) {
@@ -840,7 +840,7 @@ export async function getDocumentVersions(req: Request, res: Response, next: Nex
 // DASHBOARD & REPORTS
 // ============================================
 
-export async function getDashboard(req: Request, res: Response, next: NextFunction) {
+export async function getDashboard(_req: Request, res: Response, next: NextFunction) {
   try {
     const now = new Date();
     const thirtyDaysFromNow = new Date();

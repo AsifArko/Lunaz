@@ -1,0 +1,29 @@
+# fly.toml app configuration file for Lunaz (backend + web + manage)
+# See https://fly.io/docs/reference/configuration/
+
+app = 'lunaz'
+primary_region = 'ewr'
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  PORT = "8080"
+  NODE_ENV = "production"
+  FRONTEND_WEB_URL = "https://lunaz.fly.dev"
+  FRONTEND_MANAGE_URL = "https://lunaz.fly.dev/manage"
+  # Set these via: fly secrets set MONGODB_URI=... JWT_SECRET=...
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = 'stop'
+  auto_start_machines = true
+  min_machines_running = 1
+  processes = ['app']
+
+[[vm]]
+  memory = '1gb'
+  cpu_kind = 'shared'
+  cpus = 1
+  memory_mb = 1024

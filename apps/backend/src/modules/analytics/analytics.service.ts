@@ -958,15 +958,39 @@ export const analyticsService = {
         sessionId: d.sessionId,
         userId: d.userId?.toString(),
         type: d.type,
-        page: d.page,
-        referrer: d.referrer,
-        utm: d.utm,
+        page: d.page
+          ? {
+              ...d.page,
+              route: d.page.route ?? undefined,
+              title: d.page.title ?? undefined,
+              search: d.page.search ?? undefined,
+              hash: d.page.hash ?? undefined,
+            }
+          : { path: '', url: '', hostname: '' },
+        referrer: d.referrer
+          ? {
+              ...d.referrer,
+              url: d.referrer.url ?? undefined,
+              domain: d.referrer.domain ?? undefined,
+              searchEngine: d.referrer.searchEngine ?? undefined,
+              socialNetwork: d.referrer.socialNetwork ?? undefined,
+            }
+          : undefined,
+        utm: d.utm
+          ? {
+              source: d.utm.source ?? undefined,
+              medium: d.utm.medium ?? undefined,
+              campaign: d.utm.campaign ?? undefined,
+              term: d.utm.term ?? undefined,
+              content: d.utm.content ?? undefined,
+            }
+          : undefined,
         geo: d.geo,
         device: d.device,
         event: d.event,
         ip: d.ip,
         createdAt: d.createdAt.toISOString(),
-      })),
+      })) as TrafficLog[],
       total,
       page,
       limit,
@@ -1039,21 +1063,36 @@ export const analyticsService = {
         requestId: d.requestId,
         method: d.method,
         path: d.path,
-        route: d.route,
+        route: d.route ?? undefined,
         statusCode: d.statusCode,
-        statusText: d.statusText,
+        statusText: d.statusText ?? undefined,
         duration: d.duration,
-        request: d.request,
-        response: d.response,
-        client: d.client,
-        server: d.server,
-        error: d.error,
+        request: d.request
+          ? {
+              ...d.request,
+              contentType: d.request.contentType ?? undefined,
+              contentLength: d.request.contentLength ?? undefined,
+              authorization: d.request.authorization ?? undefined,
+            }
+          : undefined,
+        response: d.response
+          ? {
+              ...d.response,
+              contentType: d.response.contentType ?? undefined,
+              contentLength: d.response.contentLength ?? undefined,
+              cached: d.response.cached ?? undefined,
+              compressed: d.response.compressed ?? undefined,
+            }
+          : undefined,
+        client: d.client ?? undefined,
+        server: d.server ?? undefined,
+        error: d.error ?? undefined,
         level: d.level,
         message: d.message,
         tags: d.tags,
         metadata: d.metadata,
         createdAt: d.createdAt.toISOString(),
-      })),
+      })) as ServerLog[],
       total,
       page,
       limit,

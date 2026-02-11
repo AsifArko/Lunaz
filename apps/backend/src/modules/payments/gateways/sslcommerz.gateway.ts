@@ -264,7 +264,7 @@ export class SSLCommerzGateway implements PaymentGateway {
 
     return {
       transactionId: result.refund_ref_id || `SSL_REFUND_${Date.now()}`,
-      originalTransactionId: payment.gatewayTransactionId,
+      originalTransactionId: payment.gatewayTransactionId ?? undefined,
     };
   }
 }

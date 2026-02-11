@@ -29,6 +29,8 @@ export const backendEnvSchema = z.object({
   GOOGLE_CLIENT_SECRET: z.string().optional(),
   FACEBOOK_APP_ID: z.string().optional(),
   FACEBOOK_APP_SECRET: z.string().optional(),
+  // Fly.io: when set, serve web + manage static files from this directory
+  STATIC_DIR: z.string().optional(),
 });
 
 export type BackendEnv = z.infer<typeof backendEnvSchema>;

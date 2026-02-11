@@ -1,4 +1,5 @@
 import express from 'express';
+import path from 'path';
 import cors from 'cors';
 import helmet from 'helmet';
 import { getConfig } from './config/index.js';
@@ -103,6 +104,21 @@ export function createApp() {
   app.get('/health', (_req, res) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
   });
+
+  // Serve static files when STATIC_DIR is set (Fly.io single-app deployment)
+  const staticDir = config.STATIC_DIR;
+  if (staticDir) {
+    const publicDir = path.resolve(staticDir);
+    app.use('/manage', express.static(path.join(publicDir, 'manage')));
+    app.use(express.static(publicDir));
+    app.get('/manage', (_req, res) => res.redirect(301, '/manage/'));
+    app.get('/manage/*', (_req, res) => {
+      res.sendFile(path.join(publicDir, 'manage', 'index.html'));
+    });
+    app.get('*', (_req, res) => {
+      res.sendFile(path.join(publicDir, 'index.html'));
+    });
+  }
 
   app.use(errorHandler);
   return app;

@@ -29,15 +29,15 @@ export class BankTransferGateway implements PaymentGateway {
             bankName: string;
             accountName: string;
             accountNumber: string;
-            branchName?: string;
-            routingNumber?: string;
+            branchName?: string | null;
+            routingNumber?: string | null;
           }) => ({
             id: a._id?.toString(),
             bankName: a.bankName,
             accountName: a.accountName,
             accountNumber: a.accountNumber,
-            branchName: a.branchName,
-            routingNumber: a.routingNumber,
+            branchName: a.branchName ?? undefined,
+            routingNumber: a.routingNumber ?? undefined,
           })
         ) || [];
 
@@ -121,7 +121,7 @@ export class BankTransferGateway implements PaymentGateway {
     // Bank transfer refunds are manual - just return a reference
     return {
       transactionId: `MANUAL_REFUND_${Date.now()}`,
-      originalTransactionId: payment.bankTransfer?.transactionReference,
+      originalTransactionId: payment.bankTransfer?.transactionReference ?? undefined,
       data: {
         note: 'Bank transfer refund must be processed manually',
         amount,
