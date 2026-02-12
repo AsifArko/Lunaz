@@ -6,6 +6,7 @@ import { requireRole } from '../../middleware/requireRole.js';
 import { validateBody } from '../../middleware/validate.js';
 import { getConfig } from '../../config/index.js';
 import { UserRole } from '@lunaz/types';
+import { uploadToS3, extractKeyFromUrl, deleteFromS3 } from '../../lib/s3.js';
 import { createCategorySchema, updateCategorySchema } from './categories.validation.js';
 import * as categoryService from './categories.service.js';
 import { CategoryModel } from './categories.model.js';
@@ -37,7 +38,7 @@ router.get('/tree', async (_req, res, next) => {
   }
 });
 
-// POST /categories/:id/images — admin upload image(s) — stored as base64 in document
+// POST /categories/:id/images — admin upload image(s) — stored in MinIO/S3
 router.post(
   '/:id/images',
   authMiddleware(getConfigFn),
@@ -45,6 +46,7 @@ router.post(
   upload.array('images', 10),
   async (req, res, next) => {
     try {
+      const cfg = getConfigFn();
       const doc = await CategoryModel.findById(req.params.id);
       if (!doc) {
         res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Category not found' } });
@@ -57,17 +59,34 @@ router.post(
         return;
       }
 
-      const uploadedImages = [];
+      const uploadedImages: { id: string; url: string; order: number }[] = [];
       const currentMaxOrder = (doc.images ?? []).reduce((max, img) => Math.max(max, img.order), 0);
 
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
         const mimetype = file.mimetype || 'image/jpeg';
-        const dataUrl = `data:${mimetype};base64,${file.buffer.toString('base64')}`;
+        const result = await uploadToS3(
+          cfg,
+          file.buffer,
+          mimetype,
+          'categories',
+          doc._id.toString()
+        );
+
+        if (!result) {
+          res.status(503).json({
+            error: {
+              code: 'UPLOAD_UNAVAILABLE',
+              message:
+                'File upload is not configured. Set S3_BUCKET, S3_REGION, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, and S3_PUBLIC_URL (for MinIO) in environment.',
+            },
+          });
+          return;
+        }
 
         const image = {
           id: randomUUID(),
-          url: dataUrl,
+          url: result.url,
           order: currentMaxOrder + i + 1,
         };
         doc.images = doc.images ?? [];
@@ -83,13 +102,14 @@ router.post(
   }
 );
 
-// POST /categories/:id/images/url — admin add image via URL (fetched and stored as base64)
+// POST /categories/:id/images/url — admin add image via URL (fetched and stored in MinIO/S3)
 router.post(
   '/:id/images/url',
   authMiddleware(getConfigFn),
   requireRole(UserRole.ADMIN),
   async (req, res, next) => {
     try {
+      const cfg = getConfigFn();
       const doc = await CategoryModel.findById(req.params.id);
       if (!doc) {
         res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Category not found' } });
@@ -118,12 +138,24 @@ router.post(
       }
       const buffer = Buffer.from(await response.arrayBuffer());
       const contentType = response.headers.get('content-type') || 'image/jpeg';
-      const dataUrl = `data:${contentType};base64,${buffer.toString('base64')}`;
+
+      const result = await uploadToS3(cfg, buffer, contentType, 'categories', doc._id.toString());
+
+      if (!result) {
+        res.status(503).json({
+          error: {
+            code: 'UPLOAD_UNAVAILABLE',
+            message:
+              'File upload is not configured. Set S3_BUCKET, S3_REGION, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, and S3_PUBLIC_URL (for MinIO) in environment.',
+          },
+        });
+        return;
+      }
 
       const currentMaxOrder = (doc.images ?? []).reduce((max, img) => Math.max(max, img.order), 0);
       const image = {
         id: randomUUID(),
-        url: dataUrl,
+        url: result.url,
         order: currentMaxOrder + 1,
       };
       doc.images = doc.images ?? [];
@@ -144,6 +176,7 @@ router.delete(
   requireRole(UserRole.ADMIN),
   async (req, res, next) => {
     try {
+      const cfg = getConfigFn();
       const doc = await CategoryModel.findById(req.params.id);
       if (!doc) {
         res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Category not found' } });
@@ -156,7 +189,13 @@ router.delete(
         return;
       }
 
-      doc.images.splice(imgIndex, 1);
+      const img = doc.images![imgIndex];
+      const key = extractKeyFromUrl(cfg, img.url);
+      if (key) {
+        await deleteFromS3(cfg, key);
+      }
+
+      doc.images!.splice(imgIndex, 1);
       await doc.save();
       res.status(204).send();
     } catch (e) {
@@ -225,14 +264,20 @@ router.patch(
   }
 );
 
-// DELETE /categories/:id — admin delete
+// DELETE /categories/:id — admin delete (removes images from MinIO)
 router.delete(
   '/:id',
   authMiddleware(getConfigFn),
   requireRole(UserRole.ADMIN),
   async (req, res, next) => {
     try {
-      // Check for children
+      const cfg = getConfigFn();
+      const doc = await CategoryModel.findById(req.params.id);
+      if (!doc) {
+        res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Category not found' } });
+        return;
+      }
+
       const hasKids = await categoryService.hasChildren(req.params.id);
       if (hasKids) {
         res.status(400).json({
@@ -242,6 +287,13 @@ router.delete(
           },
         });
         return;
+      }
+
+      for (const img of doc.images ?? []) {
+        const key = extractKeyFromUrl(cfg, img.url);
+        if (key) {
+          await deleteFromS3(cfg, key).catch(() => {});
+        }
       }
 
       const deleted = await categoryService.deleteCategory(req.params.id);

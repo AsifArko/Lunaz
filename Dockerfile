@@ -51,9 +51,7 @@ FROM node:20-alpine AS builder-web
 WORKDIR /app
 
 ARG VITE_API_URL=/api/v1
-ARG VITE_STRIPE_PUBLIC_KEY=
 ENV VITE_API_URL=${VITE_API_URL}
-ENV VITE_STRIPE_PUBLIC_KEY=${VITE_STRIPE_PUBLIC_KEY}
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=deps /app/package.json ./package.json

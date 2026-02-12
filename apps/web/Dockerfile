@@ -28,9 +28,9 @@ WORKDIR /app
 
 # Build arguments (passed at build time)
 ARG VITE_API_URL=http://localhost:4000/api/v1
-ARG VITE_STRIPE_PUBLIC_KEY=""
+ARG VITE_GOOGLE_CLIENT_ID=""
 ENV VITE_API_URL=${VITE_API_URL}
-ENV VITE_STRIPE_PUBLIC_KEY=${VITE_STRIPE_PUBLIC_KEY}
+ENV VITE_GOOGLE_CLIENT_ID=${VITE_GOOGLE_CLIENT_ID}
 
 # Copy dependencies from deps stage
 COPY --from=deps /app/node_modules ./node_modules

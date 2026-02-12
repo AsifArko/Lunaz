@@ -21,7 +21,7 @@ import { paymentsRoutes } from './modules/payments/payments.routes.js';
 import { complianceRoutes } from './modules/compliance/index.js';
 
 /** Build CORS allowed origins: config URLs plus 127.0.0.1 variants so both localhost and 127.0.0.1 work */
-function getAllowedOrigins(webUrl: string, manageUrl: string): string[] {
+function getAllowedOrigins(webUrl: string, manageUrl: string, isDev: boolean): string[] {
   const origins = new Set([webUrl, manageUrl]);
   try {
     const web = new URL(webUrl);
@@ -37,29 +37,87 @@ function getAllowedOrigins(webUrl: string, manageUrl: string): string[] {
   } catch {
     // ignore
   }
+  // In development, explicitly add localhost:3000 and :3001 so Docker/Compose always works
+  if (isDev) {
+    origins.add('http://localhost:3000');
+    origins.add('http://localhost:3001');
+    origins.add('http://127.0.0.1:3000');
+    origins.add('http://127.0.0.1:3001');
+  }
   return Array.from(origins);
+}
+
+/** Check if origin is a local development origin (localhost or 127.0.0.1) */
+function isLocalOrigin(origin: string | undefined): boolean {
+  if (!origin) return false;
+  try {
+    const url = new URL(origin);
+    return url.hostname === 'localhost' || url.hostname === '127.0.0.1';
+  } catch {
+    return false;
+  }
 }
 
 export function createApp() {
   const config = getConfig();
   const app = express();
 
-  // Security
-  app.use(helmet());
-  const allowedOrigins = getAllowedOrigins(config.FRONTEND_WEB_URL, config.FRONTEND_MANAGE_URL);
+  const isDev = config.NODE_ENV === 'development';
+  const allowedOrigins = getAllowedOrigins(
+    config.FRONTEND_WEB_URL,
+    config.FRONTEND_MANAGE_URL,
+    isDev
+  );
+
+  const corsAllowMethods = 'GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS';
+  const corsAllowHeaders =
+    'Content-Type, Authorization, Accept, Accept-Language, Origin, X-Requested-With, X-CSRF-Token';
+
+  // Preflight: must run FIRST, handle OPTIONS before cors package
+  app.use((req, res, next) => {
+    if (req.method !== 'OPTIONS') return next();
+    const origin = req.headers.origin as string | undefined;
+    const allowed = origin && (allowedOrigins.includes(origin) || (isDev && isLocalOrigin(origin)));
+    if (allowed) {
+      res.setHeader('Access-Control-Allow-Origin', origin);
+      res.setHeader('Access-Control-Allow-Methods', corsAllowMethods);
+      res.setHeader('Access-Control-Allow-Headers', corsAllowHeaders);
+      res.setHeader('Access-Control-Allow-Credentials', 'true');
+      // Max-Age 0 disables preflight cache; avoids stale cached responses breaking CORS
+      res.setHeader('Access-Control-Max-Age', '0');
+    }
+    res.status(204).setHeader('Content-Length', '0').end();
+  });
+
+  // CORS for non-OPTIONS requests
   app.use(
     cors({
       origin: (origin, cb) => {
-        // Allow requests with no origin (e.g. Postman) or from allowed list; reflect origin so browser accepts response
-        if (!origin || allowedOrigins.includes(origin)) {
-          cb(null, origin || allowedOrigins[0]);
+        if (origin) {
+          if (allowedOrigins.includes(origin) || (isDev && isLocalOrigin(origin))) {
+            cb(null, origin);
+            return;
+          }
+          cb(null, false);
           return;
         }
-        cb(null, false);
+        cb(null, allowedOrigins[0]);
       },
       credentials: true,
-      methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-      allowedHeaders: ['Content-Type', 'Authorization'],
+      methods: corsAllowMethods.split(', '),
+      allowedHeaders: corsAllowHeaders.split(', '),
+      optionsSuccessStatus: 204,
+      preflightContinue: false,
+    })
+  );
+
+  // Security — in development, disable CSP to avoid blocking API calls from different ports
+  app.use(
+    helmet({
+      ...(isDev && {
+        contentSecurityPolicy: false,
+        crossOriginEmbedderPolicy: false,
+      }),
     })
   );
   app.use(express.json());

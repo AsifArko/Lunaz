@@ -11,6 +11,8 @@ export const backendEnvSchema = z.object({
   S3_BUCKET: z.string().optional(),
   S3_REGION: z.string().optional(),
   S3_ENDPOINT: z.string().url().optional(),
+  /** Public URL for serving uploaded files (e.g. http://localhost:9000 for MinIO). Required when using MinIO. */
+  S3_PUBLIC_URL: z.string().url().optional(),
   AWS_ACCESS_KEY_ID: z.string().optional(),
   AWS_SECRET_ACCESS_KEY: z.string().optional(),
   FRONTEND_WEB_URL: z.string().url().default('http://localhost:3000'),
@@ -38,7 +40,6 @@ export type BackendEnv = z.infer<typeof backendEnvSchema>;
 /** Web frontend env (build-time). */
 export const webEnvSchema = z.object({
   VITE_API_URL: z.string().url().default('http://localhost:4000/api/v1'),
-  VITE_STRIPE_PUBLIC_KEY: z.string().optional(),
 });
 
 export type WebEnv = z.infer<typeof webEnvSchema>;

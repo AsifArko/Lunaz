@@ -9,6 +9,7 @@ import { getConfig } from '../../config/index.js';
 import { UserRole, ProductStatus } from '@lunaz/types';
 import { ProductModel } from './products.model.js';
 import { CategoryModel } from '../categories/categories.model.js';
+import { uploadToS3, extractKeyFromUrl, deleteFromS3 } from '../../lib/s3.js';
 import {
   createProductSchema,
   updateProductSchema,
@@ -178,17 +179,24 @@ router.patch(
   }
 );
 
-// DELETE /products/:id — admin delete (images stored in document, no external cleanup)
+// DELETE /products/:id — admin delete (removes images from MinIO)
 router.delete(
   '/:id',
   authMiddleware(getConfigFn),
   requireRole(UserRole.ADMIN),
   async (req, res, next) => {
     try {
+      const cfg = getConfigFn();
       const doc = await ProductModel.findById(req.params.id);
       if (!doc) {
         res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Product not found' } });
         return;
+      }
+      for (const img of doc.images) {
+        const key = extractKeyFromUrl(cfg, img.url);
+        if (key) {
+          await deleteFromS3(cfg, key).catch(() => {});
+        }
       }
       await doc.deleteOne();
       res.status(204).send();
@@ -198,7 +206,7 @@ router.delete(
   }
 );
 
-// POST /products/:id/images — admin upload image(s) — stored as base64 in document
+// POST /products/:id/images — admin upload image(s) — stored in MinIO/S3
 router.post(
   '/:id/images',
   authMiddleware(getConfigFn),
@@ -206,6 +214,7 @@ router.post(
   upload.array('images', 10),
   async (req, res, next) => {
     try {
+      const cfg = getConfigFn();
       const doc = await ProductModel.findById(req.params.id);
       if (!doc) {
         res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Product not found' } });
@@ -218,17 +227,28 @@ router.post(
         return;
       }
 
-      const uploadedImages = [];
+      const uploadedImages: { id: string; url: string; order: number }[] = [];
       const currentMaxOrder = doc.images.reduce((max, img) => Math.max(max, img.order), 0);
 
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
         const mimetype = file.mimetype || 'image/jpeg';
-        const dataUrl = `data:${mimetype};base64,${file.buffer.toString('base64')}`;
+        const result = await uploadToS3(cfg, file.buffer, mimetype, 'products', doc._id.toString());
+
+        if (!result) {
+          res.status(503).json({
+            error: {
+              code: 'UPLOAD_UNAVAILABLE',
+              message:
+                'File upload is not configured. Set S3_BUCKET, S3_REGION, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, and S3_PUBLIC_URL (for MinIO) in environment.',
+            },
+          });
+          return;
+        }
 
         const image = {
           id: randomUUID(),
-          url: dataUrl,
+          url: result.url,
           order: currentMaxOrder + i + 1,
         };
         doc.images.push(image);
@@ -243,13 +263,14 @@ router.post(
   }
 );
 
-// POST /products/:id/images/url — admin add image via URL (fetched and stored as base64)
+// POST /products/:id/images/url — admin add image via URL (fetched and stored in MinIO/S3)
 router.post(
   '/:id/images/url',
   authMiddleware(getConfigFn),
   requireRole(UserRole.ADMIN),
   async (req, res, next) => {
     try {
+      const cfg = getConfigFn();
       const doc = await ProductModel.findById(req.params.id);
       if (!doc) {
         res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Product not found' } });
@@ -278,12 +299,24 @@ router.post(
       }
       const buffer = Buffer.from(await response.arrayBuffer());
       const contentType = response.headers.get('content-type') || 'image/jpeg';
-      const dataUrl = `data:${contentType};base64,${buffer.toString('base64')}`;
+
+      const result = await uploadToS3(cfg, buffer, contentType, 'products', doc._id.toString());
+
+      if (!result) {
+        res.status(503).json({
+          error: {
+            code: 'UPLOAD_UNAVAILABLE',
+            message:
+              'File upload is not configured. Set S3_BUCKET, S3_REGION, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, and S3_PUBLIC_URL (for MinIO) in environment.',
+          },
+        });
+        return;
+      }
 
       const currentMaxOrder = doc.images.reduce((max, img) => Math.max(max, img.order), 0);
       const image = {
         id: randomUUID(),
-        url: dataUrl,
+        url: result.url,
         order: currentMaxOrder + 1,
       };
       doc.images.push(image);
@@ -303,6 +336,7 @@ router.delete(
   requireRole(UserRole.ADMIN),
   async (req, res, next) => {
     try {
+      const cfg = getConfigFn();
       const doc = await ProductModel.findById(req.params.id);
       if (!doc) {
         res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Product not found' } });
@@ -313,6 +347,12 @@ router.delete(
       if (imgIndex === -1) {
         res.status(404).json({ error: { code: 'NOT_FOUND', message: 'Image not found' } });
         return;
+      }
+
+      const img = doc.images[imgIndex];
+      const key = extractKeyFromUrl(cfg, img.url);
+      if (key) {
+        await deleteFromS3(cfg, key);
       }
 
       doc.images.splice(imgIndex, 1);

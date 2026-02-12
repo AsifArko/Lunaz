@@ -62,7 +62,6 @@ services:
       dockerfile: apps/web/Dockerfile
       args:
         VITE_API_URL: ${VITE_API_URL}
-        VITE_STRIPE_PUBLIC_KEY: ${VITE_STRIPE_PUBLIC_KEY:-}
     image: lunaz/web:${TAG:-latest}
     container_name: lunaz-web
     restart: unless-stopped
