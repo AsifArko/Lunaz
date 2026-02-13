@@ -163,7 +163,7 @@ export function createApp() {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
   });
 
-  // Serve static files when STATIC_DIR is set (Fly.io single-app deployment)
+  // Serve static files when STATIC_DIR is set (e.g. single-container ECS deployment)
   const staticDir = config.STATIC_DIR;
   if (staticDir) {
     const publicDir = path.resolve(staticDir);

@@ -1,5 +1,7 @@
 # Lunaz — CI/CD Pipeline and Secure Development Workflow
 
+> **For AWS EC2 deployment:** See [15-AWS-EC2-DEPLOYMENT-PIPELINE.md](./15-AWS-EC2-DEPLOYMENT-PIPELINE.md) and [EC2-SETUP.md](./EC2-SETUP.md) for the simplified master-only pipeline, build tags, and EC2 deployment.
+
 ## 1. Goals
 
 - **Secure by default** — Enforce code reviews, branch protection, and secrets management.

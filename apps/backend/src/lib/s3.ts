@@ -1,6 +1,6 @@
 /**
- * S3/MinIO upload service for image storage.
- * Uploads files to S3-compatible storage (MinIO, AWS S3) and returns public URLs.
+ * AWS S3 upload service for image storage.
+ * Uploads files to AWS S3 and returns public URLs.
  */
 
 import {
@@ -28,12 +28,10 @@ function getS3Client(cfg: BackendEnv): S3Client | null {
     config = cfg;
     s3Client = new S3Client({
       region: cfg.S3_REGION!,
-      endpoint: cfg.S3_ENDPOINT,
       credentials: {
         accessKeyId: cfg.AWS_ACCESS_KEY_ID!,
         secretAccessKey: cfg.AWS_SECRET_ACCESS_KEY!,
       },
-      forcePathStyle: true, // Required for MinIO
     });
   }
 
@@ -41,24 +39,16 @@ function getS3Client(cfg: BackendEnv): S3Client | null {
 }
 
 /**
- * Get the public URL for an object in S3/MinIO.
- * Uses S3_PUBLIC_URL when set (required for MinIO), otherwise derives from S3.
+ * Get the public URL for an object in S3.
+ * Uses S3_PUBLIC_URL when set (e.g. for CloudFront), otherwise derives from bucket/region.
  */
 function getPublicUrl(cfg: BackendEnv, key: string): string {
   const bucket = cfg.S3_BUCKET!;
 
   if (cfg.S3_PUBLIC_URL) {
-    // MinIO: http://localhost:9000/bucket/key
     return `${cfg.S3_PUBLIC_URL.replace(/\/$/, '')}/${bucket}/${key}`;
   }
 
-  if (cfg.S3_ENDPOINT) {
-    // Custom endpoint without S3_PUBLIC_URL - use endpoint as base
-    const base = cfg.S3_ENDPOINT.replace(/\/$/, '');
-    return `${base}/${bucket}/${key}`;
-  }
-
-  // AWS S3 default
   const region = cfg.S3_REGION || 'us-east-1';
   return `https://${bucket}.s3.${region}.amazonaws.com/${key}`;
 }
@@ -69,7 +59,7 @@ export interface UploadResult {
 }
 
 /**
- * Upload a buffer to S3/MinIO.
+ * Upload a buffer to AWS S3.
  * @param cfg - Backend config
  * @param buffer - File buffer
  * @param contentType - MIME type (e.g. image/jpeg)
@@ -106,7 +96,7 @@ export async function uploadToS3(
 }
 
 /**
- * Delete an object from S3/MinIO by key.
+ * Delete an object from S3 by key.
  * @param cfg - Backend config
  * @param key - Object key (from uploadToS3 result)
  */
@@ -130,11 +120,11 @@ export function extractKeyFromUrl(cfg: BackendEnv, url: string): string | null {
   if (url.startsWith('data:')) return null;
 
   const bucket = cfg.S3_BUCKET!;
+  const region = cfg.S3_REGION || 'us-east-1';
   const patterns = [
     cfg.S3_PUBLIC_URL && `${cfg.S3_PUBLIC_URL.replace(/\/$/, '')}/${bucket}/`,
-    cfg.S3_ENDPOINT && `${cfg.S3_ENDPOINT.replace(/\/$/, '')}/${bucket}/`,
-    `https://${bucket}.s3.${cfg.S3_REGION || 'us-east-1'}.amazonaws.com/`,
-    `http://${bucket}.s3.${cfg.S3_REGION || 'us-east-1'}.amazonaws.com/`,
+    `https://${bucket}.s3.${region}.amazonaws.com/`,
+    `http://${bucket}.s3.${region}.amazonaws.com/`,
   ].filter(Boolean) as string[];
 
   for (const base of patterns) {

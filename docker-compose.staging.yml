@@ -20,7 +20,7 @@ services:
       MONGODB_URI: ${MONGODB_URI}
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-7d}
-      # S3 / MinIO (image uploads)
+      # S3 (image uploads)
       S3_BUCKET: ${S3_BUCKET}
       S3_REGION: ${S3_REGION:-us-east-1}
       S3_ENDPOINT: ${S3_ENDPOINT:-}

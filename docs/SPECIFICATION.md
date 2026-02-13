@@ -47,7 +47,7 @@ See [01-ARCHITECTURE.md](./01-ARCHITECTURE.md) for folder structure and boundari
 | **Manage**       | TypeScript, React, same shared packages                                                |
 | **Backend**      | TypeScript, Node.js (Express or Fastify), MongoDB driver (e.g. Mongoose), AWS SDK (S3) |
 | **Database**     | MongoDB                                                                                |
-| **File storage** | AWS S3 (or S3-compatible, e.g. MinIO for dev)                                          |
+| **File storage** | AWS S3                                                                                 |
 | **Auth**         | JWT; secure HTTP-only cookies or Bearer token as chosen                                |
 | **Validation**   | Shared schemas (e.g. Zod) in packages; used by Backend and optionally frontends        |
 | **Containers**   | Docker, Docker Compose                                                                 |

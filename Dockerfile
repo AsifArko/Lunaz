@@ -1,9 +1,9 @@
 # ============================================================================
-# Lunaz — Full stack (backend + web + manage) for Fly.io
+# Lunaz — Full stack (backend + web + manage) for AWS ECS
 # ============================================================================
 # Build context: repo root
 # Usage: docker build -t lunaz .
-#        fly deploy
+# Single-container deployment: backend serves static files when STATIC_DIR is set.
 # ============================================================================
 
 # -----------------------------------------------------------------------------
@@ -95,7 +95,7 @@ RUN npm run build --workspace=@lunaz/types && \
     npm run build --workspace=manage -- --base=/manage/
 
 # -----------------------------------------------------------------------------
-# Stage 5: Production (Node only, no Nginx — single process on 8080)
+# Stage 5: Production (Node only — single process on 8080)
 # -----------------------------------------------------------------------------
 FROM node:20-alpine AS production
 WORKDIR /app
