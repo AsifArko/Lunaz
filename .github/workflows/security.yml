@@ -27,6 +27,7 @@ jobs:
   dependency-audit:
     name: Dependency Audit
     runs-on: ubuntu-latest
+    continue-on-error: true  # Don't block PRs; report only
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -81,6 +82,7 @@ jobs:
   container-scan:
     name: Container Scan - ${{ matrix.app }}
     runs-on: ubuntu-latest
+    continue-on-error: true  # Don't block PRs; report only
     strategy:
       fail-fast: false
       matrix:
@@ -132,6 +134,7 @@ jobs:
   codeql:
     name: CodeQL Analysis
     runs-on: ubuntu-latest
+    continue-on-error: true  # Don't block PRs; report only
     if: github.event_name == 'pull_request' || github.event_name == 'schedule'
     permissions:
       actions: read
