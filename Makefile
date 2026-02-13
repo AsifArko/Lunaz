@@ -44,15 +44,16 @@ help:
 	@echo "  Docker:"
 	@echo "    make docker-build    Build all Docker images"
 	@echo "    make docker-up       Start all containers (docker compose up)"
-	@echo "    make docker-up-db    Start only MongoDB + MinIO (for npm run dev:*)"
+	@echo "    make docker-up-db    Start only MongoDB (for npm run dev:*)"
 	@echo "    make docker-down     Stop all containers"
 	@echo "    make docker-logs     View container logs"
 	@echo "    make docker-clean    Remove containers, images, and volumes"
 	@echo "    make docker-restart  Restart all containers"
 	@echo ""
 	@echo "  Production:"
-	@echo "    make prod-build  Build production images"
-	@echo "    make prod-up     Start production containers"
+	@echo "    make prod-build   Build production images"
+	@echo "    make prod-up      Start production containers"
+	@echo "    make ec2-deploy   Deploy to EC2 (TAG=xxx REGISTRY_IMAGE=ghcr.io/org/repo)"
 	@echo ""
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -209,9 +210,9 @@ docker-build:
 docker-up:
 	docker compose up -d
 
-# Start only MongoDB and MinIO (for local dev with npm run dev:backend, dev:web, dev:manage)
+# Start only MongoDB (for local dev with npm run dev:backend, dev:web, dev:manage)
 docker-up-db:
-	docker compose up -d mongodb minio minio-init
+	docker compose up -d mongodb
 
 docker-up-build:
 	docker compose up -d --build
@@ -253,6 +254,16 @@ prod-up:
 prod-down:
 	docker compose -f docker-compose.prod.yml down
 
+# EC2 deployment (run on EC2 server after pulling)
+ec2-deploy:
+	@if [ -z "$$TAG" ] || [ -z "$$REGISTRY_IMAGE" ]; then \
+		echo "Usage: TAG=abc1234 REGISTRY_IMAGE=ghcr.io/owner/repo make ec2-deploy"; \
+		exit 1; \
+	fi
+	docker compose -f docker-compose.ec2.yml pull
+	docker compose -f docker-compose.ec2.yml up -d --remove-orphans
+	docker system prune -f
+
 prod-logs:
 	docker compose -f docker-compose.prod.yml logs -f
 
@@ -263,11 +274,3 @@ prod-logs:
 db-shell:
 	docker compose exec mongodb mongosh lunaz
 
-# ─────────────────────────────────────────────────────────────────────────────
-# MinIO
-# ─────────────────────────────────────────────────────────────────────────────
-
-minio-console:
-	@echo "Opening MinIO Console at http://localhost:9001"
-	@echo "Credentials: minioadmin / minioadmin"
-	@open http://localhost:9001 2>/dev/null || xdg-open http://localhost:9001 2>/dev/null || echo "Visit http://localhost:9001"

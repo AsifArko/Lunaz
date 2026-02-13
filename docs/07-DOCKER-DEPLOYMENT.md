@@ -17,7 +17,7 @@
 
 ### 2.2 Web
 
-- **Build:** Multi-stage; build React app (e.g. Vite build); serve with nginx or a minimal Node server.
+- **Build:** Multi-stage; build React app (e.g. Vite build); serve with `serve` (Node static server).
 - **Env at build time:** `VITE_API_URL` (or similar) for API base URL. Runtime env can be injected via a small script if needed.
 - **Output:** Static files served on port 80 (or 3000).
 
@@ -30,10 +30,9 @@
 - Use official `mongo` or `mongo:7` image; no custom Dockerfile unless persistence or custom config is required.
 - **Data:** Mount a named volume for data persistence across restarts.
 
-### 2.5 S3 (local development)
+### 2.5 S3 (image storage)
 
-- **MinIO:** Use `minio/minio` image to simulate S3; create bucket on first run (e.g. via init container or startup script).
-- **Config:** `S3_ENDPOINT=http://minio:9000`, `S3_BUCKET=lunaz-products`; Backend uses path-style or virtual-hosted style as per MinIO docs.
+- **AWS S3:** Image uploads for products and categories use AWS S3. Set `S3_BUCKET`, `S3_REGION`, `AWS_ACCESS_KEY_ID`, and `AWS_SECRET_ACCESS_KEY` in environment.
 
 ## 3. Docker Compose (Local)
 
@@ -54,23 +53,6 @@ services:
       timeout: 5s
       retries: 5
 
-  minio:
-    image: minio/minio
-    command: server /data
-    ports:
-      - '9000:9000'
-      - '9001:9001'
-    volumes:
-      - minio_data:/data
-    environment:
-      MINIO_ROOT_USER: minioadmin
-      MINIO_ROOT_PASSWORD: minioadmin
-    healthcheck:
-      test: ['CMD', 'mc', 'ready', 'local']
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
   backend:
     build:
       context: .
@@ -84,15 +66,12 @@ services:
       JWT_SECRET: ${JWT_SECRET:-dev-secret-change-in-prod}
       S3_BUCKET: lunaz-products
       S3_REGION: us-east-1
-      S3_ENDPOINT: http://minio:9000
-      AWS_ACCESS_KEY_ID: minioadmin
-      AWS_SECRET_ACCESS_KEY: minioadmin
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       FRONTEND_WEB_URL: http://localhost:3000
       FRONTEND_MANAGE_URL: http://localhost:3001
     depends_on:
       mongodb:
-        condition: service_healthy
-      minio:
         condition: service_healthy
 
   web:
@@ -119,7 +98,6 @@ services:
 
 volumes:
   mongodb_data:
-  minio_data:
 ```
 
 - **Secrets:** Use `env_file: .env` or Compose env vars; never commit `.env` with real secrets. Provide `.env.example` with placeholder values.
@@ -165,7 +143,7 @@ CMD ["node", "index.js"]
 
 ## 6. Summary
 
-- **Containers:** Backend, Web, Manage, MongoDB, MinIO (dev).
+- **Containers:** Backend, Web, Manage, MongoDB.
 - **Config:** Environment variables only; document in `.env.example` and [02-BACKEND.md](./02-BACKEND.md).
 - **Monorepo:** Build context at root; copy only needed apps and packages into each image.
 - **Clean and configurable:** No hardcoded env; same Compose pattern can be adapted for CI or production deploy.

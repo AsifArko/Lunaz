@@ -114,7 +114,7 @@ Use this matrix to track coverage across Web, Manage, and Backend. **P** = Plann
 - **Web:** Home, categories, product list/detail (price, sizes, add to cart), cart, checkout, login/register, profile, addresses, order history and detail.
 - **Manage:** Login, dashboard (basic), product list/create/edit with images and variants, category CRUD, order list/detail and status update.
 - **Shared:** `@lunaz/types` with core entities and API types; `@lunaz/ui` with primitives and layout used by Web and Manage.
-- **Infra:** Docker Compose (Backend, Web, Manage, MongoDB, MinIO).
+- **Infra:** Docker Compose (Backend, Web, Manage, MongoDB).
 
 ### Phase 2 — Sales and operations
 

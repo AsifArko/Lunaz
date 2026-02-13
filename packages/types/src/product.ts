@@ -11,7 +11,7 @@ export interface ProductVariant {
   attributes?: Record<string, string>;
 }
 
-/** Product image (URL from MinIO/S3 or legacy base64 data URL). */
+/** Product image (URL from S3 or legacy base64 data URL). */
 export interface ProductImage {
   id: string;
   url: string;

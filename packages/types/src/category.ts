@@ -1,6 +1,6 @@
 import type { Id } from './user.js';
 
-/** Category image (URL from MinIO/S3 or legacy base64 data URL). */
+/** Category image (URL from S3 or legacy base64 data URL). */
 export interface CategoryImage {
   id: string;
   url: string;

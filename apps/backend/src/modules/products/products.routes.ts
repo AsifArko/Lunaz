@@ -179,7 +179,7 @@ router.patch(
   }
 );
 
-// DELETE /products/:id — admin delete (removes images from MinIO)
+// DELETE /products/:id — admin delete (removes images from S3)
 router.delete(
   '/:id',
   authMiddleware(getConfigFn),
@@ -206,7 +206,7 @@ router.delete(
   }
 );
 
-// POST /products/:id/images — admin upload image(s) — stored in MinIO/S3
+// POST /products/:id/images — admin upload image(s) — stored in S3
 router.post(
   '/:id/images',
   authMiddleware(getConfigFn),
@@ -240,7 +240,7 @@ router.post(
             error: {
               code: 'UPLOAD_UNAVAILABLE',
               message:
-                'File upload is not configured. Set S3_BUCKET, S3_REGION, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, and S3_PUBLIC_URL (for MinIO) in environment.',
+                'File upload is not configured. Set S3_BUCKET, S3_REGION, AWS_ACCESS_KEY_ID, and AWS_SECRET_ACCESS_KEY in environment.',
             },
           });
           return;
@@ -263,7 +263,7 @@ router.post(
   }
 );
 
-// POST /products/:id/images/url — admin add image via URL (fetched and stored in MinIO/S3)
+// POST /products/:id/images/url — admin add image via URL (fetched and stored in S3)
 router.post(
   '/:id/images/url',
   authMiddleware(getConfigFn),
@@ -307,7 +307,7 @@ router.post(
           error: {
             code: 'UPLOAD_UNAVAILABLE',
             message:
-              'File upload is not configured. Set S3_BUCKET, S3_REGION, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, and S3_PUBLIC_URL (for MinIO) in environment.',
+              'File upload is not configured. Set S3_BUCKET, S3_REGION, AWS_ACCESS_KEY_ID, and AWS_SECRET_ACCESS_KEY in environment.',
           },
         });
         return;

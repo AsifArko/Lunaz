@@ -6,7 +6,7 @@
 - **Language:** TypeScript (strict)
 - **Framework:** Express or Fastify
 - **Database:** MongoDB (driver: native or Mongoose)
-- **Storage:** AWS S3 (SDK v3) or S3-compatible (e.g. MinIO for dev)
+- **Storage:** AWS S3 (SDK v3)
 - **Validation:** Zod (schemas can live in `@lunaz/types` or backend)
 - **Auth:** JWT (access token; optional refresh token)
 
@@ -58,7 +58,7 @@ apps/backend/
 | `S3_REGION`             | AWS region                      | `us-east-1`                       |
 | `AWS_ACCESS_KEY_ID`     | S3 access (or IAM role in prod) | —                                 |
 | `AWS_SECRET_ACCESS_KEY` | S3 secret                       | —                                 |
-| `S3_ENDPOINT`           | Optional; for MinIO             | `http://minio:9000`               |
+| `S3_ENDPOINT`           | Optional; custom endpoint       | —                                 |
 | `FRONTEND_WEB_URL`      | Web app URL (CORS, emails)      | `http://localhost:3000`           |
 | `FRONTEND_MANAGE_URL`   | Manage app URL (CORS)           | `http://localhost:3001`           |
 | `STRIPE_SECRET_KEY`     | Payment provider (optional)     | `sk_...`                          |

@@ -10,8 +10,9 @@ export const backendEnvSchema = z.object({
   JWT_REFRESH_EXPIRES_IN: z.string().default('7d'),
   S3_BUCKET: z.string().optional(),
   S3_REGION: z.string().optional(),
+  /** Optional custom S3 endpoint (leave empty for standard AWS S3). */
   S3_ENDPOINT: z.string().url().optional(),
-  /** Public URL for serving uploaded files (e.g. http://localhost:9000 for MinIO). Required when using MinIO. */
+  /** Optional custom public URL for serving uploaded files (e.g. CloudFront). Leave empty to use default S3 URL. */
   S3_PUBLIC_URL: z.string().url().optional(),
   AWS_ACCESS_KEY_ID: z.string().optional(),
   AWS_SECRET_ACCESS_KEY: z.string().optional(),
@@ -31,7 +32,7 @@ export const backendEnvSchema = z.object({
   GOOGLE_CLIENT_SECRET: z.string().optional(),
   FACEBOOK_APP_ID: z.string().optional(),
   FACEBOOK_APP_SECRET: z.string().optional(),
-  // Fly.io: when set, serve web + manage static files from this directory
+  /** When set, serve web + manage static files from this directory (e.g. for single-container ECS deployment). */
   STATIC_DIR: z.string().optional(),
 });
 

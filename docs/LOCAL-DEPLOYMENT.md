@@ -8,7 +8,7 @@ You can run the full stack on your machine in two ways: **all-in-Docker** (one c
 
 Best for: quickly running the whole app without running three dev servers.
 
-1. **Start everything** (MongoDB, MinIO, Backend, Web, Manage):
+1. **Start everything** (MongoDB, Backend, Web, Manage):
 
    ```bash
    docker compose up --build
@@ -33,7 +33,6 @@ Best for: quickly running the whole app without running three dev servers.
    - **Manage (admin):** http://localhost:3001
    - **Backend API:** http://localhost:4000
    - **Health:** http://localhost:4000/health
-   - **MinIO console:** http://localhost:9001 (minioadmin / minioadmin)
 
 **Stop:** `make docker-down` or `docker compose down`
 
@@ -41,9 +40,9 @@ Best for: quickly running the whole app without running three dev servers.
 
 ## Option 2: DB in Docker, apps with npm (dev with hot reload)
 
-Best for: daily development with `npm run dev:backend`, `dev:web`, and `dev:manage`, with the database (and optional S3) running in Docker.
+Best for: daily development with `npm run dev:backend`, `dev:web`, and `dev:manage`, with the database running in Docker.
 
-### 1. Start only MongoDB (and MinIO)
+### 1. Start only MongoDB
 
 ```bash
 make docker-up-db
@@ -52,13 +51,11 @@ make docker-up-db
 This starts:
 
 - **MongoDB** on `localhost:27017` (database `lunaz`)
-- **MinIO** on `localhost:9000` (API) and `localhost:9001` (console)
-- MinIO bucket `lunaz-products` is created automatically
 
 Your `.env` should already have:
 
 - `MONGODB_URI=mongodb://localhost:27017/lunaz`
-- Optional S3/MinIO vars if you use file uploads (see `.env` and [07-DOCKER-DEPLOYMENT.md](./07-DOCKER-DEPLOYMENT.md))
+- AWS S3 credentials for image uploads: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `S3_BUCKET`, `S3_REGION` (see `.env.example` and [07-DOCKER-DEPLOYMENT.md](./07-DOCKER-DEPLOYMENT.md))
 
 ### 2. Install and build (first time only)
 
@@ -113,4 +110,4 @@ make docker-down
 | “Deploy” locally for testing | **Option 1** — `docker compose up --build`                                             |
 | Develop with hot reload      | **Option 2** — `make docker-up-db` then `npm run dev:backend`, `dev:web`, `dev:manage` |
 
-Both options keep the database (and optionally MinIO) consistent. When you move to **AWS**, you’ll replace the Dockerized MongoDB with a managed service (e.g. DocumentDB or Atlas) and run Backend/Web/Manage on ECS, EKS, or Lambda; the same env vars and Docker setup from Option 1 translate well to that workflow.
+Both options keep the database consistent. For **AWS** deployment, you’ll use DocumentDB or Atlas for MongoDB, S3 for images, and run Backend/Web/Manage on ECS; the same env vars and Docker setup from Option 1 translate well to that workflow.
