@@ -174,10 +174,6 @@ jobs:
           base: ${{ github.event.pull_request.base.sha }}
           head: ${{ github.event.pull_request.head.sha }}
 
-      - name: Dependency review
-        uses: actions/dependency-review-action@v4
-        continue-on-error: true
-
   # ─────────────────────────────────────────────────────────────────────────────
   # Docker Build Stage (master only)
   # ─────────────────────────────────────────────────────────────────────────────
