@@ -76,6 +76,8 @@ jobs:
     name: Container Scan - ${{ matrix.app }}
     runs-on: ubuntu-latest
     continue-on-error: true  # Don't block PRs; report only
+    permissions:
+      security-events: write  # Required for SARIF upload (needs Advanced Security)
     strategy:
       fail-fast: false
       matrix:
@@ -107,11 +109,12 @@ jobs:
           severity: 'CRITICAL,HIGH'
 
       - name: Upload Trivy scan results
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         if: always()
         with:
           sarif_file: 'trivy-${{ matrix.app }}.sarif'
           category: 'trivy-${{ matrix.app }}'
+        continue-on-error: true  # Fails when Advanced Security not enabled
 
       - name: Run Trivy (table output)
         uses: aquasecurity/trivy-action@master
@@ -138,18 +141,19 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v3
+        uses: github/codeql-action/init@v4
         with:
           languages: javascript-typescript
           queries: security-and-quality
 
       - name: Autobuild
-        uses: github/codeql-action/autobuild@v3
+        uses: github/codeql-action/autobuild@v4
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v3
+        uses: github/codeql-action/analyze@v4
         with:
           category: "/language:javascript-typescript"
+        continue-on-error: true  # Fails when Advanced Security not enabled
 
   # ─────────────────────────────────────────────────────────────────────────────
   # Security Report Summary
