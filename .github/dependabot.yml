@@ -23,11 +23,8 @@ updates:
     commit-message:
       prefix: "deps"
       include: "scope"
-    labels:
-      - "dependencies"
-      - "automated"
-    reviewers:
-      - "lunaz-team"
+    # Labels: create in repo Settings → Labels if desired
+    # labels: ["dependencies", "automated"]
 
   # GitHub Actions
   - package-ecosystem: "github-actions"
@@ -41,9 +38,9 @@ updates:
     commit-message:
       prefix: "ci"
       include: "scope"
-    labels:
-      - "ci/cd"
-      - "automated"
+    # labels:
+    #   - "ci/cd"
+    #   - "automated"
     reviewers:
       - "lunaz-team"
 
@@ -52,22 +49,13 @@ updates:
     directory: "/apps/backend"
     schedule:
       interval: "weekly"
-    labels:
-      - "docker"
-      - "automated"
 
   - package-ecosystem: "docker"
     directory: "/apps/web"
     schedule:
       interval: "weekly"
-    labels:
-      - "docker"
-      - "automated"
 
   - package-ecosystem: "docker"
     directory: "/apps/manage"
     schedule:
       interval: "weekly"
-    labels:
-      - "docker"
-      - "automated"

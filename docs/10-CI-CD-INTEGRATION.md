@@ -664,7 +664,7 @@ jobs:
           image-ref: lunaz/${{ matrix.app }}:scan
           format: sarif
           output: trivy-${{ matrix.app }}.sarif
-      - uses: github/codeql-action/upload-sarif@v3
+      - uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: trivy-${{ matrix.app }}.sarif
 ```
