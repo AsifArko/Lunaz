@@ -128,7 +128,7 @@ jobs:
     steps:
       - name: Get previous successful run
         id: prev
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const currentRunId = context.payload.workflow_run?.id || 0;
