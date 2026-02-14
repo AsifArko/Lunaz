@@ -43,7 +43,7 @@
     "@secretlint/secretlint-rule-privatekey": "^8.0.0",
     "@secretlint/secretlint-rule-sendgrid": "^8.0.0",
     "@secretlint/secretlint-rule-slack": "^8.0.0",
-    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.55.0",
     "@typescript-eslint/parser": "^7.0.0",
     "eslint": "^8.57.0",
     "eslint-plugin-react": "^7.34.0",
