@@ -27,6 +27,7 @@ jobs:
   dependency-audit:
     name: Dependency Audit
     runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     continue-on-error: true  # Don't block PRs; report only
     steps:
       - name: Checkout code
@@ -51,6 +52,7 @@ jobs:
   secret-scan:
     name: Secret Scan
     runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -75,6 +77,8 @@ jobs:
   container-scan:
     name: Container Scan - ${{ matrix.app }}
     runs-on: ubuntu-latest
+    # Skip for fork PRs - checkout fails with "Repository not found" due to token restrictions
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     continue-on-error: true  # Don't block PRs; report only
     permissions:
       security-events: write  # Required for SARIF upload (needs Advanced Security)
@@ -131,7 +135,7 @@ jobs:
     name: CodeQL Analysis
     runs-on: ubuntu-latest
     continue-on-error: true  # Don't block PRs; report only
-    if: github.event_name == 'pull_request' || github.event_name == 'schedule'
+    if: github.event_name == 'schedule' || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository)
     permissions:
       actions: read
       contents: read
