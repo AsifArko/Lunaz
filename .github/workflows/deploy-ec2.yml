@@ -56,6 +56,25 @@ jobs:
             echo "🚀 Deploying current commit: $SHORT_SHA"
           fi
 
+      - name: Setup EC2 directory
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            sudo mkdir -p /opt/lunaz
+            sudo chown ${{ secrets.EC2_USER }}:${{ secrets.EC2_USER }} /opt/lunaz
+
+      - name: Copy docker-compose to EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "docker-compose.ec2.yml"
+          target: "/opt/lunaz"
+
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v1
         with:
