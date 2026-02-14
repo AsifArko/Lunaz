@@ -40,7 +40,7 @@
     "@secretlint/secretlint-rule-github": "^8.0.0",
     "@secretlint/secretlint-rule-npm": "^8.0.0",
     "@secretlint/secretlint-rule-preset-recommend": "^8.0.0",
-    "@secretlint/secretlint-rule-privatekey": "^8.0.0",
+    "@secretlint/secretlint-rule-privatekey": "^11.3.1",
     "@secretlint/secretlint-rule-sendgrid": "^8.0.0",
     "@secretlint/secretlint-rule-slack": "^8.0.0",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
