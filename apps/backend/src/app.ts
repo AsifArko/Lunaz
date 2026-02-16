@@ -58,6 +58,23 @@ function isLocalOrigin(origin: string | undefined): boolean {
   }
 }
 
+/** Check if origin's hostname matches a configured frontend URL (handles EC2 IP + port mismatches) */
+function originMatchesConfiguredHost(
+  origin: string | undefined,
+  webUrl: string,
+  manageUrl: string
+): boolean {
+  if (!origin) return false;
+  try {
+    const o = new URL(origin);
+    const web = new URL(webUrl);
+    const manage = new URL(manageUrl);
+    return o.hostname === web.hostname || o.hostname === manage.hostname;
+  } catch {
+    return false;
+  }
+}
+
 export function createApp() {
   const config = getConfig();
   const app = express();
@@ -77,7 +94,11 @@ export function createApp() {
   app.use((req, res, next) => {
     if (req.method !== 'OPTIONS') return next();
     const origin = req.headers.origin as string | undefined;
-    const allowed = origin && (allowedOrigins.includes(origin) || (isDev && isLocalOrigin(origin)));
+    const allowed =
+      origin &&
+      (allowedOrigins.includes(origin) ||
+        (isDev && isLocalOrigin(origin)) ||
+        originMatchesConfiguredHost(origin, config.FRONTEND_WEB_URL, config.FRONTEND_MANAGE_URL));
     if (allowed) {
       res.setHeader('Access-Control-Allow-Origin', origin);
       res.setHeader('Access-Control-Allow-Methods', corsAllowMethods);
@@ -94,7 +115,11 @@ export function createApp() {
     cors({
       origin: (origin, cb) => {
         if (origin) {
-          if (allowedOrigins.includes(origin) || (isDev && isLocalOrigin(origin))) {
+          if (
+            allowedOrigins.includes(origin) ||
+            (isDev && isLocalOrigin(origin)) ||
+            originMatchesConfiguredHost(origin, config.FRONTEND_WEB_URL, config.FRONTEND_MANAGE_URL)
+          ) {
             cb(null, origin);
             return;
           }
