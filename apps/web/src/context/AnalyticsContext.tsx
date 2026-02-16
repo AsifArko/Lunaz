@@ -83,7 +83,10 @@ interface AnalyticsContextType {
 /*                              Helpers                                       */
 /* -------------------------------------------------------------------------- */
 
-const API_URL = import.meta.env.VITE_API_URL ?? '/api/v1';
+const API_URL =
+  (typeof window !== 'undefined' && window.__VITE_API_URL__) ||
+  import.meta.env.VITE_API_URL ||
+  '/api/v1';
 
 // Generate or retrieve visitor ID
 function getVisitorId(): string {
