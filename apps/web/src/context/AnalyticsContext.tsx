@@ -95,7 +95,7 @@ function getApiUrl(): string {
     pageHost.startsWith('10.') ||
     pageHost.startsWith('192.168.');
   if (!isLocalOrPrivate) {
-    return `${window.location.protocol}//${window.location.hostname}:4000/api/v1`;
+    return `${window.location.origin}/api/v1`;
   }
   return (
     (typeof window !== 'undefined' && window.__VITE_API_URL__) ||
