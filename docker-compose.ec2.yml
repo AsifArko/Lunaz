@@ -24,8 +24,8 @@ services:
       - "443:443"
       - "3001:3001"
     build:
-      context: .
-      dockerfile: infra/nginx/Dockerfile
+      context: infra/nginx
+      dockerfile: Dockerfile
     depends_on:
       backend:
         condition: service_healthy
