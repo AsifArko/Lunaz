@@ -93,7 +93,7 @@ services:
       - .env
     environment:
       VITE_API_URL: ${API_URL}/api/v1
-      VITE_GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      VITE_GOOGLE_CLIENT_ID: ${VITE_GOOGLE_CLIENT_ID:-${GOOGLE_CLIENT_ID:-}}
     depends_on:
       backend:
         condition: service_healthy
