@@ -78,6 +78,10 @@ services:
     restart: unless-stopped
     ports:
       - "3001:80"
+    env_file:
+      - .env
+    environment:
+      VITE_API_URL: ${API_URL}/api/v1
     depends_on:
       backend:
         condition: service_healthy

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { API_URL } from '../../api/client';
 import { useAuth } from '../../context/AuthContext';
 
 interface LegalDocument {
@@ -172,7 +173,7 @@ export function LegalDocumentsPage() {
       if (filter.status) params.append('status', filter.status);
       if (filter.search) params.append('search', filter.search);
 
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/compliance/documents?${params}`, {
+      const res = await fetch(`${API_URL}/compliance/documents?${params}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (res.ok) {

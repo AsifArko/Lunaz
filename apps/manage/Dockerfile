@@ -58,6 +58,10 @@ RUN npm install -g serve
 # Copy built static files
 COPY --from=builder /app/apps/manage/dist ./dist
 
+# Copy entrypoint (generates config.js at runtime from VITE_API_URL env)
+COPY apps/manage/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
 # Expose port
 EXPOSE 80
 
@@ -65,5 +69,5 @@ EXPOSE 80
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD wget -q --spider http://localhost:80/ || exit 1
 
-# Serve static files on port 80
-CMD ["serve", "-s", "/app/dist", "-l", "80"]
+# Entrypoint: creates config.js with API URL, then serves
+ENTRYPOINT ["/entrypoint.sh"]

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { API_URL } from '../../api/client';
 import { useAuth } from '../../context/AuthContext';
 
 interface DashboardData {
@@ -46,7 +47,7 @@ export function ComplianceDashboard() {
 
   async function fetchDashboard() {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/compliance/dashboard`, {
+      const res = await fetch(`${API_URL}/compliance/dashboard`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (res.ok) {

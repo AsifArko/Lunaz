@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { API_URL } from '../../api/client';
 import { useAuth } from '../../context/AuthContext';
 
 interface Director {
@@ -61,7 +62,7 @@ export function BusinessAuthenticityPage() {
 
   async function fetchAuthenticity() {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/compliance/authenticity`, {
+      const res = await fetch(`${API_URL}/compliance/authenticity`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (res.ok) {

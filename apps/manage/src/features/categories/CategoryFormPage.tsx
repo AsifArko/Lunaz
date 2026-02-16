@@ -8,7 +8,7 @@ import {
 } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import type { Category, PaginatedResponse } from '@lunaz/types';
-import { api } from '../../api/client';
+import { api, API_URL } from '../../api/client';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 
@@ -436,14 +436,11 @@ export function CategoryFormPage() {
         const formData = new FormData();
         newImages.forEach((file) => formData.append('images', file));
 
-        await fetch(
-          `${import.meta.env.VITE_API_URL ?? '/api/v1'}/categories/${categoryId}/images`,
-          {
-            method: 'POST',
-            headers: { Authorization: `Bearer ${token}` },
-            body: formData,
-          }
-        );
+        await fetch(`${API_URL}/categories/${categoryId}/images`, {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${token}` },
+          body: formData,
+        });
       }
 
       // Add images via URL

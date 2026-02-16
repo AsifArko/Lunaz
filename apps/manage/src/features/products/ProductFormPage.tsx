@@ -8,7 +8,7 @@ import {
 } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import type { Product, Category, PaginatedResponse, ProductStatus } from '@lunaz/types';
-import { api } from '../../api/client';
+import { api, API_URL } from '../../api/client';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 
@@ -774,7 +774,7 @@ export function ProductFormPage() {
         const formData = new FormData();
         newImages.forEach((file) => formData.append('images', file));
 
-        await fetch(`${import.meta.env.VITE_API_URL ?? '/api/v1'}/products/${productId}/images`, {
+        await fetch(`${API_URL}/products/${productId}/images`, {
           method: 'POST',
           headers: {
             Authorization: `Bearer ${token}`,
