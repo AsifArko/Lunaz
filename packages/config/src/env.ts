@@ -11,9 +11,17 @@ export const backendEnvSchema = z.object({
   S3_BUCKET: z.string().optional(),
   S3_REGION: z.string().optional(),
   /** Optional custom S3 endpoint (leave empty for standard AWS S3). */
-  S3_ENDPOINT: z.string().url().optional(),
+  S3_ENDPOINT: z
+    .string()
+    .optional()
+    .transform((v) => (v === '' || !v ? undefined : v))
+    .pipe(z.string().url().optional()),
   /** Optional custom public URL for serving uploaded files (e.g. CloudFront). Leave empty to use default S3 URL. */
-  S3_PUBLIC_URL: z.string().url().optional(),
+  S3_PUBLIC_URL: z
+    .string()
+    .optional()
+    .transform((v) => (v === '' || !v ? undefined : v))
+    .pipe(z.string().url().optional()),
   AWS_ACCESS_KEY_ID: z.string().optional(),
   AWS_SECRET_ACCESS_KEY: z.string().optional(),
   FRONTEND_WEB_URL: z.string().url().default('http://localhost:3000'),
