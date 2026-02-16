@@ -18,7 +18,7 @@ function getApiUrl(): string {
     pageHost.startsWith('192.168.');
 
   if (!isLocalOrPrivate) {
-    return `${window.location.protocol}//${window.location.hostname}:4000/api/v1`;
+    return `${window.location.origin}/api/v1`;
   }
 
   return (
