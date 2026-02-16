@@ -6,6 +6,9 @@
 
 FROM nginx:alpine
 
+# openssl needed for entrypoint to generate self-signed cert
+RUN apk add --no-cache openssl
+
 # Remove default config
 RUN rm -f /etc/nginx/conf.d/default.conf
 
