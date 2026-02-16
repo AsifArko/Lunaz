@@ -1,11 +1,5 @@
 /// <reference types="vite/client" />
 
-declare global {
-  interface Window {
-    __VITE_API_URL__?: string;
-  }
-}
-
 interface ImportMetaEnv {
   readonly VITE_API_URL: string;
 }
@@ -13,3 +7,11 @@ interface ImportMetaEnv {
 interface ImportMeta {
   readonly env: ImportMetaEnv;
 }
+
+declare global {
+  interface Window {
+    __VITE_API_URL__?: string;
+  }
+}
+
+export {};
