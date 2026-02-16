@@ -28,8 +28,6 @@ function getApiUrl(): string {
   );
 }
 
-const API_URL = getApiUrl();
-
 export interface AuthTokens {
   token: string | null;
   refreshToken: string | null;
@@ -71,14 +69,14 @@ export async function api<T>(path: string, options: ApiOptions = {}): Promise<T>
   headers.set('Content-Type', 'application/json');
   if (token) headers.set('Authorization', `Bearer ${token}`);
 
-  let res = await fetch(`${API_URL}${path}`, { ...init, headers });
+  let res = await fetch(`${getApiUrl()}${path}`, { ...init, headers });
   let data = await res.json().catch(() => ({}));
 
   const isRefreshEndpoint = path === '/auth/refresh';
   const refreshToken = auth.refreshToken;
   if (res.status === 401 && refreshToken && !isRefreshEndpoint) {
     try {
-      const refreshRes = await fetch(`${API_URL}/auth/refresh`, {
+      const refreshRes = await fetch(`${getApiUrl()}/auth/refresh`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ refreshToken }),
@@ -92,7 +90,7 @@ export async function api<T>(path: string, options: ApiOptions = {}): Promise<T>
         const newRefresh = refreshData.refreshToken ?? refreshToken;
         onTokensRefreshed?.({ token: refreshData.token, refreshToken: newRefresh });
         headers.set('Authorization', `Bearer ${refreshData.token}`);
-        res = await fetch(`${API_URL}${path}`, { ...init, headers });
+        res = await fetch(`${getApiUrl()}${path}`, { ...init, headers });
         data = await res.json().catch(() => ({}));
       } else {
         onRefreshFailed?.();

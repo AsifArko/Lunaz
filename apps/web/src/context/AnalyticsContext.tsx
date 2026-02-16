@@ -104,8 +104,6 @@ function getApiUrl(): string {
   );
 }
 
-const API_URL = getApiUrl();
-
 // Generate or retrieve visitor ID
 function getVisitorId(): string {
   let visitorId = localStorage.getItem('lunaz_visitor_id');
@@ -206,7 +204,7 @@ export function AnalyticsProvider({ children }: { children: ReactNode }) {
         headers['Authorization'] = `Bearer ${token}`;
       }
 
-      await fetch(`${API_URL}/analytics/collect`, {
+      await fetch(`${getApiUrl()}/analytics/collect`, {
         method: 'POST',
         headers,
         body: JSON.stringify({
@@ -301,7 +299,7 @@ export function AnalyticsProvider({ children }: { children: ReactNode }) {
       // Only send if we have at least some metrics
       if (Object.keys(metrics).length === 0) return;
 
-      fetch(`${API_URL}/analytics/performance`, {
+      fetch(`${getApiUrl()}/analytics/performance`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
