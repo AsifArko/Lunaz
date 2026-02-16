@@ -11,6 +11,7 @@ interface ImportMeta {
 declare global {
   interface Window {
     __VITE_API_URL__?: string;
+    __VITE_GOOGLE_CLIENT_ID__?: string;
   }
 }
 
