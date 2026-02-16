@@ -1,9 +1,12 @@
 /**
- * API client — base URL from env; typed with @lunaz/types.
+ * API client — base URL from runtime config (config.js) or build-time env.
  * Automatically attaches access token and retries on 401 using refresh token.
  */
 
-const API_URL = import.meta.env.VITE_API_URL ?? '/api/v1';
+const API_URL =
+  (typeof window !== 'undefined' && window.__VITE_API_URL__) ||
+  import.meta.env.VITE_API_URL ||
+  '/api/v1';
 
 export interface AuthTokens {
   token: string | null;
