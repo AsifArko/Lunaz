@@ -108,7 +108,7 @@ jobs:
         run: |
           echo "Waiting for services to be healthy..."
           for i in $(seq 1 30); do
-            if curl -sf "${{ secrets.PROD_API_URL }}/health" > /dev/null; then
+            if curl -sfk "${{ secrets.PROD_API_URL }}/health" > /dev/null; then
               echo "✓ Backend health check passed"
               exit 0
             fi
@@ -120,17 +120,18 @@ jobs:
 
       - name: Smoke tests
         run: |
+          # -k: allow self-signed certs (HTTPS with Nginx)
           # Backend health
-          curl -sf "${{ secrets.PROD_API_URL }}/health" || exit 1
+          curl -sfk "${{ secrets.PROD_API_URL }}/health" || exit 1
 
           # Web (if PROD_URL set)
           if [ -n "${{ secrets.PROD_URL }}" ]; then
-            curl -sf "${{ secrets.PROD_URL }}" -o /dev/null || exit 1
+            curl -sfk "${{ secrets.PROD_URL }}" -o /dev/null || exit 1
           fi
 
           # Manage (if PROD_MANAGE_URL set)
           if [ -n "${{ secrets.PROD_MANAGE_URL }}" ]; then
-            curl -sf "${{ secrets.PROD_MANAGE_URL }}" -o /dev/null || exit 1
+            curl -sfk "${{ secrets.PROD_MANAGE_URL }}" -o /dev/null || exit 1
           fi
 
           echo "✓ Smoke tests passed"

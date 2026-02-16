@@ -189,7 +189,15 @@ jobs:
       short_sha: ${{ steps.vars.outputs.short_sha }}
     strategy:
       matrix:
-        app: [backend, web, manage]
+        include:
+          - app: backend
+            dockerfile: apps/backend/Dockerfile
+          - app: web
+            dockerfile: apps/web/Dockerfile
+          - app: manage
+            dockerfile: apps/manage/Dockerfile
+          - app: nginx
+            dockerfile: infra/nginx/Dockerfile
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -212,7 +220,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: apps/${{ matrix.app }}/Dockerfile
+          file: ${{ matrix.dockerfile }}
           push: true
           build-args: |
             VITE_API_URL=${{ secrets.VITE_API_URL }}

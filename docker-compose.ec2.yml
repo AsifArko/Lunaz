@@ -3,18 +3,51 @@
 # ============================================================================
 # Uses pre-built images from GHCR. Set TAG and REGISTRY_IMAGE before running.
 # Usage: TAG=abc1234 REGISTRY_IMAGE=ghcr.io/owner/repo docker compose -f docker-compose.ec2.yml up -d
+#
+# HTTPS: Nginx terminates SSL (self-signed cert). Access:
+#   - Web:    https://YOUR_IP/
+#   - Manage: https://YOUR_IP:3001/
+#   - API:    https://YOUR_IP/api/v1
+# Browsers will show a certificate warning (expected for self-signed).
 # ============================================================================
 
 services:
   # ─────────────────────────────────────────────────────────────────────────────
-  # Backend (Express.js API)
+  # Nginx (HTTPS reverse proxy — single entry point)
+  # ─────────────────────────────────────────────────────────────────────────────
+  nginx:
+    image: ${REGISTRY_IMAGE}/nginx:${TAG}
+    container_name: lunaz-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "3001:3001"
+    build:
+      context: .
+      dockerfile: infra/nginx/Dockerfile
+    depends_on:
+      backend:
+        condition: service_healthy
+      web:
+        condition: service_started
+      manage:
+        condition: service_started
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    networks:
+      - lunaz-network
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Backend (Express.js API) — internal only, no port exposure
   # ─────────────────────────────────────────────────────────────────────────────
   backend:
     image: ${REGISTRY_IMAGE}/backend:${TAG}
     container_name: lunaz-backend
     restart: unless-stopped
-    ports:
-      - "4000:4000"
     env_file:
       - .env
     environment:
@@ -50,14 +83,12 @@ services:
       - lunaz-network
 
   # ─────────────────────────────────────────────────────────────────────────────
-  # Web (Customer-facing React app) — Port 80
+  # Web (Customer-facing React app) — internal only, Nginx proxies
   # ─────────────────────────────────────────────────────────────────────────────
   web:
     image: ${REGISTRY_IMAGE}/web:${TAG}
     container_name: lunaz-web
     restart: unless-stopped
-    ports:
-      - "80:80"
     env_file:
       - .env
     environment:
@@ -74,14 +105,12 @@ services:
       - lunaz-network
 
   # ─────────────────────────────────────────────────────────────────────────────
-  # Manage (Admin dashboard) — Port 3001
+  # Manage (Admin dashboard) — internal only, Nginx proxies on 3001
   # ─────────────────────────────────────────────────────────────────────────────
   manage:
     image: ${REGISTRY_IMAGE}/manage:${TAG}
     container_name: lunaz-manage
     restart: unless-stopped
-    ports:
-      - "3001:80"
     env_file:
       - .env
     environment:
