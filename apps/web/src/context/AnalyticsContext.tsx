@@ -84,35 +84,24 @@ interface AnalyticsContextType {
 /* -------------------------------------------------------------------------- */
 
 function getApiUrl(): string {
-  const fromConfig = typeof window !== 'undefined' && window.__VITE_API_URL__;
-  const fromEnv = import.meta.env.VITE_API_URL;
-  const url = fromConfig || fromEnv || '/api/v1';
-  if (typeof window === 'undefined') return url;
-  const isPrivateOrLocal = (u: string) => {
-    try {
-      const h = new URL(u, 'http://localhost').hostname;
-      return (
-        h === 'localhost' ||
-        h === '127.0.0.1' ||
-        h.startsWith('172.') ||
-        h.startsWith('10.') ||
-        h.startsWith('192.168.')
-      );
-    } catch {
-      return false;
-    }
-  };
+  if (typeof window === 'undefined') {
+    return import.meta.env.VITE_API_URL || '/api/v1';
+  }
   const pageHost = window.location.hostname;
-  const pageIsPublic =
-    pageHost !== 'localhost' &&
-    pageHost !== '127.0.0.1' &&
-    !pageHost.startsWith('172.') &&
-    !pageHost.startsWith('10.') &&
-    !pageHost.startsWith('192.168.');
-  if (pageIsPublic && isPrivateOrLocal(url)) {
+  const isLocalOrPrivate =
+    pageHost === 'localhost' ||
+    pageHost === '127.0.0.1' ||
+    pageHost.startsWith('172.') ||
+    pageHost.startsWith('10.') ||
+    pageHost.startsWith('192.168.');
+  if (!isLocalOrPrivate) {
     return `${window.location.protocol}//${window.location.hostname}:4000/api/v1`;
   }
-  return url;
+  return (
+    (typeof window !== 'undefined' && window.__VITE_API_URL__) ||
+    import.meta.env.VITE_API_URL ||
+    '/api/v1'
+  );
 }
 
 const API_URL = getApiUrl();
