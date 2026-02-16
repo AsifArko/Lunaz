@@ -40,8 +40,11 @@ const TOKEN_KEY = 'lunaz_token';
 const REFRESH_TOKEN_KEY = 'lunaz_refresh_token';
 const USER_KEY = 'lunaz_user';
 
-// OAuth configuration
-const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+// OAuth configuration (runtime config.js or build-time env)
+const GOOGLE_CLIENT_ID =
+  (typeof window !== 'undefined' && window.__VITE_GOOGLE_CLIENT_ID__) ||
+  import.meta.env.VITE_GOOGLE_CLIENT_ID ||
+  '';
 const FACEBOOK_APP_ID = import.meta.env.VITE_FACEBOOK_APP_ID;
 
 export function AuthProvider({ children }: { children: ReactNode }) {
