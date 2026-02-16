@@ -1,8 +1,17 @@
 /**
- * API client — base URL from env; typed with @lunaz/types.
+ * API client — base URL from runtime config (config.js) or build-time env.
  */
 
-const API_URL = import.meta.env.VITE_API_URL ?? '/api/v1';
+declare global {
+  interface Window {
+    __VITE_API_URL__?: string;
+  }
+}
+
+export const API_URL =
+  (typeof window !== 'undefined' && window.__VITE_API_URL__) ||
+  import.meta.env.VITE_API_URL ||
+  '/api/v1';
 
 export async function api<T>(
   path: string,

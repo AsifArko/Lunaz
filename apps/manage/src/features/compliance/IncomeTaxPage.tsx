@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { API_URL } from '../../api/client';
 import { useAuth } from '../../context/AuthContext';
 
 interface TaxRecord {
@@ -182,7 +183,7 @@ export function IncomeTaxPage() {
       if (filter.taxType) params.append('taxType', filter.taxType);
       if (filter.paymentStatus) params.append('paymentStatus', filter.paymentStatus);
 
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/compliance/tax-records?${params}`, {
+      const res = await fetch(`${API_URL}/compliance/tax-records?${params}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (res.ok) {
@@ -199,7 +200,7 @@ export function IncomeTaxPage() {
 
   async function fetchSummary() {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/compliance/tax-records/summary`, {
+      const res = await fetch(`${API_URL}/compliance/tax-records/summary`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (res.ok) {

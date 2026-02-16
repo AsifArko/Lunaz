@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { API_URL } from '../../api/client';
 import { useAuth } from '../../context/AuthContext';
 
 interface Certificate {
@@ -172,7 +173,7 @@ export function CertificatesPage() {
       if (filter.status) params.append('status', filter.status);
       if (filter.expiringSoon) params.append('expiringSoon', 'true');
 
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/compliance/certificates?${params}`, {
+      const res = await fetch(`${API_URL}/compliance/certificates?${params}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (res.ok) {
