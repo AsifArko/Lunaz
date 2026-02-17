@@ -11,9 +11,16 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "baseUrl": ".",
-    "paths": { "@/*": ["src/*"] }
+    "paths": {
+      "@/*": ["src/*"],
+      "@lunaz/types": ["../../types"]
+    }
   },
   "include": ["src"],
-  "references": [{ "path": "./tsconfig.node.json" }],
+  "references": [
+    {
+      "path": "./tsconfig.node.json"
+    }
+  ],
   "types": ["vite/client"]
 }

@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
-import { OrderStatus, PaymentStatus } from '@lunaz/types';
-import { UserRole } from '@lunaz/types';
+import { OrderStatus, PaymentStatus, UserRole } from '@lunaz/types';
 import { OrderModel } from './orders.model.js';
 import { CartModel } from '../cart/cart.model.js';
 import { ProductModel } from '../products/products.model.js';

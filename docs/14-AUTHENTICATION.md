@@ -8,20 +8,20 @@ This document describes the current state of authentication, identified gaps, an
 
 ### 1.1 Backend
 
-| Component                           | Status          | Notes                                                                                            |
-| ----------------------------------- | --------------- | ------------------------------------------------------------------------------------------------ |
-| **POST /auth/register**             | ✅ Implemented  | Email, password, name, phone; returns JWT only.                                                  |
-| **POST /auth/login**                | ✅ Implemented  | Returns single JWT; no refresh token.                                                            |
-| **GET /auth/me**                    | ✅ Implemented  | Protected; returns current user from JWT.                                                        |
-| **POST /auth/forgot-password**      | ✅ Implemented  | Token-based reset flow.                                                                          |
-| **POST /auth/reset-password**       | ✅ Implemented  | Consumes reset token.                                                                            |
-| **POST /auth/validate-reset-token** | ✅ Implemented  | Validates without consuming.                                                                     |
-| **POST /auth/oauth/google**         | ❌ **Missing**  | Frontend calls it; backend has no route → 404.                                                   |
-| **POST /auth/oauth/facebook**       | ❌ **Missing**  | Same as Google.                                                                                  |
-| **POST /auth/refresh**              | ❌ **Missing**  | No refresh token flow; users rely on single long-lived JWT.                                      |
-| **JWT**                             | ✅ Single token | `lib/jwt.ts`: sign/verify; expiry from `JWT_EXPIRES_IN` (e.g. 7d).                               |
-| **Auth middleware**                 | ✅              | Verifies Bearer token; 401 on missing/invalid/expired.                                           |
-| **User model**                      | ⚠️ Partial      | `passwordHash` required; no OAuth provider IDs; no session/schema for “sessions” or “auth logs”. |
+| Component                           | Status       | Notes                                                                                            |
+| ----------------------------------- | ------------ | ------------------------------------------------------------------------------------------------ |
+| **POST /auth/register**             | Implemented  | Email, password, name, phone; returns JWT only.                                                  |
+| **POST /auth/login**                | Implemented  | Returns single JWT; no refresh token.                                                            |
+| **GET /auth/me**                    | Implemented  | Protected; returns current user from JWT.                                                        |
+| **POST /auth/forgot-password**      | Implemented  | Token-based reset flow.                                                                          |
+| **POST /auth/reset-password**       | Implemented  | Consumes reset token.                                                                            |
+| **POST /auth/validate-reset-token** | Implemented  | Validates without consuming.                                                                     |
+| **POST /auth/oauth/google**         | **Missing**  | Frontend calls it; backend has no route → 404.                                                   |
+| **POST /auth/oauth/facebook**       | **Missing**  | Same as Google.                                                                                  |
+| **POST /auth/refresh**              | **Missing**  | No refresh token flow; users rely on single long-lived JWT.                                      |
+| **JWT**                             | Single token | `lib/jwt.ts`: sign/verify; expiry from `JWT_EXPIRES_IN` (e.g. 7d).                               |
+| **Auth middleware**                 | Yes          | Verifies Bearer token; 401 on missing/invalid/expired.                                           |
+| **User model**                      | Partial      | `passwordHash` required; no OAuth provider IDs; no session/schema for “sessions” or “auth logs”. |
 
 **User model (current):**
 
@@ -34,14 +34,14 @@ This document describes the current state of authentication, identified gaps, an
 
 ### 1.2 Frontend (Web App)
 
-| Component              | Status | Notes                                                                                                                                                               |
-| ---------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Login / Register**   | ✅     | Email/password; token and user stored in `localStorage`.                                                                                                            |
-| **OAuth UI**           | ✅     | Google (One Tap / redirect) and Facebook buttons and flows.                                                                                                         |
-| **OAuth backend call** | ⚠️     | Calls `/auth/oauth/{google,facebook}` with credential; backend does not implement these → fails.                                                                    |
-| **Token storage**      | ✅     | `lunaz_token`, `lunaz_user` in localStorage.                                                                                                                        |
-| **API client**         | ⚠️     | No interceptor. Each call that needs auth receives `token` explicitly (e.g. `api(path, { token })`). No automatic attachment of token, no 401 handling, no refresh. |
-| **Token refresh**      | ❌     | Not implemented; when JWT expires user is logged out.                                                                                                               |
+| Component              | Status  | Notes                                                                                                                                                               |
+| ---------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Login / Register**   | Yes     | Email/password; token and user stored in `localStorage`.                                                                                                            |
+| **OAuth UI**           | Yes     | Google (One Tap / redirect) and Facebook buttons and flows.                                                                                                         |
+| **OAuth backend call** | Partial | Calls `/auth/oauth/{google,facebook}` with credential; backend does not implement these -> fails.                                                                   |
+| **Token storage**      | Yes     | `lunaz_token`, `lunaz_user` in localStorage.                                                                                                                        |
+| **API client**         | Partial | No interceptor. Each call that needs auth receives `token` explicitly (e.g. `api(path, { token })`). No automatic attachment of token, no 401 handling, no refresh. |
+| **Token refresh**      | No      | Not implemented; when JWT expires user is logged out.                                                                                                               |
 
 **AuthContext:** Provides `login`, `register`, `loginWithGoogle`, `loginWithFacebook`, `logout`, and state. OAuth handlers call non-existent backend routes.
 

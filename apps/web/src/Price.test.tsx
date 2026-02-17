@@ -1,7 +1,7 @@
 /// <reference types="@testing-library/jest-dom/vitest" />
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { Price, getProductPrice } from '@lunaz/ui';
+import { Price, getProductPrice } from '@/ui';
 import type { Product } from '@lunaz/types';
 
 describe('Price', () => {

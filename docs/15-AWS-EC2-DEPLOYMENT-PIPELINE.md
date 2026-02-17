@@ -31,7 +31,7 @@ This document describes the complete GitHub Actions pipeline, build tagging, cod
 - **Single source of truth:** All changes flow via Pull Requests to `master`.
 - **Automated quality gates:** ESLint, Prettier, and pre-commit hooks enforce consistency.
 - **Build on merge:** When a PR is merged to `master`, the pipeline builds, tags, and deploys.
-- **Traceability:** Every deployment has a unique build tag (e.g. `build-abc1234`).
+- **Traceability:** Every deployment has a unique release tag (e.g. `v2026.02.17-abc1234`).
 - **EC2-native:** Deploy to a single EC2 instance (or multiple) using Docker Compose.
 - **No route hacks:** Web, Backend, and Manage run on distinct ports (3000, 4000, 3001).
 
@@ -84,10 +84,10 @@ master (protected)
   │
   └── feature/*  (PR → master)
   └── fix/*      (PR → master)
-  └── chore/*    (PR → master)
+  └── task/*     (PR → master)
 ```
 
-- **All work** is done in feature/fix/chore branches.
+- **All work** is done in feature/fix/task branches.
 - **All merges** go to `master` via Pull Request.
 - **No `staging` branch** in this simplified model (optional: add later).
 - **No direct pushes** to `master`; branch protection enforces PR + CI pass.
@@ -195,7 +195,7 @@ npx husky add .husky/pre-commit "npm run lint && npm run format:check"
 
 **Triggers:**
 
-- `push` to `master`, `feature/*`, `fix/*`, `chore/*`
+- `push` to `master`, `feature/*`, `fix/*`, `task/*`
 - `pull_request` to `master`
 
 **Jobs (in order):**
@@ -216,7 +216,7 @@ npx husky add .husky/pre-commit "npm run lint && npm run format:check"
 **Jobs:**
 
 1. **build** — Build Docker images, push to GHCR with build tag
-2. **tag** — Create Git tag `build-<short-sha>` (e.g. `build-abc1234`)
+2. **tag** — Create Git tag `v<YYYY.MM.DD>-<short-sha>` (e.g. `v2026.02.17-abc1234`), GitHub Release, and Docker images use same tag
 3. **deploy** — SSH to EC2, pull images, run `docker compose up`
 4. **health** — Verify `/health` and frontend endpoints
 5. **rollback** — On failure, revert to previous image (optional)
@@ -232,27 +232,27 @@ npx husky add .husky/pre-commit "npm run lint && npm run format:check"
 
 ### 6.1 Tag Format
 
-| Tag Type   | Example         | When Created                   |
-| ---------- | --------------- | ------------------------------ |
-| Build tag  | `build-abc1234` | On merge to master             |
-| Docker tag | `abc1234`       | Same as build (short SHA)      |
-| Latest     | `latest`        | Latest successful master build |
+| Tag Type    | Example               | When Created                                     |
+| ----------- | --------------------- | ------------------------------------------------ |
+| Release tag | `v2026.02.17-abc1234` | Same for Git, Docker, GitHub Release, deployment |
+| Docker tag  | `v2026.02.17-abc1234` | Same as release tag                              |
+| Latest      | `latest`              | Latest successful master build                   |
 
 ### 6.2 Tag Creation
 
 After a successful merge to `master`:
 
 1. CI runs and passes
-2. Docker images are built and pushed to `ghcr.io/<org>/lunaz/<app>:<short-sha>`
-3. Git tag `build-<short-sha>` is created and pushed
-4. Deploy workflow uses `<short-sha>` to pull the correct images
+2. Docker images are built and pushed to `ghcr.io/<org>/lunaz/<app>:<release-tag>`
+3. Git tag `v<YYYY.MM.DD>-<short-sha>` is created, pushed, and a GitHub Release is created; Docker images and deployment use the same tag
+4. Deploy workflow resolves the tag for the commit and pulls images with that tag
 
 ### 6.3 Image Naming (GHCR)
 
 ```
-ghcr.io/<github-org>/lunaz/backend:<short-sha>
-ghcr.io/<github-org>/lunaz/web:<short-sha>
-ghcr.io/<github-org>/lunaz/manage:<short-sha>
+ghcr.io/<github-org>/lunaz/backend:<release-tag>
+ghcr.io/<github-org>/lunaz/web:<release-tag>
+ghcr.io/<github-org>/lunaz/nginx:<release-tag>
 ```
 
 ---
@@ -329,9 +329,9 @@ The EC2 instance must authenticate to GHCR to pull private images:
 
 1. Developer merges PR to `master`
 2. CI runs (lint, test, build)
-3. Docker job builds and pushes images to GHCR with tag `<short-sha>`
+3. Docker job builds and pushes images to GHCR with tag `<release-tag>`
 4. Deploy workflow triggers
-5. Workflow SSHs to EC2, sets `TAG=<short-sha>`, runs:
+5. Workflow SSHs to EC2, sets `TAG=<release-tag>`, runs:
    ```bash
    cd /opt/lunaz
    docker compose -f docker-compose.ec2.yml pull
@@ -462,8 +462,8 @@ When building Web and Manage images in CI, pass:
 
 1. [ ] Simplify `ci.yml` triggers to PR/push to `master` only (remove staging if desired)
 2. [ ] Ensure Docker job runs only on `master` after merge
-3. [ ] Add build tag creation step (Git tag `build-<short-sha>`)
-4. [ ] Use GHCR image names: `ghcr.io/<org>/lunaz/<app>:<short-sha>`
+3. [ ] Add release tag creation step (Git tag `v<YYYY.MM.DD>-<short-sha>` + GitHub Release + Docker)
+4. [ ] Use GHCR image names: `ghcr.io/<org>/lunaz/<app>:<release-tag>`
 5. [ ] Pass `VITE_API_URL` as build arg when building Web/Manage images in CI
 
 ### Phase 3: EC2 Deployment Workflow
@@ -494,14 +494,14 @@ When building Web and Manage images in CI, pass:
 
 ## Summary
 
-| Component        | Implementation                              |
-| ---------------- | ------------------------------------------- |
-| **Branch model** | PR → master only                            |
-| **Build tag**    | `build-<short-sha>` on merge to master      |
-| **Docker**       | GHCR, tag = short SHA                       |
-| **Deploy**       | SSH to EC2, `docker compose pull` + `up -d` |
-| **Ports**        | Web 3000, Backend 4000, Manage 3001         |
-| **Quality**      | ESLint, Prettier, Husky pre-commit          |
-| **Secrets**      | GitHub Secrets + EC2 `.env`                 |
+| Component        | Implementation                                                                    |
+| ---------------- | --------------------------------------------------------------------------------- |
+| **Branch model** | PR → master only                                                                  |
+| **Release tag**  | `v<YYYY.MM.DD>-<short-sha>` — unified for Git, Docker, GitHub Release, deployment |
+| **Docker**       | GHCR, tag = short SHA                                                             |
+| **Deploy**       | SSH to EC2, `docker compose pull` + `up -d`                                       |
+| **Ports**        | Web 3000, Backend 4000, Manage 3001                                               |
+| **Quality**      | ESLint, Prettier, Husky pre-commit                                                |
+| **Secrets**      | GitHub Secrets + EC2 `.env`                                                       |
 
 This document should be followed in order during implementation. Each phase builds on the previous one.

@@ -1,5 +1,5 @@
 import type { BankAccount } from '@lunaz/types';
-import { Card, Price } from '@lunaz/ui';
+import { Card, Price } from '@/ui';
 
 interface BankTransferDetailsProps {
   bankDetails: BankAccount[];

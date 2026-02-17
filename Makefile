@@ -5,7 +5,7 @@
 # Usage: make <target>
 # ============================================================================
 
-.PHONY: help install dev build clean docker-build docker-up docker-down docker-logs docker-clean seed-admin seed-products seed-data seed-all lint format typecheck test ci security-scan
+.PHONY: help install dev build clean docker-build docker-up docker-down docker-logs docker-clean seed-admin seed-products seed-data seed-all lint format typecheck test ci
 
 # Default target
 help:
@@ -13,10 +13,9 @@ help:
 	@echo ""
 	@echo "  Development:"
 	@echo "    make install     Install all dependencies"
-	@echo "    make dev         Start development servers (backend + web + manage)"
+	@echo "    make dev         Start development servers (backend + web)"
 	@echo "    make dev-backend Start backend development server"
-	@echo "    make dev-web     Start web development server"
-	@echo "    make dev-manage  Start manage development server"
+	@echo "    make dev-web     Start web development server (includes /manage)"
 	@echo "    make build       Build all packages and apps"
 	@echo "    make clean       Remove node_modules and dist folders"
 	@echo ""
@@ -27,7 +26,6 @@ help:
 	@echo "    make typecheck   Run TypeScript type checking"
 	@echo "    make test        Run all tests"
 	@echo "    make ci          Run full CI pipeline locally"
-	@echo "    make security-scan Run security scans"
 	@echo ""
 	@echo "  Database Seeding:"
 	@echo "    make seed-admin     Create an admin user"
@@ -72,18 +70,13 @@ dev-backend:
 dev-web:
 	npm run dev:web
 
-dev-manage:
-	npm run dev:manage
-
 build:
 	npm run build
 
 clean:
 	rm -rf node_modules
 	rm -rf apps/*/node_modules
-	rm -rf packages/*/node_modules
 	rm -rf apps/*/dist
-	rm -rf packages/*/dist
 
 # ─────────────────────────────────────────────────────────────────────────────
 # CI/CD
@@ -129,23 +122,13 @@ ci:
 	@echo "Step 4/4: Building..."
 	npm run build
 	@echo ""
-	@echo "✓ CI pipeline completed successfully!"
-
-# Run security scans
-security-scan:
-	@echo "Running security scans..."
-	npm audit --audit-level=high || true
-	@echo ""
-	@echo "Scanning for secrets..."
-	npx secretlint "**/*" || true
-	@echo ""
-	@echo "✓ Security scan completed!"
+	@echo "CI pipeline completed successfully!"
 
 # Setup husky pre-commit hooks
 setup-hooks:
 	npm run prepare
 	npx husky add .husky/pre-commit "npm run lint && npm run format:check"
-	@echo "✓ Git hooks configured!"
+	@echo "Git hooks configured!"
 
 # ─────────────────────────────────────────────────────────────────────────────
 # Database / Seeding
@@ -229,9 +212,6 @@ docker-logs-backend:
 docker-logs-web:
 	docker compose logs -f web
 
-docker-logs-manage:
-	docker compose logs -f manage
-
 docker-restart:
 	docker compose restart
 
@@ -257,7 +237,7 @@ prod-down:
 # EC2 deployment (run on EC2 server after pulling)
 ec2-deploy:
 	@if [ -z "$$TAG" ] || [ -z "$$REGISTRY_IMAGE" ]; then \
-		echo "Usage: TAG=abc1234 REGISTRY_IMAGE=ghcr.io/owner/repo make ec2-deploy"; \
+		echo "Usage: TAG=v2026.02.17-abc1234 REGISTRY_IMAGE=ghcr.io/owner/repo make ec2-deploy"; \
 		exit 1; \
 	fi
 	docker compose -f docker-compose.ec2.yml pull

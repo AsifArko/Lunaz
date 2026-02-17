@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import type { Product, Category, PaginatedResponse } from '@lunaz/types';
-import { Container, ProductCard, ProductCardSkeleton, type ProductCardProduct } from '@lunaz/ui';
+import { Container, ProductCard, ProductCardSkeleton, type ProductCardProduct } from '@/ui';
 import { api } from '../../api/client';
 import { useCart } from '../../context/CartContext';
 import { useToast } from '../../context/ToastContext';

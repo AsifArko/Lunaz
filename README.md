@@ -1,15 +1,13 @@
 # Lunaz
 
-Lifestyle and home décor e-commerce — Web (customer storefront), Manage (admin CMS), and Backend (Node.js API). Monorepo with shared TypeScript types and React UI.
+Lifestyle and home décor e-commerce — Web (customer storefront + admin at /manage) and Backend (Node.js API). Monorepo with shared TypeScript types and React UI.
 
 ## Structure
 
-- **apps/web** — Customer-facing React app (Vite + React + TypeScript)
-- **apps/manage** — Admin React app (Vite + React + TypeScript)
+- **apps/web** — Customer-facing React app + Admin dashboard at /manage (Vite + React + TypeScript). UI components live in `apps/web/src/ui`.
 - **apps/backend** — Node.js API (Express + MongoDB)
-- **packages/types** — Shared types, enums, API contracts (`@lunaz/types`)
-- **packages/ui** — Shared React components (`@lunaz/ui`)
-- **packages/config** — Env validation (`@lunaz/config`)
+- **types/** — Shared types, enums, API contracts (plain folder, imported via path aliases)
+- **config/** — Env validation (plain folder, uses zod from backend)
 - **lunaz-doc** — Specification and architecture docs
 
 ## Prerequisites
@@ -20,7 +18,7 @@ Lifestyle and home décor e-commerce — Web (customer storefront), Manage (admi
 ## Running locally (deploy / testing)
 
 - **Full stack in one command:** `docker compose up --build` then `make docker-seed-admin`. See [docs/LOCAL-DEPLOYMENT.md](docs/LOCAL-DEPLOYMENT.md).
-- **DB in Docker, apps with npm:** `make docker-up-db`, then in three terminals run `npm run dev:backend`, `npm run dev:web`, `npm run dev:manage` (same doc).
+- **DB in Docker, apps with npm:** `make docker-up-db`, then run `npm run dev:backend` and `npm run dev:web` (manage at http://localhost:3000/manage).
 
 ## Quick start (local)
 
@@ -35,10 +33,8 @@ Lifestyle and home décor e-commerce — Web (customer storefront), Manage (admi
 
    ```bash
    npm install
-   npm run build --workspace=@lunaz/types
-   npm run build --workspace=@lunaz/config
-   npm run build --workspace=@lunaz/ui
-   npm run build --workspace=backend
+   npm install
+   npm run build
    ```
 
 3. Run backend (needs MongoDB):
@@ -61,11 +57,10 @@ Lifestyle and home décor e-commerce — Web (customer storefront), Manage (admi
    npm run seed:admin
    ```
 
-5. In other terminals, run Web and Manage:
+5. In another terminal, run Web (includes admin at /manage):
 
    ```bash
-   npm run dev:web    # http://localhost:3000
-   npm run dev:manage # http://localhost:3001
+   npm run dev:web    # http://localhost:3000 (manage at /manage)
    ```
 
 - Backend: http://localhost:4000
@@ -79,8 +74,7 @@ docker compose up --build
 ```
 
 - Backend: http://localhost:4000
-- Web: http://localhost:3000
-- Manage: http://localhost:3001
+- Web: http://localhost:3000 (manage at /manage)
 - MongoDB: localhost:27017
 
 ## Scripts
@@ -90,12 +84,11 @@ docker compose up --build
 | `npm run build`       | Build all workspaces                     |
 | `npm run dev:backend` | Start backend dev server                 |
 | `npm run dev:web`     | Start Web dev server                     |
-| `npm run dev:manage`  | Start Manage dev server                  |
 | `npm run seed:admin`  | Create admin user (requires MONGODB_URI) |
 
 ## Admin Access
 
-The Manage app (`/manage`) is for administrators only. Admin users are created via the seed script, not through public registration.
+The admin dashboard at `/manage` is for administrators only. Admin users are created via the seed script, not through public registration.
 
 **Default admin credentials** (when using `npm run seed:admin`):
 

@@ -1,6 +1,6 @@
 import { useState, useEffect, type FormEvent } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { Spinner } from '@lunaz/ui';
+import { Spinner } from '@/ui';
 import { api } from '../../api/client';
 
 const CheckIcon = ({ active }: { active: boolean }) => (

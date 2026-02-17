@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { Spinner } from '@lunaz/ui';
+import { Spinner } from '@/ui';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { AuthBackground, PRESET_SUBTLE } from '../../components/AuthBackground';

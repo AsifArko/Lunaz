@@ -14,18 +14,18 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
-      '@lunaz/ui': path.resolve(__dirname, '../../packages/ui/src'),
-      '@lunaz/types': path.resolve(__dirname, '../../packages/types/src'),
+      '@/ui': path.resolve(__dirname, 'src/ui'),
+      '@lunaz/types': path.resolve(__dirname, '../../types'),
     },
   },
   optimizeDeps: {
     include: ['react', 'react-dom', 'react-router-dom'],
   },
   server: {
-    port: 3000,
+    port: Number(process.env.VITE_DEV_PORT) || 3000,
     proxy: {
       '/api': {
-        target: 'http://localhost:4000',
+        target: `http://localhost:${process.env.PORT || 4000}`,
         changeOrigin: true,
       },
     },

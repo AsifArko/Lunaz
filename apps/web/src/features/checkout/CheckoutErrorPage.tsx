@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Container, Card, Button } from '@lunaz/ui';
+import { Container, Card, Button } from '@/ui';
 
 export function CheckoutErrorPage() {
   return (

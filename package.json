@@ -5,9 +5,8 @@
   "description": "Lunaz lifestyle and home décor e-commerce",
   "scripts": {
     "build": "npm run build --workspaces --if-present",
-    "dev": "npm run dev --workspace=apps/backend",
+    "dev": "concurrently -n backend,web -c blue,magenta \"npm run dev:backend\" \"npm run dev:web\"",
     "dev:web": "npm run dev --workspace=apps/web",
-    "dev:manage": "npm run dev --workspace=apps/manage",
     "dev:backend": "npm run dev --workspace=apps/backend",
     "lint": "npm run lint --workspaces --if-present",
     "lint:fix": "npm run lint:fix --workspaces --if-present",
@@ -18,7 +17,7 @@
     "test:unit": "npm run test:unit --workspaces --if-present",
     "test:integration": "npm run test:integration --workspace=apps/backend --if-present",
     "test:e2e": "npm run test:e2e --if-present",
-    "clean": "rm -rf apps/*/dist apps/*/build packages/*/dist node_modules",
+    "clean": "rm -rf apps/*/dist apps/*/build node_modules",
     "seed:admin": "npm run seed:admin --workspace=apps/backend",
     "seed:products": "npm run seed:products --workspace=apps/backend",
     "seed:data": "npm run seed:data --workspace=apps/backend",
@@ -27,13 +26,13 @@
     "prepare": "husky || true"
   },
   "workspaces": [
-    "apps/*",
-    "packages/*"
+    "apps/*"
   ],
   "engines": {
     "node": ">=20"
   },
   "devDependencies": {
+    "concurrently": "^9.1.0",
     "@secretlint/secretlint-rule-aws": "^8.0.0",
     "@secretlint/secretlint-rule-basicauth": "^8.0.0",
     "@secretlint/secretlint-rule-gcp": "^8.0.0",

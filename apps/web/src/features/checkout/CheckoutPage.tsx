@@ -9,7 +9,7 @@ import type {
   BankAccount,
   InitiatePaymentResponse,
 } from '@lunaz/types';
-import { Container, Card, Button, Input, Price } from '@lunaz/ui';
+import { Container, Card, Button, Input, Price } from '@/ui';
 import { api } from '../../api/client';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';

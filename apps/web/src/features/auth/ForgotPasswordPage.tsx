@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
-import { Spinner } from '@lunaz/ui';
+import { Spinner } from '@/ui';
 import { api } from '../../api/client';
 
 export function ForgotPasswordPage() {

@@ -1,20 +1,4 @@
-# ============================================================================
-# Lunaz — EC2 Production (Image-only, no build)
-# ============================================================================
-# Uses pre-built images from GHCR. Set TAG and REGISTRY_IMAGE before running.
-# Usage: TAG=abc1234 REGISTRY_IMAGE=ghcr.io/owner/repo docker compose -f docker-compose.ec2.yml up -d
-#
-# HTTPS: Nginx terminates SSL (self-signed cert). Access:
-#   - Web:    https://YOUR_IP/
-#   - Manage: https://YOUR_IP:3001/
-#   - API:    https://YOUR_IP/api/v1
-# Browsers will show a certificate warning (expected for self-signed).
-# ============================================================================
-
 services:
-  # ─────────────────────────────────────────────────────────────────────────────
-  # Nginx (HTTPS reverse proxy — single entry point)
-  # ─────────────────────────────────────────────────────────────────────────────
   nginx:
     image: ${REGISTRY_IMAGE}/nginx:${TAG}
     container_name: lunaz-nginx
@@ -22,16 +6,10 @@ services:
     ports:
       - "80:80"
       - "443:443"
-      - "3001:3001"
-    build:
-      context: infra/nginx
-      dockerfile: Dockerfile
     depends_on:
       backend:
         condition: service_healthy
       web:
-        condition: service_started
-      manage:
         condition: service_started
     logging:
       driver: "json-file"
@@ -41,9 +19,6 @@ services:
     networks:
       - lunaz-network
 
-  # ─────────────────────────────────────────────────────────────────────────────
-  # Backend (Express.js API) — internal only, no port exposure
-  # ─────────────────────────────────────────────────────────────────────────────
   backend:
     image: ${REGISTRY_IMAGE}/backend:${TAG}
     container_name: lunaz-backend
@@ -61,7 +36,6 @@ services:
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       FRONTEND_WEB_URL: ${FRONTEND_WEB_URL}
-      FRONTEND_MANAGE_URL: ${FRONTEND_MANAGE_URL}
       API_URL: ${API_URL}
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
@@ -82,9 +56,6 @@ services:
     networks:
       - lunaz-network
 
-  # ─────────────────────────────────────────────────────────────────────────────
-  # Web (Customer-facing React app) — internal only, Nginx proxies
-  # ─────────────────────────────────────────────────────────────────────────────
   web:
     image: ${REGISTRY_IMAGE}/web:${TAG}
     container_name: lunaz-web
@@ -94,28 +65,6 @@ services:
     environment:
       VITE_API_URL: ${API_URL}/api/v1
       VITE_GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
-    depends_on:
-      backend:
-        condition: service_healthy
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-    networks:
-      - lunaz-network
-
-  # ─────────────────────────────────────────────────────────────────────────────
-  # Manage (Admin dashboard) — internal only, Nginx proxies on 3001
-  # ─────────────────────────────────────────────────────────────────────────────
-  manage:
-    image: ${REGISTRY_IMAGE}/manage:${TAG}
-    container_name: lunaz-manage
-    restart: unless-stopped
-    env_file:
-      - .env
-    environment:
-      VITE_API_URL: ${API_URL}/api/v1
     depends_on:
       backend:
         condition: service_healthy

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Container } from '@lunaz/ui';
+import { Container } from '@/ui';
 
 function SocialIcon({
   href,

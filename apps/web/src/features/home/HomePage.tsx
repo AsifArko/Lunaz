@@ -8,7 +8,7 @@ import {
   ProductCard,
   ProductCardSkeleton,
   type ProductCardProduct,
-} from '@lunaz/ui';
+} from '@/ui';
 import { api } from '../../api/client';
 import { Skeleton } from '../../components/Skeleton';
 import { HeroAnimation } from '../../components/HeroAnimation';

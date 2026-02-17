@@ -49,7 +49,7 @@ const UserModel = mongoose.model('User', userSchema);
 async function seedAdmin() {
   const mongoUri = process.env.MONGODB_URI;
   if (!mongoUri) {
-    console.error('❌ MONGODB_URI environment variable is required');
+    console.error('MONGODB_URI environment variable is required');
     process.exit(1);
   }
 
@@ -58,9 +58,9 @@ async function seedAdmin() {
   const password = process.env.ADMIN_PASSWORD || 'r3@d3n15710n';
   const name = process.env.ADMIN_NAME || 'Sajia Afrin';
 
-  console.log('🔌 Connecting to MongoDB...');
+  console.log('Connecting to MongoDB...');
   await mongoose.connect(mongoUri);
-  console.log('✅ Connected to MongoDB');
+  console.log('Connected to MongoDB');
 
   try {
     // Check if admin already exists
@@ -68,13 +68,13 @@ async function seedAdmin() {
 
     if (existing) {
       if (existing.role === UserRole.ADMIN) {
-        console.log(`ℹ️  Admin user already exists: ${email}`);
+        console.log(`Admin user already exists: ${email}`);
         console.log('   To create a different admin, set ADMIN_EMAIL env var');
       } else {
         // Upgrade existing user to admin
         existing.role = UserRole.ADMIN;
         await existing.save();
-        console.log(`✅ Upgraded existing user to admin: ${email}`);
+        console.log(`Upgraded existing user to admin: ${email}`);
       }
     } else {
       // Create new admin user
@@ -88,27 +88,27 @@ async function seedAdmin() {
       });
 
       console.log('');
-      console.log('✅ Admin user created successfully!');
+      console.log('Admin user created successfully!');
       console.log('');
       console.log('   Email:    ', email);
       console.log('   Password: ', password);
       console.log('   Name:     ', name);
       console.log('');
-      console.log('⚠️  Change the password after first login in production!');
+      console.log('Change the password after first login in production!');
     }
   } catch (err) {
     if ((err as { code?: number }).code === 11000) {
-      console.log(`ℹ️  User with email ${email} already exists`);
+      console.log(`User with email ${email} already exists`);
     } else {
       throw err;
     }
   } finally {
     await mongoose.disconnect();
-    console.log('🔌 Disconnected from MongoDB');
+    console.log('Disconnected from MongoDB');
   }
 }
 
 seedAdmin().catch((err) => {
-  console.error('❌ Error seeding admin:', err);
+  console.error('Error seeding admin:', err);
   process.exit(1);
 });
