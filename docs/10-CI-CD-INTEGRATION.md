@@ -54,7 +54,7 @@ For `master` and `staging` branches:
 | Event        | Branches/Tags                                                     | Actions                                   |
 | ------------ | ----------------------------------------------------------------- | ----------------------------------------- |
 | Push         | `master`, `staging`, `feature/*`, `fix/*`, `patch/*`, `release/*` | Lint, Test, Build                         |
-| Pull Request | `master`, `staging`                                               | Lint, Test, Build, Security Scan          |
+| Pull Request | `master`, `staging`                                               | Lint, Test, Build                         |
 | Tag          | `v*`                                                              | Full Release (CI, Docker, GitHub Release) |
 | Manual       | `release.yml` workflow dispatch                                   | Create versioned release                  |
 
@@ -65,14 +65,14 @@ For `master` and `staging` branches:
 │                           CI Pipeline                                │
 ├─────────────────────────────────────────────────────────────────────┤
 │                                                                       │
-│  ┌─────────┐    ┌─────────┐    ┌─────────┐    ┌─────────────────┐   │
-│  │  Lint   │ →  │  Test   │ →  │  Build  │ →  │ Security Scan   │   │
-│  └─────────┘    └─────────┘    └─────────┘    └─────────────────┘   │
-│       │              │              │                  │              │
-│       ▼              ▼              ▼                  ▼              │
-│  - ESLint       - Unit Tests   - TypeScript     - Dependency audit   │
-│  - Prettier     - Integration  - Docker images  - Secret detection   │
-│  - TypeScript     Tests                         - SAST (optional)    │
+│  ┌─────────┐    ┌─────────┐    ┌─────────┐   │
+│  │  Lint   │ →  │  Test   │ →  │  Build  │   │
+│  └─────────┘    └─────────┘    └─────────┘   │
+│       │              │              │         │
+│       ▼              ▼              ▼         │
+│  - ESLint       - Unit Tests   - TypeScript   │
+│  - Prettier     - Integration  - Docker images│
+│  - TypeScript     Tests                       │
 │                                                                       │
 └─────────────────────────────────────────────────────────────────────┘
 ```
@@ -133,23 +133,6 @@ build:
     - npm run build --workspace=web
     - npm run build --workspace=manage
 ```
-
-### 3.6 Security Scan Stage
-
-```yaml
-security:
-  steps:
-    - npm audit --audit-level=high # Dependency vulnerabilities
-    - npx secretlint "**/*" # Secret detection in code
-    - trivy image <image> # Container vulnerability scan
-```
-
-**Security Checks:**
-
-- **Dependency audit** — `npm audit` for known vulnerabilities.
-- **Secret detection** — Scan for API keys, tokens, passwords in code.
-- **Container scanning** — Trivy or similar for Docker image vulnerabilities.
-- **SAST** — Optional static analysis (SonarQube, Semgrep).
 
 ## 4. CD Pipeline
 
@@ -246,8 +229,7 @@ Tag strategy:
 │   ├── ci.yml              # Lint, test, build on push/PR
 │   ├── deploy-staging.yml  # Deploy to staging
 │   ├── deploy-prod.yml     # Deploy to production
-│   ├── release.yml         # Version releases and tagging
-│   └── security.yml        # Security scans (scheduled)
+│   └── release.yml         # Version releases and tagging
 ├── actions/
 │   └── docker-build/       # Reusable action for building images
 └── CODEOWNERS              # Required reviewers per path
@@ -424,7 +406,7 @@ jobs:
         with:
           payload: |
             {
-              "text": "⚠️ Staging deployment failed for ${{ github.sha }}"
+              "text": "Staging deployment failed for ${{ github.sha }}"
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
@@ -455,7 +437,7 @@ env:
 jobs:
   approval:
     runs-on: ubuntu-latest
-    environment: production-approval
+    environment: development
     steps:
       - run: echo "Deployment approved"
 
@@ -528,7 +510,7 @@ jobs:
         with:
           payload: |
             {
-              "text": "✅ Production deployment successful: ${{ steps.sha.outputs.sha }}"
+              "text": "Production deployment successful: ${{ steps.sha.outputs.sha }}"
             }
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
@@ -608,67 +590,6 @@ jobs:
 - `v1` — Major version (latest minor)
 - `latest` — Most recent stable release
 
-### 5.6 Security Scan Workflow (`security.yml`)
-
-```yaml
-name: Security Scan
-
-on:
-  schedule:
-    - cron: '0 6 * * 1' # Weekly on Monday at 6 AM UTC
-  pull_request:
-    branches: [master]
-
-jobs:
-  dependency-audit:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-      - run: npm ci
-      - run: npm audit --audit-level=moderate
-        continue-on-error: true
-      - uses: actions/dependency-review-action@v4
-        if: github.event_name == 'pull_request'
-
-  secret-scan:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: trufflesecurity/trufflehog@main
-        with:
-          path: ./
-          extra_args: --only-verified
-
-  container-scan:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        app: [backend, web, manage]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: docker/build-push-action@v5
-        with:
-          context: .
-          file: apps/${{ matrix.app }}/Dockerfile
-          push: false
-          tags: lunaz/${{ matrix.app }}:scan
-          load: true
-      - uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: lunaz/${{ matrix.app }}:scan
-          format: sarif
-          output: trivy-${{ matrix.app }}.sarif
-      - uses: github/codeql-action/upload-sarif@v4
-        with:
-          sarif_file: trivy-${{ matrix.app }}.sarif
-```
-
 ## 6. Secrets Management
 
 ### 6.1 Secret Categories
@@ -709,7 +630,7 @@ Environment: production
   - AWS_ACCESS_KEY_ID
   - AWS_SECRET_ACCESS_KEY
 
-Environment: production-approval
+Environment: development
   - (No secrets, used for manual approval gate)
 ```
 
@@ -825,7 +746,7 @@ Create the following environments in GitHub Settings → Environments:
    - No protection rules (auto-deploy on merge)
    - Environment secrets for staging infrastructure
 
-2. **production-approval**
+2. **development**
    - Required reviewers: DevOps team or designated approvers
    - Wait timer: 0-60 minutes (optional)
 
@@ -939,7 +860,6 @@ docker compose -f docker-compose.prod.yml up
 - [ ] Implement lint job with ESLint and Prettier
 - [ ] Implement test job with MongoDB service
 - [ ] Implement build job for all workspaces
-- [ ] Add security scanning job
 - [ ] Configure artifact caching
 
 ### Phase 3: Docker and Registry
@@ -967,8 +887,7 @@ docker compose -f docker-compose.prod.yml up
 ## 13. Summary
 
 - **Branches:** `master` (production), `staging`, `feature/*` — all protected with required reviews.
-- **CI:** Lint → Test → Build → Security Scan on every push and PR.
+- **CI:** Lint → Test → Build on every push and PR.
 - **CD:** Auto-deploy to staging on merge; manual approval for production.
 - **Secrets:** GitHub Secrets per environment; never in code; rotate regularly.
 - **Rollback:** Automatic on health check failure; manual via workflow dispatch.
-- **Security:** Secret detection pre-commit, dependency audits, container scanning.

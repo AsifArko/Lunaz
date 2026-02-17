@@ -14,8 +14,8 @@ on:
     branches: [master]
   workflow_dispatch:
     inputs:
-      rollback_sha:
-        description: 'Short SHA to rollback to (e.g. abc1234, leave empty for latest)'
+      rollback_tag:
+        description: 'Tag to rollback to (e.g. v2026.02.17-cc0961d, leave empty for latest)'
         required: false
         type: string
 
@@ -43,17 +43,27 @@ jobs:
       - name: Determine deployment tag
         id: tag
         run: |
-          if [ -n "${{ github.event.inputs.rollback_sha }}" ]; then
-            echo "short_sha=${{ github.event.inputs.rollback_sha }}" >> $GITHUB_OUTPUT
-            echo "🔄 Rolling back to: ${{ github.event.inputs.rollback_sha }}"
+          if [ -n "${{ github.event.inputs.rollback_tag }}" ]; then
+            echo "tag=${{ github.event.inputs.rollback_tag }}" >> $GITHUB_OUTPUT
+            echo "Rolling back to: ${{ github.event.inputs.rollback_tag }}"
           elif [ "${{ github.event_name }}" == "workflow_run" ]; then
-            SHORT_SHA=$(echo ${{ github.event.workflow_run.head_sha }} | cut -c1-7)
-            echo "short_sha=$SHORT_SHA" >> $GITHUB_OUTPUT
-            echo "🚀 Deploying from CI: $SHORT_SHA"
+            git fetch --tags
+            DEPLOY_TAG=$(git describe --tags --exact-match ${{ github.event.workflow_run.head_sha }} 2>/dev/null || echo "")
+            if [ -z "$DEPLOY_TAG" ]; then
+              echo "::error::No release tag found for commit ${{ github.event.workflow_run.head_sha }}"
+              exit 1
+            fi
+            echo "tag=$DEPLOY_TAG" >> $GITHUB_OUTPUT
+            echo "Deploying from CI: $DEPLOY_TAG"
           else
-            SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-7)
-            echo "short_sha=$SHORT_SHA" >> $GITHUB_OUTPUT
-            echo "🚀 Deploying current commit: $SHORT_SHA"
+            git fetch --tags
+            DEPLOY_TAG=$(git describe --tags --exact-match ${{ github.sha }} 2>/dev/null || echo "")
+            if [ -z "$DEPLOY_TAG" ]; then
+              echo "::error::No release tag found for commit ${{ github.sha }}. Deploy only works for tagged commits."
+              exit 1
+            fi
+            echo "tag=$DEPLOY_TAG" >> $GITHUB_OUTPUT
+            echo "Deploying: $DEPLOY_TAG"
           fi
 
       - name: Setup EC2 directory
@@ -90,8 +100,8 @@ jobs:
               echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
             fi
 
-            # Set deployment variables
-            export TAG=${{ steps.tag.outputs.short_sha }}
+            # Set deployment variables (same tag as GitHub release and Docker images)
+            export TAG=${{ steps.tag.outputs.tag }}
             export REGISTRY_IMAGE=ghcr.io/${{ github.repository }}
 
             # Pull and deploy
@@ -101,7 +111,7 @@ jobs:
             # Cleanup old images
             docker system prune -f
 
-            echo "✓ Deployed build-${{ steps.tag.outputs.short_sha }}"
+            echo "Deployed ${{ steps.tag.outputs.tag }}"
 
       - name: Health check
         id: health
@@ -109,13 +119,13 @@ jobs:
           echo "Waiting for services to be healthy..."
           for i in $(seq 1 30); do
             if curl -sfk "${{ secrets.PROD_API_URL }}/health" > /dev/null; then
-              echo "✓ Backend health check passed"
+              echo "Backend health check passed"
               exit 0
             fi
             echo "Attempt $i/30 - Waiting..."
             sleep 10
           done
-          echo "✗ Health check failed after 5 minutes"
+          echo "Health check failed after 5 minutes"
           exit 1
 
       - name: Smoke tests
@@ -129,12 +139,12 @@ jobs:
             curl -sfk "${{ secrets.PROD_URL }}" -o /dev/null || exit 1
           fi
 
-          # Manage (if PROD_MANAGE_URL set)
-          if [ -n "${{ secrets.PROD_MANAGE_URL }}" ]; then
-            curl -sfk "${{ secrets.PROD_MANAGE_URL }}" -o /dev/null || exit 1
+          # Manage at /manage on web
+          if [ -n "${{ secrets.PROD_URL }}" ]; then
+            curl -sfk "${{ secrets.PROD_URL }}/manage" -o /dev/null || exit 1
           fi
 
-          echo "✓ Smoke tests passed"
+          echo "Smoke tests passed"
 
   # ─────────────────────────────────────────────────────────────────────────────
   # Rollback on failure
@@ -143,10 +153,10 @@ jobs:
     name: Rollback on Failure
     runs-on: ubuntu-latest
     needs: deploy
-    if: always() && needs.deploy.result == 'failure' && github.event.inputs.rollback_sha == ''
+    if: always() && needs.deploy.result == 'failure' && github.event.inputs.rollback_tag == ''
     environment: production
     steps:
-      - name: Get previous successful run
+      - name: Get previous successful run tag
         id: prev
         uses: actions/github-script@v7
         with:
@@ -161,11 +171,19 @@ jobs:
               per_page: 10
             });
             const prevRun = runs.data.workflow_runs.find(r => r.id !== currentRunId);
-            const shortSha = prevRun ? prevRun.head_sha.substring(0, 7) : '';
-            core.setOutput('short_sha', shortSha);
-            if (!shortSha) {
+            if (!prevRun) {
               core.setFailed('No previous successful deployment found');
             }
+            const { data: tags } = await github.rest.repos.listTags({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              per_page: 100
+            });
+            const tagForCommit = tags.find(t => t.commit?.sha === prevRun.head_sha);
+            if (!tagForCommit) {
+              core.setFailed(`No release tag found for previous commit ${prevRun.head_sha}`);
+            }
+            core.setOutput('tag', tagForCommit.name);
 
       - name: Rollback deployment
         uses: appleboy/ssh-action@v1
@@ -176,8 +194,8 @@ jobs:
           script: |
             set -e
             cd /opt/lunaz
-            export TAG=${{ steps.prev.outputs.short_sha }}
+            export TAG=${{ steps.prev.outputs.tag }}
             export REGISTRY_IMAGE=ghcr.io/${{ github.repository }}
             docker compose -f docker-compose.ec2.yml pull
             docker compose -f docker-compose.ec2.yml up -d --remove-orphans
-            echo "✓ Rolled back to ${{ steps.prev.outputs.short_sha }}"
+            echo "Rolled back to ${{ steps.prev.outputs.tag }}"

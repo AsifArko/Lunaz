@@ -471,16 +471,16 @@ const orderNotes = [
 // ============================================================================
 
 async function clearData() {
-  console.log('🗑️  Clearing existing customers, orders, and transactions...');
+  console.log('Clearing existing customers, orders, and transactions...');
   await TransactionModel.deleteMany({});
   await OrderModel.deleteMany({});
   // Only delete customer users, not admins
   await UserModel.deleteMany({ role: UserRole.CUSTOMER });
-  console.log('✅ Cleared existing data');
+  console.log('Cleared existing data');
 }
 
 async function seedCustomers(): Promise<mongoose.Types.ObjectId[]> {
-  console.log('\n👥 Seeding customers...');
+  console.log('\nSeeding customers...');
   const customerIds: mongoose.Types.ObjectId[] = [];
 
   for (const customer of customers) {
@@ -489,7 +489,7 @@ async function seedCustomers(): Promise<mongoose.Types.ObjectId[]> {
       email: customer.email.toLowerCase(),
     });
     if (existing) {
-      console.log(`   ⏭️  Skipping existing customer: ${customer.email}`);
+      console.log(`   Skipping existing customer: ${customer.email}`);
       customerIds.push(existing._id as mongoose.Types.ObjectId);
       continue;
     }
@@ -510,7 +510,7 @@ async function seedCustomers(): Promise<mongoose.Types.ObjectId[]> {
     });
 
     customerIds.push(user._id as mongoose.Types.ObjectId);
-    console.log(`   ✅ Created customer: ${customer.name} (${customer.email})`);
+    console.log(`   Created customer: ${customer.name} (${customer.email})`);
   }
 
   return customerIds;
@@ -534,7 +534,7 @@ interface ProductDoc {
 async function seedOrders(
   customerIds: mongoose.Types.ObjectId[]
 ): Promise<mongoose.Types.ObjectId[]> {
-  console.log('\n📦 Seeding orders...');
+  console.log('\nSeeding orders...');
   const orderIds: mongoose.Types.ObjectId[] = [];
 
   // Get all published products
@@ -543,11 +543,11 @@ async function seedOrders(
   }).lean()) as ProductDoc[];
 
   if (products.length === 0) {
-    console.log('   ⚠️  No published products found. Run seed:products first.');
+    console.log('   No published products found. Run seed:products first.');
     return orderIds;
   }
 
-  console.log(`   📋 Found ${products.length} published products`);
+  console.log(`   Found ${products.length} published products`);
 
   // Get customer data for addresses
   const customerDocs = await UserModel.find({
@@ -672,24 +672,24 @@ async function seedOrders(
 
     orderIds.push(order._id as mongoose.Types.ObjectId);
 
-    const statusEmoji =
+    const statusLabel =
       {
-        pending: '🟡',
-        confirmed: '🔵',
-        processing: '🟣',
-        shipped: '📦',
-        delivered: '✅',
-        cancelled: '❌',
-      }[status] || '⚪';
+        pending: '[P]',
+        confirmed: '[C]',
+        processing: '[X]',
+        shipped: '[S]',
+        delivered: '[D]',
+        cancelled: '[X]',
+      }[status] || '';
 
-    console.log(`   ${statusEmoji} Order ${order.orderNumber}: $${total.toFixed(2)} (${status})`);
+    console.log(`   ${statusLabel} Order ${order.orderNumber}: $${total.toFixed(2)} (${status})`);
   }
 
   return orderIds;
 }
 
 async function seedTransactions(orderIds: mongoose.Types.ObjectId[]): Promise<void> {
-  console.log('\n💳 Seeding transactions...');
+  console.log('\nSeeding transactions...');
 
   const orders = await OrderModel.find({ _id: { $in: orderIds } }).lean();
 
@@ -742,7 +742,7 @@ async function seedTransactions(orderIds: mongoose.Types.ObjectId[]): Promise<vo
   const totalTransactions = await TransactionModel.countDocuments({
     orderId: { $in: orderIds },
   });
-  console.log(`   ✅ Created ${totalTransactions} transactions`);
+  console.log(`   Created ${totalTransactions} transactions`);
 }
 
 // ============================================================================
@@ -752,20 +752,20 @@ async function seedTransactions(orderIds: mongoose.Types.ObjectId[]): Promise<vo
 async function main() {
   const mongoUri = process.env.MONGODB_URI;
   if (!mongoUri) {
-    console.error('❌ MONGODB_URI environment variable is required');
+    console.error('MONGODB_URI environment variable is required');
     process.exit(1);
   }
 
   const shouldClear = process.argv.includes('--clear');
 
-  console.log('🌱 Lunaz Data Seed Script');
+  console.log('Lunaz Data Seed Script');
   console.log('=========================\n');
   console.log('This script creates dummy customers, orders, and transactions.');
   console.log('Prerequisites: Run seed:products first.\n');
 
-  console.log('🔌 Connecting to MongoDB...');
+  console.log('Connecting to MongoDB...');
   await mongoose.connect(mongoUri);
-  console.log('✅ Connected to MongoDB');
+  console.log('Connected to MongoDB');
 
   try {
     if (shouldClear) {
@@ -780,7 +780,7 @@ async function main() {
     const existingTransactions = await TransactionModel.countDocuments();
 
     if (existingOrders > 0 || existingTransactions > 0) {
-      console.log(`\nℹ️  Found existing data:`);
+      console.log(`\nFound existing data:`);
       console.log(`   - ${existingCustomers} customers`);
       console.log(`   - ${existingOrders} orders`);
       console.log(`   - ${existingTransactions} transactions`);
@@ -811,7 +811,7 @@ async function main() {
     ]);
 
     console.log('\n=========================');
-    console.log('📊 Seeding Complete!');
+    console.log('Seeding Complete!');
     console.log('=========================');
     console.log(`   Customers:     ${totalCustomers}`);
     console.log(`   Orders:        ${totalOrders}`);
@@ -822,7 +822,7 @@ async function main() {
       console.log(`     - ${_id}: ${count}`);
     }
     console.log('');
-    console.log(`   💰 Total Revenue: $${(revenue[0]?.total || 0).toFixed(2)}`);
+    console.log(`   Total Revenue: $${(revenue[0]?.total || 0).toFixed(2)}`);
     console.log('');
     console.log('   Test customer credentials:');
     console.log('     Email:    sarah.johnson@example.com');
@@ -830,11 +830,11 @@ async function main() {
     console.log('');
   } finally {
     await mongoose.disconnect();
-    console.log('🔌 Disconnected from MongoDB');
+    console.log('Disconnected from MongoDB');
   }
 }
 
 main().catch((err) => {
-  console.error('❌ Error seeding data:', err);
+  console.error('Error seeding data:', err);
   process.exit(1);
 });

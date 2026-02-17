@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import type { Category, PaginatedResponse } from '@lunaz/types';
-import { Container } from '@lunaz/ui';
+import { Container } from '@/ui';
 import { api } from '../../api/client';
 
 interface CategoryWithCounts extends Category {

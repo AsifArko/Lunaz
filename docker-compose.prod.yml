@@ -1,22 +1,9 @@
-# Lunaz — Production Docker Compose
-# Usage: docker compose -f docker-compose.prod.yml up -d
-#
-# This file is meant as a template for production deployments.
-# In production, you would typically:
-# - Use external managed MongoDB (e.g., MongoDB Atlas)
-# - Uses AWS S3 for image uploads
-# - Use a reverse proxy/load balancer for TLS termination
-# - Set proper secrets via Docker secrets or environment variables
-
 services:
-  # ─────────────────────────────────────────────────────────────────────────────
-  # Backend (Express.js API)
-  # ─────────────────────────────────────────────────────────────────────────────
   backend:
     build:
       context: .
       dockerfile: apps/backend/Dockerfile
-    image: lunaz/backend:${TAG:-latest}
+    image: ${REGISTRY_IMAGE:-ghcr.io/lunaz}/backend:${TAG:-latest}
     container_name: lunaz-backend
     restart: unless-stopped
     ports:
@@ -27,16 +14,12 @@ services:
       MONGODB_URI: ${MONGODB_URI}
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-7d}
-      # S3
       S3_BUCKET: ${S3_BUCKET}
       S3_REGION: ${S3_REGION:-us-east-1}
       S3_ENDPOINT: ${S3_ENDPOINT:-}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      # CORS
       FRONTEND_WEB_URL: ${FRONTEND_WEB_URL}
-      FRONTEND_MANAGE_URL: ${FRONTEND_MANAGE_URL}
-      # Stripe
       STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
       STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
     healthcheck:
@@ -53,16 +36,13 @@ services:
     networks:
       - lunaz-network
 
-  # ─────────────────────────────────────────────────────────────────────────────
-  # Web (Customer-facing React app)
-  # ─────────────────────────────────────────────────────────────────────────────
   web:
     build:
       context: .
       dockerfile: apps/web/Dockerfile
       args:
         VITE_API_URL: ${VITE_API_URL}
-    image: lunaz/web:${TAG:-latest}
+    image: ${REGISTRY_IMAGE:-ghcr.io/lunaz}/web:${TAG:-latest}
     container_name: lunaz-web
     restart: unless-stopped
     ports:
@@ -78,34 +58,6 @@ services:
     networks:
       - lunaz-network
 
-  # ─────────────────────────────────────────────────────────────────────────────
-  # Manage (Admin dashboard React app)
-  # ─────────────────────────────────────────────────────────────────────────────
-  manage:
-    build:
-      context: .
-      dockerfile: apps/manage/Dockerfile
-      args:
-        VITE_API_URL: ${VITE_API_URL}
-    image: lunaz/manage:${TAG:-latest}
-    container_name: lunaz-manage
-    restart: unless-stopped
-    ports:
-      - "3001:80"
-    depends_on:
-      backend:
-        condition: service_healthy
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-    networks:
-      - lunaz-network
-
-# ─────────────────────────────────────────────────────────────────────────────
-# Networks
-# ─────────────────────────────────────────────────────────────────────────────
 networks:
   lunaz-network:
     name: lunaz-network

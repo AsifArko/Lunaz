@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
 import { verifyToken } from '../lib/jwt.js';
-import type { BackendEnv } from '@lunaz/config';
+import type { BackendEnv } from '../config/env.js';
 
 export function authMiddleware(getConfig: () => BackendEnv) {
   return (req: Request, res: Response, next: NextFunction): void => {

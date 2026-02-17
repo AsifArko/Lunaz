@@ -10,7 +10,7 @@ import {
   type PutObjectCommandInput,
 } from '@aws-sdk/client-s3';
 import { randomUUID } from 'crypto';
-import type { BackendEnv } from '@lunaz/config';
+import type { BackendEnv } from '../config/env.js';
 
 let s3Client: S3Client | null = null;
 let config: BackendEnv | null = null;

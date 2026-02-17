@@ -1,5 +1,5 @@
 import { Outlet, NavLink } from 'react-router-dom';
-import { Container } from '@lunaz/ui';
+import { Container } from '@/ui';
 import { useAuth } from '../../context/AuthContext';
 
 // Icons

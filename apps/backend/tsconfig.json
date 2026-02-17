@@ -2,11 +2,19 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "./dist",
-    "rootDir": "./src",
+    "rootDir": "../..",
     "noEmit": false,
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext"
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "baseUrl": ".",
+    "paths": {
+      "@lunaz/types": ["../../types"]
+    }
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist"]
+  "include": ["src/**/*", "../../types/**/*", "../../constants/**/*", "../../interfaces/**/*"],
+  "exclude": ["node_modules", "dist"],
+  "tsc-alias": {
+    "resolveFullPaths": true,
+    "resolveFullExtension": ".js"
+  }
 }

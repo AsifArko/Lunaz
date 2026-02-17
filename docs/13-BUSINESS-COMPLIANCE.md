@@ -1556,7 +1556,7 @@ export function ComplianceDashboard() {
 │  │ ───────────────── │ │ ───────────────── │ │ ───────────────── │ │
 │  │ #TL-2024-001      │ │ #FS-2024-052      │ │ #ENV-2024-003     │ │
 │  │ Expires: 30 days  │ │ Expires: 90 days  │ │ Expires: 15 days  │ │
-│  │ Status: ● Active  │ │ Status: ● Active  │ │ Status: ⚠ Warning │ │
+│  │ Status: Active  │ │ Status: Active  │ │ Status: Warning │ │
 │  │ [View] [Renew]    │ │ [View] [Renew]    │ │ [View] [Renew]    │ │
 │  └───────────────────┘ └───────────────────┘ └───────────────────┘ │
 │                                                                     │
@@ -1565,7 +1565,7 @@ export function ComplianceDashboard() {
 │  │ ───────────────── │ │ ───────────────── │ │ ───────────────── │ │
 │  │ #ISO-2023-001     │ │ #IMP-2024-001     │ │ #INS-2024-001     │ │
 │  │ Expires: 2 years  │ │ Expires: 180 days │ │ Expires: 60 days  │ │
-│  │ Status: ● Active  │ │ Status: ● Active  │ │ Status: ● Active  │ │
+│  │ Status: Active  │ │ Status: Active  │ │ Status: Active  │ │
 │  │ [View] [Renew]    │ │ [View] [Renew]    │ │ [View] [Renew]    │ │
 │  └───────────────────┘ └───────────────────┘ └───────────────────┘ │
 └─────────────────────────────────────────────────────────────────────┘

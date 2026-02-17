@@ -207,7 +207,7 @@ Use SSL (e.g. Let's Encrypt with Certbot) for HTTPS.
 ```bash
 # On EC2: (after deploy workflow has run at least once)
 cd /opt/lunaz
-export TAG=abc1234
+export TAG=v2026.02.17-abc1234
 export REGISTRY_IMAGE=ghcr.io/your-org/lunaz
 docker compose -f docker-compose.ec2.yml pull
 docker compose -f docker-compose.ec2.yml up -d --remove-orphans
@@ -217,7 +217,7 @@ docker compose -f docker-compose.ec2.yml up -d --remove-orphans
 
 1. Go to **Actions → Deploy to EC2**
 2. **Run workflow**
-3. Enter the short SHA to rollback to (e.g. `abc1234`)
+3. Enter the release tag to rollback to (e.g. `v2026.02.17-abc1234`)
 4. Run
 
 ---

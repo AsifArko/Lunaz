@@ -1,5 +1,5 @@
 import { useSearchParams, Link } from 'react-router-dom';
-import { Container, Card, Button } from '@lunaz/ui';
+import { Container, Card, Button } from '@/ui';
 
 export function CheckoutCancelledPage() {
   const [searchParams] = useSearchParams();

@@ -79,17 +79,17 @@ jobs:
           
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "is_prerelease=$IS_PRERELEASE" >> $GITHUB_OUTPUT
-          echo "📦 Version: $VERSION (prerelease: $IS_PRERELEASE)"
+          echo "Version: $VERSION (prerelease: $IS_PRERELEASE)"
 
       - name: Validate version format
         run: |
           VERSION="${{ steps.version.outputs.version }}"
           if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.]+)?$ ]]; then
-            echo "❌ Invalid version format: $VERSION"
+            echo "Invalid version format: $VERSION"
             echo "Expected format: X.Y.Z or X.Y.Z-suffix (e.g., 1.2.3, 1.2.3-beta.1)"
             exit 1
           fi
-          echo "✓ Version format is valid"
+          echo "Version format is valid"
 
   # ─────────────────────────────────────────────────────────────────────────────
   # Run CI Checks
@@ -144,7 +144,7 @@ jobs:
       packages: write
     strategy:
       matrix:
-        app: [backend, web, manage]
+        app: [backend, web]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -244,13 +244,13 @@ jobs:
         with:
           payload: |
             {
-              "text": "🚀 Release v${{ needs.prepare.outputs.version }} published",
+              "text": "Release v${{ needs.prepare.outputs.version }} published",
               "blocks": [
                 {
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "*🚀 New Release Published*\n\n*Version:* `v${{ needs.prepare.outputs.version }}`\n*Pre-release:* ${{ needs.prepare.outputs.is_prerelease }}\n\n<${{ github.server_url }}/${{ github.repository }}/releases/tag/v${{ needs.prepare.outputs.version }}|View Release>"
+                    "text": "*New Release Published*\n\n*Version:* `v${{ needs.prepare.outputs.version }}`\n*Pre-release:* ${{ needs.prepare.outputs.is_prerelease }}\n\n<${{ github.server_url }}/${{ github.repository }}/releases/tag/v${{ needs.prepare.outputs.version }}|View Release>"
                   }
                 }
               ]
@@ -265,13 +265,13 @@ jobs:
         with:
           payload: |
             {
-              "text": "❌ Release v${{ needs.prepare.outputs.version }} failed",
+              "text": "Release v${{ needs.prepare.outputs.version }} failed",
               "blocks": [
                 {
                   "type": "section",
                   "text": {
                     "type": "mrkdwn",
-                    "text": "*❌ Release Failed*\n\n*Version:* `v${{ needs.prepare.outputs.version }}`\n\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View workflow run>"
+                    "text": "*Release Failed*\n\n*Version:* `v${{ needs.prepare.outputs.version }}`\n\n<${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|View workflow run>"
                   }
                 }
               ]

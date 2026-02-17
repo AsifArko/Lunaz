@@ -193,7 +193,7 @@ See [03-DATABASE.md](./03-DATABASE.md) and [06-SHARED-PACKAGES.md](./06-SHARED-P
 - **Email** — Order confirmation, shipping updates, password reset via email service (e.g. SendGrid).
 - **Multi-currency** — Display and charge in multiple currencies (configurable).
 - **Returns and refunds** — Return request flow; refund via payment provider; status in Manage.
-- **Analytics** — ✅ **Implemented** — See [09-ANALYTICS-AND-LOGGING.md](./09-ANALYTICS-AND-LOGGING.md) for self-hosted analytics, traffic logging, speed insights, user behavior tracking, and server logging.
+- **Analytics** — **Implemented** — See [09-ANALYTICS-AND-LOGGING.md](./09-ANALYTICS-AND-LOGGING.md) for self-hosted analytics, traffic logging, speed insights, user behavior tracking, and server logging.
 - **SEO** — Sitemap generation; structured data (e.g. Product schema).
 - **i18n** — Multiple languages for Web and/or Manage (if required later).
 

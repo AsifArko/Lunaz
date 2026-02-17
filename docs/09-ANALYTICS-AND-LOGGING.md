@@ -719,18 +719,18 @@ For server logs:
 │  │  ─────────────────────────     │  │  ─────────────────────────         │   │
 │  │  /                    1,234    │  │  ▲ vercel.com              234     │   │
 │  │  /products            892      │  │  G accounts.google.com    156     │   │
-│  │  /products/lamp       456      │  │  🐙 github.com             89      │   │
-│  │  /categories          321      │  │  📄 Direct                 678     │   │
+│  │  /products/lamp       456      │  │  github.com             89      │   │
+│  │  /categories          321      │  │  Direct                 678     │   │
 │  │  [View All →]                  │  │  [View All →]                       │   │
 │  └────────────────────────────────┘  └────────────────────────────────────┘   │
 │                                                                                 │
 │  ┌────────────────────────────────┐  ┌────────────────────────────────────┐   │
 │  │  Countries                     │  │  Devices                           │   │
 │  │  ─────────────────────────     │  │  ─────────────────────────         │   │
-│  │  🇺🇸 United States       81%    │  │  🖥️ Desktop               74%      │   │
-│  │  🇨🇦 Canada              11%    │  │  📱 Mobile                22%      │   │
-│  │  🇧🇷 Brazil               4%    │  │  📟 Tablet                 4%      │   │
-│  │  🇬🇧 United Kingdom       4%    │  │                                    │   │
+│  │  US United States       81%    │  │  Desktop               74%      │   │
+│  │  Canada              11%    │  │  Mobile                22%      │   │
+│  │  Brazil               4%    │  │  Tablet                 4%      │   │
+│  │  United Kingdom       4%    │  │                                    │   │
 │  │  [View Map →]                  │  │  [View Details →]                  │   │
 │  └────────────────────────────────┘  └────────────────────────────────────┘   │
 │                                                                                 │
@@ -741,7 +741,7 @@ For server logs:
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────────┐
-│  🟢 Real-Time                                                                    │
+│  Real-Time                                                                    │
 ├─────────────────────────────────────────────────────────────────────────────────┤
 │                                                                                 │
 │  ┌──────────────┐  Active Visitors: 12                                         │
@@ -773,7 +773,7 @@ For server logs:
 │  │       LCP           │  │       FID           │  │       CLS           │     │
 │  │  ┌─────────────┐    │  │  ┌─────────────┐    │  │  ┌─────────────┐    │     │
 │  │  │    2.1s     │    │  │  │    45ms     │    │  │  │    0.05     │    │     │
-│  │  │   🟢 Good   │    │  │  │   🟢 Good   │    │  │  │   🟢 Good   │    │     │
+│  │  │   Good   │    │  │  │   Good   │    │  │  │   Good   │    │     │
 │  │  └─────────────┘    │  │  └─────────────┘    │  │  └─────────────┘    │     │
 │  │  Target: < 2.5s     │  │  Target: < 100ms    │  │  Target: < 0.1      │     │
 │  │  P75: 2.3s          │  │  P75: 67ms          │  │  P75: 0.08          │     │
@@ -805,17 +805,17 @@ For server logs:
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────────┐
-│  Server Logs                                                      [🔄 Live]    │
+│  Server Logs                                                      [Live]    │
 ├─────────────────────────────────────────────────────────────────────────────────┤
 │                                                                                 │
 │  Filters                                                                        │
 │  ─────────────────────────────────────────────────────────────────────────────  │
 │                                                                                 │
-│  Timeline: [Last 30 minutes ▼]    🔍 [Search logs...                        ]  │
+│  Timeline: [Last 30 minutes ▼]    [Search logs...                        ]  │
 │                                                                                 │
 │  Level: [All ▼]  Status: [All ▼]  Method: [All ▼]  Country: [All ▼]           │
 │                                                                                 │
-│  Contains:  ☐ Warning (12)  ☐ Error (3)  ☐ Fatal (0)                           │
+│  Contains:  [ ] Warning (12)  [ ] Error (3)  [ ] Fatal (0)                           │
 │                                                                                 │
 │  Log Entries                                                                    │
 │  ─────────────────────────────────────────────────────────────────────────────  │
@@ -824,9 +824,9 @@ For server logs:
 │  ──────────────────────────────────────────────────────────────────────────    │
 │  16:45:23     200     api.lunaz.com  GET /api/v1/products      OK             │
 │  16:45:21     201     api.lunaz.com  POST /api/v1/orders       Created        │
-│  16:45:18     🟡 401  api.lunaz.com  GET /api/v1/users/me      Unauthorized   │
+│  16:45:18     401  api.lunaz.com  GET /api/v1/users/me      Unauthorized   │
 │  16:45:15     200     api.lunaz.com  GET /api/v1/categories    OK             │
-│  16:45:12     🔴 500  api.lunaz.com  POST /api/v1/checkout     Server Error   │
+│  16:45:12     500  api.lunaz.com  POST /api/v1/checkout     Server Error   │
 │  16:45:10     200     api.lunaz.com  GET /api/v1/products/123  OK             │
 │                                                                                 │
 │  [Click to expand log entry details]                                           │
@@ -836,7 +836,7 @@ For server logs:
 └─────────────────────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────────────────────┐
-│  Log Entry Detail (expanded)                                            [✕]    │
+│  Log Entry Detail (expanded)                                            [x]    │
 ├─────────────────────────────────────────────────────────────────────────────────┤
 │                                                                                 │
 │  Request ID: req_abc123xyz                                                      │
@@ -854,7 +854,7 @@ For server logs:
 │  Client                               Server                                    │
 │  ─────────────────────                ─────────────────────                    │
 │  IP: 192.168.x.x (hashed)             Host: api-server-1                       │
-│  Country: 🇺🇸 United States            Environment: production                  │
+│  Country: US United States            Environment: production                  │
 │  Device: Desktop                      Version: 1.2.3                           │
 │  Browser: Chrome 120                  Node: 20.10.0                            │
 │  OS: macOS 14.2                       Memory: 512MB / 1GB                      │
@@ -877,29 +877,29 @@ Add new section to Manage app sidebar:
 
 ```
 ┌────────────────────┐
-│  📊 Dashboard      │
+│  Dashboard         │
 ├────────────────────┤
-│  📦 Products       │
-│  📁 Categories     │
+│  Products          │
+│  Categories        │
 ├────────────────────┤
-│  🛒 Orders         │
-│  👥 Customers      │
+│  Orders            │
+│  Customers         │
 ├────────────────────┤
-│  💰 Transactions   │
-│  📈 Reports        │
+│  Transactions      │
+│  Reports           │
 ├────────────────────┤
-│  📊 Analytics      │  ← NEW
-│    ├ Overview      │
-│    ├ Visitors      │
-│    ├ Pages         │
-│    ├ Referrers     │
-│    ├ Geography     │
-│    ├ Technology    │
-│    └ Behavior      │
-│  ⚡ Speed Insights │  ← NEW
-│  📋 Server Logs    │  ← NEW
+│  Analytics         │  <- NEW
+│    - Overview      │
+│    - Visitors      │
+│    - Pages         │
+│    - Referrers     │
+│    - Geography     │
+│    - Technology    │
+│    - Behavior      │
+│  Speed Insights    │  <- NEW
+│  Server Logs       │  <- NEW
 ├────────────────────┤
-│  ⚙️ Settings       │
+│  Settings          │
 └────────────────────┘
 ```
 

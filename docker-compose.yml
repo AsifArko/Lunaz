@@ -1,15 +1,4 @@
-# Lunaz — Full stack for local development
-# Usage: docker compose up --build
-# Services: MongoDB, Backend, Web, Manage
-# Image uploads use AWS S3 — set AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, S3_BUCKET in .env
-#
-# Ensure .env exists (copy from .env.example). Required for: JWT_SECRET, OAuth
-# (GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, VITE_GOOGLE_CLIENT_ID), SSLCommerz, etc.
-
 services:
-  # ─────────────────────────────────────────────────────────────────────────────
-  # MongoDB
-  # ─────────────────────────────────────────────────────────────────────────────
   mongodb:
     image: mongo:7
     container_name: lunaz-mongodb
@@ -18,9 +7,6 @@ services:
     volumes:
       - mongodb_data:/data/db
     environment:
-      # Uncomment for auth in development:
-      # MONGO_INITDB_ROOT_USERNAME: admin
-      # MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:-adminpassword}
       MONGO_INITDB_DATABASE: lunaz
     healthcheck:
       test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
@@ -30,9 +16,6 @@ services:
     networks:
       - lunaz-network
 
-  # ─────────────────────────────────────────────────────────────────────────────
-  # Backend (Express.js API)
-  # ─────────────────────────────────────────────────────────────────────────────
   backend:
     build:
       context: .
@@ -41,29 +24,22 @@ services:
     ports:
       - "4000:4000"
     env_file:
-      - .env  # Loads GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, SSLCommerz, etc. Create from .env.example
+      - .env
     environment:
       NODE_ENV: development
       PORT: 4000
-      # Override for Docker: use MongoDB service name
       MONGODB_URI: mongodb://mongodb:27017/lunaz
       JWT_SECRET: ${JWT_SECRET:-dev-secret-change-in-production-min-32-chars}
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-7d}
       JWT_REFRESH_EXPIRES_IN: ${JWT_REFRESH_EXPIRES_IN:-7d}
-      # S3 (image uploads for products and categories)
       S3_BUCKET: ${S3_BUCKET:-lunaz-products}
       S3_REGION: ${S3_REGION:-us-east-1}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      # CORS origins
       FRONTEND_WEB_URL: http://localhost:3000
-      FRONTEND_MANAGE_URL: http://localhost:3001
-      # API URL for payment callbacks and OAuth redirects
       API_URL: ${API_URL:-http://localhost:4000}
-      # OAuth (Google) — from .env
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
-      # SSLCommerz — from .env
       SSLCOMMERZ_SANDBOX: ${SSLCOMMERZ_SANDBOX:-true}
       SSLCOMMERZ_STORE_ID: ${SSLCOMMERZ_STORE_ID:-}
       SSLCOMMERZ_STORE_PASSWORD: ${SSLCOMMERZ_STORE_PASSWORD:-}
@@ -79,9 +55,6 @@ services:
     networks:
       - lunaz-network
 
-  # ─────────────────────────────────────────────────────────────────────────────
-  # Web (Customer-facing React app)
-  # ─────────────────────────────────────────────────────────────────────────────
   web:
     build:
       context: .
@@ -98,34 +71,10 @@ services:
     networks:
       - lunaz-network
 
-  # ─────────────────────────────────────────────────────────────────────────────
-  # Manage (Admin dashboard React app)
-  # ─────────────────────────────────────────────────────────────────────────────
-  manage:
-    build:
-      context: .
-      dockerfile: apps/manage/Dockerfile
-      args:
-        VITE_API_URL: http://localhost:4000/api/v1
-    container_name: lunaz-manage
-    ports:
-      - "3001:80"
-    depends_on:
-      backend:
-        condition: service_healthy
-    networks:
-      - lunaz-network
-
-# ─────────────────────────────────────────────────────────────────────────────
-# Volumes
-# ─────────────────────────────────────────────────────────────────────────────
 volumes:
   mongodb_data:
     name: lunaz-mongodb-data
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Networks
-# ─────────────────────────────────────────────────────────────────────────────
 networks:
   lunaz-network:
     name: lunaz-network

@@ -20,29 +20,33 @@ import { analyticsRoutes } from './modules/analytics/analytics.routes.js';
 import { paymentsRoutes } from './modules/payments/payments.routes.js';
 import { complianceRoutes } from './modules/compliance/index.js';
 
-/** Build CORS allowed origins: config URLs plus 127.0.0.1 variants so both localhost and 127.0.0.1 work */
-function getAllowedOrigins(webUrl: string, manageUrl: string, isDev: boolean): string[] {
-  const origins = new Set([webUrl, manageUrl]);
+/** Build CORS allowed origins: web URL (manage is at /manage on same origin) plus 127.0.0.1 variants */
+function getAllowedOrigins(
+  webUrl: string,
+  manageUrl: string | undefined,
+  isDev: boolean
+): string[] {
+  const origins = new Set([webUrl]);
+  if (manageUrl) origins.add(manageUrl);
   try {
     const web = new URL(webUrl);
-    const manage = new URL(manageUrl);
     if (web.hostname === 'localhost') {
       web.hostname = '127.0.0.1';
       origins.add(web.origin);
     }
-    if (manage.hostname === 'localhost') {
-      manage.hostname = '127.0.0.1';
-      origins.add(manage.origin);
+    if (manageUrl) {
+      const manage = new URL(manageUrl);
+      if (manage.hostname === 'localhost') {
+        manage.hostname = '127.0.0.1';
+        origins.add(manage.origin);
+      }
     }
   } catch {
     // ignore
   }
-  // In development, explicitly add localhost:3000 and :3001 so Docker/Compose always works
   if (isDev) {
     origins.add('http://localhost:3000');
-    origins.add('http://localhost:3001');
     origins.add('http://127.0.0.1:3000');
-    origins.add('http://127.0.0.1:3001');
   }
   return Array.from(origins);
 }
@@ -62,14 +66,18 @@ function isLocalOrigin(origin: string | undefined): boolean {
 function originMatchesConfiguredHost(
   origin: string | undefined,
   webUrl: string,
-  manageUrl: string
+  manageUrl: string | undefined
 ): boolean {
   if (!origin) return false;
   try {
     const o = new URL(origin);
     const web = new URL(webUrl);
-    const manage = new URL(manageUrl);
-    return o.hostname === web.hostname || o.hostname === manage.hostname;
+    if (o.hostname === web.hostname) return true;
+    if (manageUrl) {
+      const manage = new URL(manageUrl);
+      return o.hostname === manage.hostname;
+    }
+    return false;
   } catch {
     return false;
   }
@@ -82,7 +90,7 @@ export function createApp() {
   const isDev = config.NODE_ENV === 'development';
   const allowedOrigins = getAllowedOrigins(
     config.FRONTEND_WEB_URL,
-    config.FRONTEND_MANAGE_URL,
+    config.FRONTEND_MANAGE_URL ?? undefined,
     isDev
   );
 
@@ -98,7 +106,11 @@ export function createApp() {
       origin &&
       (allowedOrigins.includes(origin) ||
         (isDev && isLocalOrigin(origin)) ||
-        originMatchesConfiguredHost(origin, config.FRONTEND_WEB_URL, config.FRONTEND_MANAGE_URL));
+        originMatchesConfiguredHost(
+          origin,
+          config.FRONTEND_WEB_URL,
+          config.FRONTEND_MANAGE_URL ?? undefined
+        ));
     if (allowed) {
       res.setHeader('Access-Control-Allow-Origin', origin);
       res.setHeader('Access-Control-Allow-Methods', corsAllowMethods);
@@ -189,15 +201,11 @@ export function createApp() {
   });
 
   // Serve static files when STATIC_DIR is set (e.g. single-container ECS deployment)
+  // Web app includes /manage routes; single SPA serves both storefront and admin
   const staticDir = config.STATIC_DIR;
   if (staticDir) {
     const publicDir = path.resolve(staticDir);
-    app.use('/manage', express.static(path.join(publicDir, 'manage')));
     app.use(express.static(publicDir));
-    app.get('/manage', (_req, res) => res.redirect(301, '/manage/'));
-    app.get('/manage/*', (_req, res) => {
-      res.sendFile(path.join(publicDir, 'manage', 'index.html'));
-    });
     app.get('*', (_req, res) => {
       res.sendFile(path.join(publicDir, 'index.html'));
     });

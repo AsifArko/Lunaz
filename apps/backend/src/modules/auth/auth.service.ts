@@ -13,7 +13,7 @@ import type {
   ResetPasswordInput,
 } from './auth.validation.js';
 import { signToken, generateRefreshToken, hashRefreshToken } from '../../lib/jwt.js';
-import type { BackendEnv } from '@lunaz/config';
+import type { BackendEnv } from '../../config/env.js';
 
 /** Placeholder phone for OAuth users until they set a real one (required for orders). */
 export const OAUTH_PENDING_PHONE = '__OAUTH_PENDING__';

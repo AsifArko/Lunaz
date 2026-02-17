@@ -2,7 +2,7 @@ import { config as loadEnv } from 'dotenv';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { backendEnvSchema, type BackendEnv } from '@lunaz/config';
+import { backendEnvSchema, type BackendEnv } from './env.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 

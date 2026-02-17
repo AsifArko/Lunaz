@@ -1,12 +1,12 @@
 import { useState, type FormEvent } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Container, Button } from '@lunaz/ui';
+import { Link, useNavigate, Outlet } from 'react-router-dom';
+import { Container, Button } from '@/ui';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { Footer } from './Footer';
 
 interface LayoutProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 function SearchBar({ className = '' }: { className?: string }) {
@@ -496,7 +496,7 @@ export function Layout({ children }: LayoutProps) {
         </Container>
       </header>
 
-      <main className="flex-1">{children}</main>
+      <main className="flex-1">{children ?? <Outlet />}</main>
 
       <Footer />
 

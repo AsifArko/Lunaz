@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Container, Button, Price } from '@lunaz/ui';
+import { Container, Button, Price } from '@/ui';
 import { useCart, type LocalCartItem } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 

@@ -812,14 +812,14 @@ const products: ProductSeed[] = [
 // ============================================================================
 
 async function clearData() {
-  console.log('🗑️  Clearing existing categories and products...');
+  console.log('Clearing existing categories and products...');
   await ProductModel.deleteMany({});
   await CategoryModel.deleteMany({});
-  console.log('✅ Cleared existing data');
+  console.log('Cleared existing data');
 }
 
 async function seedCategories(): Promise<Map<string, mongoose.Types.ObjectId>> {
-  console.log('\n📁 Seeding categories...');
+  console.log('\nSeeding categories...');
   const categoryMap = new Map<string, mongoose.Types.ObjectId>();
 
   for (const cat of categories) {
@@ -836,7 +836,7 @@ async function seedCategories(): Promise<Map<string, mongoose.Types.ObjectId>> {
     });
 
     categoryMap.set(cat.slug, parent._id as mongoose.Types.ObjectId);
-    console.log(`   ✅ Created category: ${cat.name}`);
+    console.log(`   Created category: ${cat.name}`);
 
     if (cat.subcategories) {
       for (const sub of cat.subcategories) {
@@ -852,7 +852,7 @@ async function seedCategories(): Promise<Map<string, mongoose.Types.ObjectId>> {
         });
 
         categoryMap.set(sub.slug, child._id as mongoose.Types.ObjectId);
-        console.log(`      ✅ Created subcategory: ${sub.name}`);
+        console.log(`      Created subcategory: ${sub.name}`);
       }
     }
   }
@@ -861,14 +861,14 @@ async function seedCategories(): Promise<Map<string, mongoose.Types.ObjectId>> {
 }
 
 async function createProducts(categoryMap: Map<string, mongoose.Types.ObjectId>): Promise<void> {
-  console.log('\n📦 Seeding products...');
+  console.log('\nSeeding products...');
   let created = 0;
   let imageSeed = 1000;
 
   for (const product of products) {
     const categoryId = categoryMap.get(product.categorySlug);
     if (!categoryId) {
-      console.log(`   ⚠️  Category not found for product: ${product.name}`);
+      console.log(`   Category not found for product: ${product.name}`);
       continue;
     }
 
@@ -909,29 +909,29 @@ async function createProducts(categoryMap: Map<string, mongoose.Types.ObjectId>)
       },
     });
 
-    const statusIcon = product.status === ProductStatus.PUBLISHED ? '🟢' : '⚪';
+    const statusIcon = product.status === ProductStatus.PUBLISHED ? '[P]' : '[D]';
     console.log(`   ${statusIcon} Created: ${product.name}`);
     created++;
   }
 
-  console.log(`\n✅ Created ${created} products`);
+  console.log(`\nCreated ${created} products`);
 }
 
 async function main() {
   const mongoUri = process.env.MONGODB_URI;
   if (!mongoUri) {
-    console.error('❌ MONGODB_URI environment variable is required');
+    console.error('MONGODB_URI environment variable is required');
     process.exit(1);
   }
 
   const shouldClear = process.argv.includes('--clear');
 
-  console.log('🌱 Lunaz Product Seed Script');
+  console.log('Lunaz Product Seed Script');
   console.log('============================\n');
 
-  console.log('🔌 Connecting to MongoDB...');
+  console.log('Connecting to MongoDB...');
   await mongoose.connect(mongoUri);
-  console.log('✅ Connected to MongoDB');
+  console.log('Connected to MongoDB');
 
   try {
     if (shouldClear) {
@@ -944,7 +944,7 @@ async function main() {
 
     if (existingCategories > 0 || existingProducts > 0) {
       console.log(
-        `\nℹ️  Found existing data: ${existingCategories} categories, ${existingProducts} products`
+        `\nFound existing data: ${existingCategories} categories, ${existingProducts} products`
       );
       console.log('   Run with --clear flag to remove existing data before seeding\n');
     }
@@ -964,7 +964,7 @@ async function main() {
     });
 
     console.log('\n============================');
-    console.log('📊 Seeding Complete!');
+    console.log('Seeding Complete!');
     console.log('============================');
     console.log(`   Categories: ${totalCategories}`);
     console.log(`   Products:   ${totalProducts}`);
@@ -973,11 +973,11 @@ async function main() {
     console.log('');
   } finally {
     await mongoose.disconnect();
-    console.log('🔌 Disconnected from MongoDB');
+    console.log('Disconnected from MongoDB');
   }
 }
 
 main().catch((err) => {
-  console.error('❌ Error seeding products:', err);
+  console.error('Error seeding products:', err);
   process.exit(1);
 });

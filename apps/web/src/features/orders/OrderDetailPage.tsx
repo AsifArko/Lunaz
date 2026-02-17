@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useSearchParams, Link } from 'react-router-dom';
 import type { Order } from '@lunaz/types';
-import { Price } from '@lunaz/ui';
+import { Price } from '@/ui';
 import { api } from '../../api/client';
 import { useAuth } from '../../context/AuthContext';
 
