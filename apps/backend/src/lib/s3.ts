@@ -67,6 +67,25 @@ export interface UploadResult {
  * @param entityId - Entity ID for path (e.g. productId, categoryId)
  * @returns Upload result with key and public URL, or null if S3 not configured
  */
+/** Map MIME types to file extensions for documents (PDF, Word, etc.) */
+const MIME_TO_EXT: Record<string, string> = {
+  'application/pdf': 'pdf',
+  'application/msword': 'doc',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'docx',
+  'application/vnd.ms-excel': 'xls',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'xlsx',
+  'image/jpeg': 'jpg',
+  'image/jpg': 'jpg',
+  'image/png': 'png',
+  'image/gif': 'gif',
+  'image/webp': 'webp',
+};
+
+function getExtensionFromMime(contentType: string): string {
+  const mime = (contentType || '').split(';')[0].trim().toLowerCase();
+  return MIME_TO_EXT[mime] || mime.split('/')[1]?.split('+')[0] || 'bin';
+}
+
 export async function uploadToS3(
   cfg: BackendEnv,
   buffer: Buffer,
@@ -77,7 +96,7 @@ export async function uploadToS3(
   const client = getS3Client(cfg);
   if (!client) return null;
 
-  const ext = contentType.split('/')[1] || 'jpg';
+  const ext = getExtensionFromMime(contentType);
   const key = `${prefix}/${entityId}/${randomUUID()}.${ext}`;
 
   const params: PutObjectCommandInput = {
