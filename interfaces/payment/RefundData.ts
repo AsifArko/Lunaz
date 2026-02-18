@@ -1,4 +1,4 @@
-import type { Id } from '../../types/id';
+import type { Id } from 'types/id';
 
 /** Refund details. */
 export interface RefundData {

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import type { SelectInputProps } from '../../types';
+import type { SelectInputProps } from 'manage-settings/types';
 
 export function SelectInput({
   value,

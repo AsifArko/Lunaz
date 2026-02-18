@@ -1,13 +1,17 @@
 import { useState, type FormEvent } from 'react';
-import { SettingsSection } from '../../shared/SettingsSection';
-import { SettingsField } from '../../shared/SettingsField';
-import { SettingsSaveButton } from '../../shared/SettingsSaveButton';
-import { TextInput } from '../../form/TextInput';
-import { TextArea } from '../../form/TextArea';
-import { SelectInput } from '../../form/SelectInput';
-import { COUNTRY_OPTIONS, BUSINESS_TYPE_OPTIONS, INDUSTRY_OPTIONS } from '../../../utils/constants';
-import type { BusinessInfo } from '../../../types';
-import { DEFAULT_BUSINESS_INFO } from '../../../utils/defaults';
+import { SettingsSection } from 'manage-settings/components/shared/SettingsSection';
+import { SettingsField } from 'manage-settings/components/shared/SettingsField';
+import { SettingsSaveButton } from 'manage-settings/components/shared/SettingsSaveButton';
+import { TextInput } from 'manage-settings/components/form/TextInput';
+import { TextArea } from 'manage-settings/components/form/TextArea';
+import { SelectInput } from 'manage-settings/components/form/SelectInput';
+import {
+  COUNTRY_OPTIONS,
+  BUSINESS_TYPE_OPTIONS,
+  INDUSTRY_OPTIONS,
+} from 'manage-settings/utils/constants';
+import type { BusinessInfo } from 'manage-settings/types';
+import { DEFAULT_BUSINESS_INFO } from 'manage-settings/utils/defaults';
 
 interface BusinessTabProps {
   onSave?: () => void;

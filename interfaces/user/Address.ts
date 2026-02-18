@@ -1,4 +1,4 @@
-import type { Id } from '../../types/id';
+import type { Id } from 'types/id';
 
 /** Address (embedded or standalone). */
 export interface Address {

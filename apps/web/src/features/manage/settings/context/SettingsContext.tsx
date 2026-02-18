@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useCallback, useEffect, type ReactNode } from 'react';
-import type { StoreSettings } from '../types';
-import { DEFAULT_STORE_SETTINGS } from '../utils/defaults';
+import type { StoreSettings } from 'manage-settings/types';
+import { DEFAULT_STORE_SETTINGS } from 'manage-settings/utils/defaults';
 import { adminApi as api } from '@/api/adminClient';
 import { useAdminAuth } from '@/context/AdminAuthContext';
 

@@ -1,6 +1,6 @@
-import { SettingsSection } from '../../shared/SettingsSection';
-import { SettingsField } from '../../shared/SettingsField';
-import { SelectInput } from '../../form/SelectInput';
+import { SettingsSection } from 'manage-settings/components/shared/SettingsSection';
+import { SettingsField } from 'manage-settings/components/shared/SettingsField';
+import { SelectInput } from 'manage-settings/components/form/SelectInput';
 import {
   CURRENCY_OPTIONS,
   CURRENCY_POSITION_OPTIONS,
@@ -10,8 +10,8 @@ import {
   LANGUAGE_OPTIONS,
   WEIGHT_UNIT_OPTIONS,
   DIMENSION_UNIT_OPTIONS,
-} from '../../../utils/constants';
-import type { StoreSettings } from '../../../types';
+} from 'manage-settings/utils/constants';
+import type { StoreSettings } from 'manage-settings/types';
 
 interface RegionalSectionProps {
   settings: StoreSettings;

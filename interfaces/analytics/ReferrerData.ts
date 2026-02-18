@@ -1,4 +1,4 @@
-import type { ReferrerType } from '../../constants/analytics';
+import type { ReferrerType } from 'constants/analytics';
 
 export interface ReferrerData {
   url?: string;

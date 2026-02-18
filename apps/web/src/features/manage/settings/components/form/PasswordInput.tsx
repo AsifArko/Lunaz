@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import type { TextInputProps } from '../../types';
+import type { TextInputProps } from 'manage-settings/types';
 
 interface PasswordInputProps extends Omit<TextInputProps, 'type'> {
   showStrength?: boolean;

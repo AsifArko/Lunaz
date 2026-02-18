@@ -1,11 +1,11 @@
-import { SettingsSection } from '../../shared/SettingsSection';
-import { SettingsField } from '../../shared/SettingsField';
-import { SettingsToggle } from '../../shared/SettingsToggle';
-import { TextInput } from '../../form/TextInput';
-import { NumberInput } from '../../form/NumberInput';
-import { SelectInput } from '../../form/SelectInput';
-import { OUT_OF_STOCK_DISPLAY_OPTIONS } from '../../../utils/constants';
-import type { StoreSettings } from '../../../types';
+import { SettingsSection } from 'manage-settings/components/shared/SettingsSection';
+import { SettingsField } from 'manage-settings/components/shared/SettingsField';
+import { SettingsToggle } from 'manage-settings/components/shared/SettingsToggle';
+import { TextInput } from 'manage-settings/components/form/TextInput';
+import { NumberInput } from 'manage-settings/components/form/NumberInput';
+import { SelectInput } from 'manage-settings/components/form/SelectInput';
+import { OUT_OF_STOCK_DISPLAY_OPTIONS } from 'manage-settings/utils/constants';
+import type { StoreSettings } from 'manage-settings/types';
 
 interface OrderSettingsSectionProps {
   settings: StoreSettings;

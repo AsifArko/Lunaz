@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
-import type { UserSummary, LoginRequest, LoginResponse } from '@lunaz/types';
+import type { UserSummary, LoginRequest, LoginResponse } from 'types';
 import { adminApi } from '../api/adminClient';
 
 interface AdminAuthState {

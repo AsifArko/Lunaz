@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import type { Order, Product, PaginatedResponse } from '@lunaz/types';
+import type { Order, Product, PaginatedResponse } from 'types';
 import { Price } from '@/ui';
 import { adminApi as api } from '@/api/adminClient';
 import { useAdminAuth } from '@/context/AdminAuthContext';

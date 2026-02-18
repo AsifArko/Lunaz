@@ -13,14 +13,16 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
-      "@lunaz/types": ["../../types"]
+      "types": ["../../types"],
+      "types/*": ["../../types/*"],
+      "interfaces": ["../../interfaces"],
+      "interfaces/*": ["../../interfaces/*"],
+      "constants": ["../../constants"],
+      "constants/*": ["../../constants/*"],
+      "manage-settings/*": ["src/features/manage/settings/*"]
     }
   },
   "include": ["src"],
-  "references": [
-    {
-      "path": "./tsconfig.node.json"
-    }
-  ],
+  "references": [{ "path": "./tsconfig.node.json" }],
   "types": ["vite/client"]
 }

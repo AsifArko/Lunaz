@@ -1,4 +1,4 @@
-import type { ToggleProps } from '../../types';
+import type { ToggleProps } from 'manage-settings/types';
 
 export function Toggle({ checked, onChange, disabled = false, size = 'md' }: ToggleProps) {
   const sizeClasses = {

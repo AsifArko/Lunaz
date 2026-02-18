@@ -7,7 +7,7 @@ import {
   type DragEvent,
 } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import type { Category, PaginatedResponse } from '@lunaz/types';
+import type { Category, PaginatedResponse } from 'types';
 import { adminApi as api, API_URL } from '@/api/adminClient';
 import { useAdminAuth } from '@/context/AdminAuthContext';
 import { useToast } from '@/context/ToastContext';

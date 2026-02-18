@@ -1,4 +1,4 @@
-import type { TextAreaProps } from '../../types';
+import type { TextAreaProps } from 'manage-settings/types';
 
 export function TextArea({
   value,

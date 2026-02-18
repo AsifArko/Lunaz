@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import type { Order, Product, User, OrderAddress } from '@lunaz/types';
-import { PaymentMethod } from '@lunaz/types';
+import type { Order, Product, User, OrderAddress } from 'types';
+import { PaymentMethod } from 'types';
 import { adminApi as api } from '@/api/adminClient';
 import { useAdminAuth } from '@/context/AdminAuthContext';
 import { useToast } from '@/context/ToastContext';

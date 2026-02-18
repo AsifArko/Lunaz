@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Spinner } from '@/ui';
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../api/client';
-import type { LoginResponse } from '@lunaz/types';
+import type { LoginResponse } from 'types';
 
 export function GoogleCallbackPage() {
   const [searchParams] = useSearchParams();

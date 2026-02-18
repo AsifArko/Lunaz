@@ -1,4 +1,4 @@
-import type { LogLevel } from '../../constants/analytics';
+import type { LogLevel } from 'constants/analytics';
 
 export interface ServerLogsQuery {
   from?: string;

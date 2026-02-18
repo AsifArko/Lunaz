@@ -1,5 +1,5 @@
-import type { CartItem } from '../../cart';
-import type { Product } from '../../product';
+import type { CartItem } from 'interfaces/cart';
+import type { Product } from 'interfaces/product';
 
 /** Cart item with product details (for display). */
 export interface CartItemWithProduct extends CartItem {

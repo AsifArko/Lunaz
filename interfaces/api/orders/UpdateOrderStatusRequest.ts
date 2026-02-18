@@ -1,4 +1,4 @@
-import type { OrderStatus } from '../../../constants/enums';
+import type { OrderStatus } from 'constants/enums';
 
 /** PATCH /orders/:id/status */
 export interface UpdateOrderStatusRequest {

@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { authMiddleware } from '../../middleware/auth.js';
 import { requireRole } from '../../middleware/requireRole.js';
 import { getConfig } from '../../config/index.js';
-import { UserRole } from '@lunaz/types';
+import { UserRole } from 'constants/enums';
 import * as dashboardService from './dashboard.service.js';
 
 const router = Router();

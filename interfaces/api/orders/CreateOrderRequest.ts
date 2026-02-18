@@ -1,4 +1,4 @@
-import type { OrderAddress } from '../../order';
+import type { OrderAddress } from 'interfaces/order';
 
 /** POST /orders (Create order from cart) */
 export interface CreateOrderRequest {

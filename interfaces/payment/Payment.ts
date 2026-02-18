@@ -1,5 +1,5 @@
-import type { Id } from '../../types/id';
-import type { PaymentMethod, PaymentStatus } from '../../constants/enums';
+import type { Id } from 'types/id';
+import type { PaymentMethod, PaymentStatus } from 'constants/enums';
 import type { BkashPaymentData } from './BkashPaymentData';
 import type { NagadPaymentData } from './NagadPaymentData';
 import type { BankTransferPaymentData } from './BankTransferPaymentData';

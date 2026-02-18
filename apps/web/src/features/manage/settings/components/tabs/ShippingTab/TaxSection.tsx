@@ -1,10 +1,10 @@
-import { SettingsSection } from '../../shared/SettingsSection';
-import { SettingsField } from '../../shared/SettingsField';
-import { SettingsToggle } from '../../shared/SettingsToggle';
-import { NumberInput } from '../../form/NumberInput';
-import { TextInput } from '../../form/TextInput';
-import { Toggle } from '../../form/Toggle';
-import type { StoreSettings } from '../../../types';
+import { SettingsSection } from 'manage-settings/components/shared/SettingsSection';
+import { SettingsField } from 'manage-settings/components/shared/SettingsField';
+import { SettingsToggle } from 'manage-settings/components/shared/SettingsToggle';
+import { NumberInput } from 'manage-settings/components/form/NumberInput';
+import { TextInput } from 'manage-settings/components/form/TextInput';
+import { Toggle } from 'manage-settings/components/form/Toggle';
+import type { StoreSettings } from 'manage-settings/types';
 
 interface TaxSectionProps {
   settings: StoreSettings;

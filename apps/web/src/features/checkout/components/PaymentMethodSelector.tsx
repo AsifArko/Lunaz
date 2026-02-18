@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import type { PaymentMethod, PaymentMethodInfo } from '@lunaz/types';
-import { api } from '../../../api/client';
+import type { PaymentMethod, PaymentMethodInfo } from 'types';
+import { api } from '@/api/client';
 
 interface PaymentMethodSelectorProps {
   selected: PaymentMethod | null;

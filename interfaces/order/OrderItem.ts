@@ -1,4 +1,4 @@
-import type { Id } from '../../types/id';
+import type { Id } from 'types/id';
 
 /** Order line item (snapshot at order time). */
 export interface OrderItem {

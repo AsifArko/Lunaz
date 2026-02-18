@@ -1,4 +1,4 @@
-import type { Id } from '../../types/id';
+import type { Id } from 'types/id';
 import type { CartItem } from './CartItem';
 
 /** Cart entity (logged-in user). */

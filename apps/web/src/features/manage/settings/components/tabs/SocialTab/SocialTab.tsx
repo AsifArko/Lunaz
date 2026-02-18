@@ -1,11 +1,11 @@
 import { useState, type FormEvent } from 'react';
-import { SettingsSection } from '../../shared/SettingsSection';
-import { SettingsToggle } from '../../shared/SettingsToggle';
-import { SettingsSaveButton } from '../../shared/SettingsSaveButton';
-import { TextInput } from '../../form/TextInput';
-import { TextArea } from '../../form/TextArea';
-import type { SocialSettings } from '../../../types';
-import { DEFAULT_SOCIAL_SETTINGS } from '../../../utils/defaults';
+import { SettingsSection } from 'manage-settings/components/shared/SettingsSection';
+import { SettingsToggle } from 'manage-settings/components/shared/SettingsToggle';
+import { SettingsSaveButton } from 'manage-settings/components/shared/SettingsSaveButton';
+import { TextInput } from 'manage-settings/components/form/TextInput';
+import { TextArea } from 'manage-settings/components/form/TextArea';
+import type { SocialSettings } from 'manage-settings/types';
+import { DEFAULT_SOCIAL_SETTINGS } from 'manage-settings/utils/defaults';
 
 interface SocialTabProps {
   onSave?: () => void;

@@ -29,7 +29,7 @@ import {
   TransactionType,
   TransactionStatus,
   ProductStatus,
-} from '@lunaz/types';
+} from 'constants/enums';
 
 // Load .env from project root
 const __dirname = path.dirname(fileURLToPath(import.meta.url));

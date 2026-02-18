@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 import { CategoryModel } from './categories.model.js';
-import type { Category, CategoryWithChildren } from '@lunaz/types';
+import type { Category, CategoryWithChildren } from 'types';
 
 type ImageDoc = { id: string; url: string; order: number };
 
@@ -156,7 +156,7 @@ export interface CategoryWithCounts extends Category {
  */
 export async function getCategoriesWithCounts(): Promise<CategoryWithCounts[]> {
   const { ProductModel } = await import('../products/products.model.js');
-  const { ProductStatus } = await import('@lunaz/types');
+  const { ProductStatus } = await import('types');
 
   const categories = await getAllCategories();
 

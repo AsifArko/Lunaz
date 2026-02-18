@@ -1,4 +1,4 @@
-import type { PaymentMethod } from '../../../constants/enums';
+import type { PaymentMethod } from 'constants/enums';
 
 /** Request to initiate a payment. */
 export interface InitiatePaymentRequest {

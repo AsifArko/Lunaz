@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
 import { randomUUID } from 'crypto';
-import { LogLevel } from '@lunaz/types';
+import { LogLevel } from 'constants/analytics';
 import { ServerLogModel } from '../modules/analytics/analytics.model.js';
 import { parseUserAgent } from '../modules/analytics/analytics.service.js';
 

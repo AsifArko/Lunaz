@@ -3,7 +3,7 @@ import { authMiddleware } from '../../middleware/auth.js';
 import { requireRole } from '../../middleware/requireRole.js';
 import { validateBody, validateQuery } from '../../middleware/validate.js';
 import { getConfig } from '../../config/index.js';
-import { UserRole, PaymentMethod, PaymentStatus } from '@lunaz/types';
+import { UserRole, PaymentMethod, PaymentStatus } from 'constants/enums';
 import {
   initiatePaymentSchema,
   submitBankTransferProofSchema,

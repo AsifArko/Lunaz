@@ -1,4 +1,4 @@
-import type { AnalyticsEventType } from '../../constants/analytics';
+import type { AnalyticsEventType } from 'constants/analytics';
 
 export interface RealTimeData {
   activeVisitors: number;

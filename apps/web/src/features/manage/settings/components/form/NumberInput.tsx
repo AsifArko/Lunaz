@@ -1,4 +1,4 @@
-import type { NumberInputProps } from '../../types';
+import type { NumberInputProps } from 'manage-settings/types';
 
 export function NumberInput({
   value,

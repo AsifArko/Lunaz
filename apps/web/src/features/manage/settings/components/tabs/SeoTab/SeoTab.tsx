@@ -1,7 +1,7 @@
 import { type FormEvent } from 'react';
-import { SeoSection } from '../GeneralTab/SeoSection';
-import { SettingsSaveButton } from '../../shared/SettingsSaveButton';
-import type { StoreSettings } from '../../../types';
+import { SeoSection } from 'manage-settings/components/tabs/GeneralTab/SeoSection';
+import { SettingsSaveButton } from 'manage-settings/components/shared/SettingsSaveButton';
+import type { StoreSettings } from 'manage-settings/types';
 
 interface SeoTabProps {
   settings: StoreSettings;

@@ -1,6 +1,6 @@
-import type { ProductStatus } from '../../../constants/enums';
-import type { Id } from '../../../types/id';
-import type { ProductVariant } from '../../product';
+import type { ProductStatus } from 'constants/enums';
+import type { Id } from 'types/id';
+import type { ProductVariant } from 'interfaces/product';
 
 /** POST /products (Create product) */
 export interface CreateProductRequest {

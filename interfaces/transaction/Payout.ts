@@ -1,5 +1,5 @@
-import type { Id } from '../../types/id';
-import type { TransactionStatus } from '../../constants/enums';
+import type { Id } from 'types/id';
+import type { TransactionStatus } from 'constants/enums';
 
 /** Payout / cash out. */
 export interface Payout {

@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import type { Order, PaginatedResponse } from '@lunaz/types';
+import type { Order, PaginatedResponse } from 'types';
 import { Price } from '@/ui';
 import { adminApi as api } from '@/api/adminClient';
 import { useAdminAuth } from '@/context/AdminAuthContext';

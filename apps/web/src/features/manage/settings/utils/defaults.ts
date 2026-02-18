@@ -7,7 +7,7 @@ import type {
   PaymentGateways,
   SecuritySettings,
   UserPreferences,
-} from '../types';
+} from 'manage-settings/types';
 
 export const DEFAULT_STORE_SETTINGS: StoreSettings = {
   // Store Information

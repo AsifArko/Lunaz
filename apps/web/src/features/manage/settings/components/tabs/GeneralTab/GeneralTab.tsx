@@ -2,8 +2,8 @@ import type { FormEvent } from 'react';
 import { StoreInfoSection } from './StoreInfoSection';
 import { RegionalSection } from './RegionalSection';
 import { FeaturesSection } from './FeaturesSection';
-import { SettingsSaveButton } from '../../shared/SettingsSaveButton';
-import type { StoreSettings } from '../../../types';
+import { SettingsSaveButton } from 'manage-settings/components/shared/SettingsSaveButton';
+import type { StoreSettings } from 'manage-settings/types';
 
 interface GeneralTabProps {
   settings: StoreSettings;

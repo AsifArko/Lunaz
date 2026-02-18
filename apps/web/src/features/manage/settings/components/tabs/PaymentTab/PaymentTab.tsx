@@ -1,12 +1,12 @@
 import { useState, type FormEvent } from 'react';
-import { SettingsSection } from '../../shared/SettingsSection';
-import { SettingsToggle } from '../../shared/SettingsToggle';
-import { SettingsSaveButton } from '../../shared/SettingsSaveButton';
-import { TextInput } from '../../form/TextInput';
-import { TextArea } from '../../form/TextArea';
-import { Toggle } from '../../form/Toggle';
-import type { PaymentSettings, PaymentGateways } from '../../../types';
-import { DEFAULT_PAYMENT_SETTINGS, DEFAULT_PAYMENT_GATEWAYS } from '../../../utils/defaults';
+import { SettingsSection } from 'manage-settings/components/shared/SettingsSection';
+import { SettingsToggle } from 'manage-settings/components/shared/SettingsToggle';
+import { SettingsSaveButton } from 'manage-settings/components/shared/SettingsSaveButton';
+import { TextInput } from 'manage-settings/components/form/TextInput';
+import { TextArea } from 'manage-settings/components/form/TextArea';
+import { Toggle } from 'manage-settings/components/form/Toggle';
+import type { PaymentSettings, PaymentGateways } from 'manage-settings/types';
+import { DEFAULT_PAYMENT_SETTINGS, DEFAULT_PAYMENT_GATEWAYS } from 'manage-settings/utils/defaults';
 
 // Section Icons
 const PaymentMethodsIcon = (

@@ -1,9 +1,9 @@
-import { SettingsSection } from '../../shared/SettingsSection';
-import { SettingsField } from '../../shared/SettingsField';
-import { TextInput } from '../../form/TextInput';
-import { TextArea } from '../../form/TextArea';
-import { FileUpload } from '../../form/FileUpload';
-import type { StoreSettings } from '../../../types';
+import { SettingsSection } from 'manage-settings/components/shared/SettingsSection';
+import { SettingsField } from 'manage-settings/components/shared/SettingsField';
+import { TextInput } from 'manage-settings/components/form/TextInput';
+import { TextArea } from 'manage-settings/components/form/TextArea';
+import { FileUpload } from 'manage-settings/components/form/FileUpload';
+import type { StoreSettings } from 'manage-settings/types';
 
 interface StoreInfoSectionProps {
   settings: StoreSettings;

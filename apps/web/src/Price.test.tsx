@@ -2,7 +2,7 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { Price, getProductPrice } from '@/ui';
-import type { Product } from '@lunaz/types';
+import type { Product } from 'types';
 
 describe('Price', () => {
   it('formats amount with currency symbol', () => {

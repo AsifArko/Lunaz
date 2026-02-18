@@ -1,4 +1,4 @@
-import type { UserSummary } from '../../user';
+import type { UserSummary } from 'interfaces/user';
 
 /** OAuth: when phone is required for new user */
 export interface OAuthRequiresPhoneResponse {

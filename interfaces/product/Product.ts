@@ -1,5 +1,5 @@
-import type { Id } from '../../types/id';
-import type { ProductStatus } from '../../constants/enums';
+import type { Id } from 'types/id';
+import type { ProductStatus } from 'constants/enums';
 import type { ProductVariant } from './ProductVariant';
 import type { ProductImage } from './ProductImage';
 

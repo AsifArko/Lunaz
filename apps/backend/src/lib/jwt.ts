@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
-import type { UserSummary } from '@lunaz/types';
+import type { UserSummary } from 'types';
 
 export function signToken(payload: UserSummary, secret: string, expiresIn: string): string {
   return jwt.sign(payload, secret, { expiresIn } as jwt.SignOptions);
