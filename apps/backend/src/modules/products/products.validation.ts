@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { ProductStatus } from 'constants/enums';
+import { ProductStatus } from '../../constants/enums';
 
 const variantSchema = z.object({
   id: z.string().min(1),

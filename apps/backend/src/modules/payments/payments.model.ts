@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { PaymentMethod, PaymentStatus } from 'constants/enums';
+import { PaymentMethod, PaymentStatus } from '../../constants/enums';
 
 const bkashDataSchema = new mongoose.Schema(
   {

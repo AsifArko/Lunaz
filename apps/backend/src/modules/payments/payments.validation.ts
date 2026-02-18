@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { PaymentMethod, PaymentStatus } from 'constants/enums';
+import { PaymentMethod, PaymentStatus } from '../../constants/enums';
 
 export const initiatePaymentSchema = z.object({
   body: z.object({

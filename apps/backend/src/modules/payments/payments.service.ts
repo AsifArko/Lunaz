@@ -1,4 +1,4 @@
-import { PaymentMethod, PaymentStatus } from 'constants/enums';
+import { PaymentMethod, PaymentStatus } from '../../constants/enums';
 import type { Payment } from 'types';
 import { PaymentModel, type PaymentDocument } from './payments.model.js';
 import { OrderModel } from '../orders/orders.model.js';
@@ -58,13 +58,44 @@ function getExpiryTime(method: PaymentMethod): Date {
 
 /**
  * Format payment document for API response.
+ * Handles populated orderId (from listPayments) - extracts _id and orderNumber.
  */
 export function formatPayment(payment: PaymentDocument): Payment {
   const obj = payment.toObject();
+  const orderIdVal = obj.orderId;
+  const orderId: string =
+    orderIdVal && typeof orderIdVal === 'object' && '_id' in orderIdVal
+      ? ((orderIdVal as { _id: unknown })._id?.toString() ?? String(orderIdVal))
+      : String(orderIdVal ?? '');
+  const orderNumber =
+    orderIdVal && typeof orderIdVal === 'object' && 'orderNumber' in orderIdVal
+      ? (orderIdVal as { orderNumber?: string }).orderNumber
+      : undefined;
+  const userIdVal = obj.userId;
+  const userId: string =
+    userIdVal && typeof userIdVal === 'object' && '_id' in userIdVal
+      ? ((userIdVal as { _id: unknown })._id?.toString() ?? String(userIdVal))
+      : String(userIdVal ?? '');
+  const customerName =
+    userIdVal && typeof userIdVal === 'object' && 'name' in userIdVal
+      ? (userIdVal as { name?: string }).name
+      : undefined;
+  const customerEmail =
+    userIdVal && typeof userIdVal === 'object' && 'email' in userIdVal
+      ? (userIdVal as { email?: string }).email
+      : undefined;
+  const customerPhone =
+    userIdVal && typeof userIdVal === 'object' && 'phone' in userIdVal
+      ? (userIdVal as { phone?: string }).phone
+      : undefined;
   return {
     id: obj._id.toString(),
-    orderId: obj.orderId.toString(),
-    userId: obj.userId.toString(),
+    orderId,
+    ...(orderNumber !== undefined && { orderNumber }),
+    userId,
+    ...(customerName !== undefined && { customerName }),
+    ...(customerEmail !== undefined && { customerEmail }),
+    ...(customerPhone !== undefined && { customerPhone }),
     method: obj.method,
     status: obj.status,
     amount: obj.amount,
@@ -491,7 +522,9 @@ export async function getPayment(
   userId?: string,
   isAdmin = false
 ): Promise<PaymentDocument> {
-  const payment = await PaymentModel.findById(paymentId);
+  const payment = await PaymentModel.findById(paymentId)
+    .populate('orderId', 'orderNumber total')
+    .populate('userId', 'name email phone');
   if (!payment) {
     throw Object.assign(new Error('Payment not found'), { statusCode: 404 });
   }
@@ -559,7 +592,7 @@ export async function listPayments(filters: {
   const [payments, total] = await Promise.all([
     PaymentModel.find(query)
       .populate('orderId', 'orderNumber total')
-      .populate('userId', 'name email')
+      .populate('userId', 'name email phone')
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit),
@@ -567,7 +600,7 @@ export async function listPayments(filters: {
   ]);
 
   return {
-    items: payments.map(formatPayment),
+    data: payments.map(formatPayment),
     total,
     page,
     limit,
@@ -584,7 +617,7 @@ export async function getPendingBankTransfers() {
     status: PaymentStatus.PROCESSING,
   })
     .populate('orderId', 'orderNumber total')
-    .populate('userId', 'name email')
+    .populate('userId', 'name email phone')
     .sort({ createdAt: -1 });
 
   return payments.map(formatPayment);

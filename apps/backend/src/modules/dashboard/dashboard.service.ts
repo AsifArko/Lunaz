@@ -1,7 +1,7 @@
 import { OrderModel } from '../orders/orders.model.js';
 import { ProductModel } from '../products/products.model.js';
 import { UserModel } from '../auth/auth.model.js';
-import { UserRole, OrderStatus, ProductStatus } from 'constants/enums';
+import { UserRole, OrderStatus, ProductStatus } from '../../constants/enums';
 
 /**
  * Get main dashboard statistics.

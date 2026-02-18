@@ -13,6 +13,7 @@ import { OrderDetailPage } from './orders/OrderDetailPage';
 import { CustomersPage } from './customers/CustomersPage';
 import { CustomerDetailPage } from './customers/CustomerDetailPage';
 import { TransactionsPage } from './reports/TransactionsPage';
+import { TransactionDetailPage } from './reports/TransactionDetailPage';
 import { ReportsPage } from './reports/ReportsPage';
 import { SettingsPage } from './settings/SettingsPage';
 import { AnalyticsPage } from './analytics/AnalyticsPage';
@@ -53,6 +54,7 @@ export function ManageApp() {
           <Route path="customers" element={<CustomersPage />} />
           <Route path="customers/:id" element={<CustomerDetailPage />} />
           <Route path="transactions" element={<TransactionsPage />} />
+          <Route path="transactions/:id" element={<TransactionDetailPage />} />
           <Route path="reports" element={<ReportsPage />} />
           <Route path="analytics" element={<AnalyticsPage />} />
           <Route path="speed-insights" element={<SpeedInsightsPage />} />

@@ -1,5 +1,5 @@
 import crypto from 'crypto';
-import { PaymentStatus } from 'constants/enums';
+import { PaymentStatus } from '../../../constants/enums';
 import { PaymentModel, type PaymentDocument } from '../payments.model.js';
 import { OrderModel } from '../../orders/orders.model.js';
 import { getSettings } from '../../settings/settings.model.js';

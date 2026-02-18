@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { OrderStatus, PaymentMethod } from 'constants/enums';
+import { OrderStatus, PaymentMethod } from '../../constants/enums';
 
 const addressSchema = z.object({
   name: z.string().min(1),

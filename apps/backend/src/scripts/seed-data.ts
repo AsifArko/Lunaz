@@ -29,7 +29,7 @@ import {
   TransactionType,
   TransactionStatus,
   ProductStatus,
-} from 'constants/enums';
+} from '../constants/enums';
 
 // Load .env from project root
 const __dirname = path.dirname(fileURLToPath(import.meta.url));

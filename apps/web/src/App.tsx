@@ -15,6 +15,7 @@ import { OrderDetailPage as ManageOrderDetailPage } from './features/manage/orde
 import { CustomersPage } from './features/manage/customers/CustomersPage';
 import { CustomerDetailPage } from './features/manage/customers/CustomerDetailPage';
 import { TransactionsPage } from './features/manage/reports/TransactionsPage';
+import { TransactionDetailPage } from './features/manage/reports/TransactionDetailPage';
 import { ReportsPage } from './features/manage/reports/ReportsPage';
 import { SettingsPage } from './features/manage/settings/SettingsPage';
 import { AnalyticsPage } from './features/manage/analytics/AnalyticsPage';
@@ -84,6 +85,7 @@ function App() {
           <Route path="customers" element={<CustomersPage />} />
           <Route path="customers/:id" element={<CustomerDetailPage />} />
           <Route path="transactions" element={<TransactionsPage />} />
+          <Route path="transactions/:id" element={<TransactionDetailPage />} />
           <Route path="reports" element={<ReportsPage />} />
           <Route path="analytics" element={<AnalyticsPage />} />
           <Route path="speed-insights" element={<SpeedInsightsPage />} />
