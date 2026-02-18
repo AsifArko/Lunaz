@@ -5,7 +5,7 @@ import { authMiddleware } from '../../middleware/auth.js';
 import { requireRole } from '../../middleware/requireRole.js';
 import { validateBody } from '../../middleware/validate.js';
 import { getConfig } from '../../config/index.js';
-import { UserRole } from 'constants/enums';
+import { UserRole } from '../../constants/enums';
 import { uploadToS3, extractKeyFromUrl, deleteFromS3 } from '../../lib/s3.js';
 import { createCategorySchema, updateCategorySchema } from './categories.validation.js';
 import * as categoryService from './categories.service.js';

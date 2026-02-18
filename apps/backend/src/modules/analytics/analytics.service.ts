@@ -1,4 +1,9 @@
-import type { AnalyticsEventType, DeviceType, ReferrerType, LogLevel } from 'constants/analytics';
+import type {
+  AnalyticsEventType,
+  DeviceType,
+  ReferrerType,
+  LogLevel,
+} from '../../constants/analytics';
 import type {
   AnalyticsOverview,
   AnalyticsTimeSeries,

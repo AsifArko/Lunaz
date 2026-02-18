@@ -10,7 +10,15 @@ import type { RefundData } from './RefundData';
 export interface Payment {
   id: Id;
   orderId: Id;
+  /** Order number (when orderId is populated in list responses). */
+  orderNumber?: string;
   userId: Id;
+  /** Customer name (when userId is populated in list responses). */
+  customerName?: string;
+  /** Customer email (when userId is populated in list responses). */
+  customerEmail?: string;
+  /** Customer phone (when userId is populated in list responses). */
+  customerPhone?: string;
   method: PaymentMethod;
   status: PaymentStatus;
   amount: number;

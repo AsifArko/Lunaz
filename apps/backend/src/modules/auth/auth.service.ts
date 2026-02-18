@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 import crypto from 'crypto';
 import { OAuth2Client } from 'google-auth-library';
 import type { UserSummary } from 'types';
-import { UserRole } from 'constants/enums';
+import { UserRole } from '../../constants/enums';
 import { UserModel } from './auth.model.js';
 import { AuthSessionModel } from './auth-session.model.js';
 import { AuthLogModel, AuthLogEvent, AuthLogMethod } from './auth-log.model.js';

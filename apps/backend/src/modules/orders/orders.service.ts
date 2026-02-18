@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { OrderStatus, PaymentStatus, UserRole } from 'constants/enums';
+import { OrderStatus, PaymentStatus, UserRole } from '../../constants/enums';
 import { OrderModel } from './orders.model.js';
 import { CartModel } from '../cart/cart.model.js';
 import { ProductModel } from '../products/products.model.js';

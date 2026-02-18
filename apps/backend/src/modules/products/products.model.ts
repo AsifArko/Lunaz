@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { ProductStatus } from 'constants/enums';
+import { ProductStatus } from '../../constants/enums';
 
 const variantSchema = new mongoose.Schema({
   id: { type: String, required: true },

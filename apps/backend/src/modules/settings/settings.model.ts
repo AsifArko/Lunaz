@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { PaymentMethod } from 'constants/enums';
+import { PaymentMethod } from '../../constants/enums';
 
 // Bank account schema for bank transfers
 const bankAccountSchema = new mongoose.Schema(

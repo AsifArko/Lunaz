@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { TransactionType, TransactionStatus } from 'constants/enums';
+import { TransactionType, TransactionStatus } from '../../constants/enums';
 
 const transactionSchema = new mongoose.Schema(
   {

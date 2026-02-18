@@ -1,37 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import type { Transaction, Order, PaginatedResponse } from 'types';
+import type { Payment, PaginatedResponse } from 'types';
 import { Price } from '@/ui';
 import { adminApi as api } from '@/api/adminClient';
 import { useAdminAuth } from '@/context/AdminAuthContext';
 import { useToast } from '@/context/ToastContext';
 
-// Type configuration
-const typeConfig: Record<
-  string,
-  {
-    label: string;
-    color: string;
-    bgColor: string;
-    textColor: string;
-  }
-> = {
-  sale: {
-    label: 'Sale',
-    color: 'bg-emerald-500',
-    bgColor: 'bg-emerald-50',
-    textColor: 'text-emerald-700',
-  },
-  refund: { label: 'Refund', color: 'bg-red-500', bgColor: 'bg-red-50', textColor: 'text-red-700' },
-  payout: {
-    label: 'Payout',
-    color: 'bg-blue-500',
-    bgColor: 'bg-blue-50',
-    textColor: 'text-blue-700',
-  },
-};
-
-// Status configuration
+// Payment status configuration
 const statusConfig: Record<
   string,
   {
@@ -41,11 +16,59 @@ const statusConfig: Record<
     textColor: string;
   }
 > = {
+  paid: {
+    label: 'Paid',
+    color: 'bg-emerald-500',
+    bgColor: 'bg-emerald-50',
+    textColor: 'text-emerald-700',
+  },
   pending: {
     label: 'Pending',
     color: 'bg-amber-500',
     bgColor: 'bg-amber-50',
     textColor: 'text-amber-700',
+  },
+  initiated: {
+    label: 'Initiated',
+    color: 'bg-blue-500',
+    bgColor: 'bg-blue-50',
+    textColor: 'text-blue-700',
+  },
+  processing: {
+    label: 'Processing',
+    color: 'bg-indigo-500',
+    bgColor: 'bg-indigo-50',
+    textColor: 'text-indigo-700',
+  },
+  failed: {
+    label: 'Failed',
+    color: 'bg-red-500',
+    bgColor: 'bg-red-50',
+    textColor: 'text-red-700',
+  },
+  cancelled: {
+    label: 'Cancelled',
+    color: 'bg-gray-500',
+    bgColor: 'bg-gray-50',
+    textColor: 'text-gray-700',
+  },
+  expired: {
+    label: 'Expired',
+    color: 'bg-gray-500',
+    bgColor: 'bg-gray-50',
+    textColor: 'text-gray-700',
+  },
+  refunded: {
+    label: 'Refunded',
+    color: 'bg-red-500',
+    bgColor: 'bg-red-50',
+    textColor: 'text-red-700',
+  },
+  partially_refunded: {
+    label: 'Partial Refund',
+    color: 'bg-orange-500',
+    bgColor: 'bg-orange-50',
+    textColor: 'text-orange-700',
   },
   completed: {
     label: 'Completed',
@@ -53,7 +76,6 @@ const statusConfig: Record<
     bgColor: 'bg-emerald-50',
     textColor: 'text-emerald-700',
   },
-  failed: { label: 'Failed', color: 'bg-red-500', bgColor: 'bg-red-50', textColor: 'text-red-700' },
 };
 
 // Filter Dropdown Component
@@ -170,11 +192,18 @@ function FilterDropdown({
   );
 }
 
-// Shorten ID for display
-function shortenId(id: string, length: number = 8): string {
+// Format GatewayPaymentId: strip TXN_LN- prefix, show full ID
+function formatGatewayPaymentId(id: string | undefined): string {
   if (!id) return '—';
-  if (id.length <= length) return id;
-  return `${id.slice(0, length)}...`;
+  return id.startsWith('TXN_LN-') ? id.slice(7) : id;
+}
+
+// Get card type (brand only, e.g. VISA, Mastercard)
+function getCardTypeDisplay(payment: Payment): string {
+  const card = payment.card;
+  const gw = payment.gatewayResponse as Record<string, string> | undefined;
+  const brand = card?.cardBrand || gw?.card_brand;
+  return brand || '—';
 }
 
 export function TransactionsPage() {
@@ -182,21 +211,20 @@ export function TransactionsPage() {
   const { addToast } = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [orders, setOrders] = useState<Record<string, Order>>({});
+  const [payments, setPayments] = useState<Payment[]>([]);
   const [total, setTotal] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
 
   const page = parseInt(searchParams.get('page') || '1', 10);
-  const type = searchParams.get('type') || '';
   const status = searchParams.get('status') || '';
+  const method = searchParams.get('method') || '';
   const dateFrom = searchParams.get('dateFrom') || '';
   const dateTo = searchParams.get('dateTo') || '';
   const limit = 10;
 
   useEffect(() => {
-    async function fetchTransactions() {
+    async function fetchPayments() {
       if (!token) return;
       setIsLoading(true);
 
@@ -204,44 +232,25 @@ export function TransactionsPage() {
         const params = new URLSearchParams();
         params.set('page', page.toString());
         params.set('limit', limit.toString());
-        params.set('sort', 'createdAt');
-        params.set('order', 'desc');
-        if (type) params.set('type', type);
-        if (dateFrom) params.set('dateFrom', dateFrom);
-        if (dateTo) params.set('dateTo', dateTo);
+        if (status) params.set('status', status);
+        if (method) params.set('method', method);
+        if (dateFrom) params.set('from', dateFrom);
+        if (dateTo) params.set('to', dateTo);
 
-        const res = await api<PaginatedResponse<Transaction>>(
-          `/transactions?${params.toString()}`,
-          { token }
-        );
-        setTransactions(res.data);
+        const res = await api<PaginatedResponse<Payment>>(`/payments?${params.toString()}`, {
+          token,
+        });
+        setPayments(res.data);
         setTotal(res.total);
         setTotalPages(res.totalPages);
-
-        // Fetch order details for transactions
-        const orderIds = [...new Set(res.data.map((t) => t.orderId).filter(Boolean))];
-        if (orderIds.length > 0) {
-          const ordersMap: Record<string, Order> = {};
-          await Promise.all(
-            orderIds.map(async (orderId) => {
-              try {
-                const order = await api<Order>(`/orders/${orderId}`, { token });
-                ordersMap[orderId] = order;
-              } catch {
-                // Order might not exist or be accessible
-              }
-            })
-          );
-          setOrders(ordersMap);
-        }
       } catch {
         addToast('Failed to load transactions', 'error');
       } finally {
         setIsLoading(false);
       }
     }
-    fetchTransactions();
-  }, [token, page, type, dateFrom, dateTo, addToast]);
+    fetchPayments();
+  }, [token, page, status, method, dateFrom, dateTo, addToast]);
 
   const updateParams = (updates: Record<string, string>) => {
     const newParams = new URLSearchParams(searchParams);
@@ -256,26 +265,26 @@ export function TransactionsPage() {
     setSearchParams(newParams);
   };
 
-  // Filter by status on frontend
-  const filteredTransactions = status
-    ? transactions.filter((t) => t.status === status)
-    : transactions;
+  // Filter by status on frontend (in case backend doesn't support all filters)
+  const filteredPayments = status ? payments.filter((p) => p.status === status) : payments;
 
-  // Calculate stats
-  const salesCount = transactions.filter((t) => t.type === 'sale').length;
-  const refundsCount = transactions.filter((t) => t.type === 'refund').length;
-  const totalSales = transactions
-    .filter((t) => t.type === 'sale' && t.status === 'completed')
-    .reduce((sum, t) => sum + t.amount, 0);
-  const totalRefunds = transactions
-    .filter((t) => t.type === 'refund' && t.status === 'completed')
-    .reduce((sum, t) => sum + t.amount, 0);
-  const netAmount = totalSales - totalRefunds;
+  // Calculate stats from current page data
+  const paidCount = payments.filter((p) => p.status === 'paid').length;
+  const refundedCount = payments.filter((p) =>
+    ['refunded', 'partially_refunded'].includes(p.status)
+  ).length;
+  const totalPaid = payments
+    .filter((p) => p.status === 'paid')
+    .reduce((sum, p) => sum + p.amount, 0);
+  const totalRefunded = payments
+    .filter((p) => ['refunded', 'partially_refunded'].includes(p.status))
+    .reduce((sum, p) => sum + (p.refund?.amount ?? p.amount), 0);
+  const netAmount = totalPaid - totalRefunded;
 
   const startItem = total > 0 ? (page - 1) * limit + 1 : 0;
   const endItem = Math.min(page * limit, total);
 
-  const hasFilters = Boolean(type || status || dateFrom || dateTo);
+  const hasFilters = Boolean(status || method || dateFrom || dateTo);
 
   return (
     <div className="space-y-6">
@@ -284,7 +293,7 @@ export function TransactionsPage() {
         <div>
           <h1 className="text-xl font-medium text-gray-900">Transactions</h1>
           <p className="mt-1 text-sm text-gray-500">
-            View all payment transactions and financial records
+            View SSLCommerz and payment gateway transactions with order links
           </p>
         </div>
       </div>
@@ -333,8 +342,8 @@ export function TransactionsPage() {
               </svg>
             </div>
             <div>
-              <p className="text-[10px] font-medium text-gray-500 uppercase tracking-wide">Sales</p>
-              <p className="text-lg font-semibold text-emerald-600">{salesCount}</p>
+              <p className="text-[10px] font-medium text-gray-500 uppercase tracking-wide">Paid</p>
+              <p className="text-lg font-semibold text-emerald-600">{paidCount}</p>
             </div>
           </div>
         </div>
@@ -358,9 +367,9 @@ export function TransactionsPage() {
             </div>
             <div>
               <p className="text-[10px] font-medium text-gray-500 uppercase tracking-wide">
-                Refunds
+                Refunded
               </p>
-              <p className="text-lg font-semibold text-red-600">{refundsCount}</p>
+              <p className="text-lg font-semibold text-red-600">{refundedCount}</p>
             </div>
           </div>
         </div>
@@ -394,28 +403,34 @@ export function TransactionsPage() {
 
       {/* Filters */}
       <div className="flex flex-wrap items-center gap-2">
-        {/* Type Filter */}
-        <FilterDropdown
-          options={[
-            { value: 'sale', label: 'Sales' },
-            { value: 'refund', label: 'Refunds' },
-            { value: 'payout', label: 'Payouts' },
-          ]}
-          value={type}
-          onChange={(val) => updateParams({ type: val })}
-          placeholder="All Types"
-        />
-
         {/* Status Filter */}
         <FilterDropdown
           options={[
+            { value: 'paid', label: 'Paid' },
             { value: 'pending', label: 'Pending' },
-            { value: 'completed', label: 'Completed' },
+            { value: 'initiated', label: 'Initiated' },
+            { value: 'processing', label: 'Processing' },
             { value: 'failed', label: 'Failed' },
+            { value: 'cancelled', label: 'Cancelled' },
+            { value: 'refunded', label: 'Refunded' },
           ]}
           value={status}
           onChange={(val) => updateParams({ status: val })}
           placeholder="All Status"
+        />
+
+        {/* Method Filter */}
+        <FilterDropdown
+          options={[
+            { value: 'card', label: 'Card / SSLCommerz' },
+            { value: 'bkash', label: 'bKash' },
+            { value: 'nagad', label: 'Nagad' },
+            { value: 'bank_transfer', label: 'Bank Transfer' },
+            { value: 'cash_on_delivery', label: 'Cash on Delivery' },
+          ]}
+          value={method}
+          onChange={(val) => updateParams({ method: val })}
+          placeholder="All Methods"
         />
 
         {/* Date Range */}
@@ -487,7 +502,7 @@ export function TransactionsPage() {
               Loading transactions...
             </div>
           </div>
-        ) : filteredTransactions.length === 0 ? (
+        ) : filteredPayments.length === 0 ? (
           <div className="p-12 text-center">
             <div className="w-12 h-12 mx-auto mb-4 bg-gray-50 rounded-full flex items-center justify-center">
               <svg
@@ -515,129 +530,111 @@ export function TransactionsPage() {
                 <thead>
                   <tr className="border-b border-gray-100 bg-gray-50/50">
                     <th className="px-4 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">
-                      TRX ID
-                    </th>
-                    <th className="px-4 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">
                       Date
                     </th>
                     <th className="px-4 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">
                       Order
                     </th>
                     <th className="px-4 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">
-                      Customer
-                    </th>
-                    <th className="px-4 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">
                       Payment ID
                     </th>
                     <th className="px-4 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">
-                      Type
+                      Customer
+                    </th>
+                    <th className="px-4 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">
+                      Card Type
                     </th>
                     <th className="px-4 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">
                       Method
                     </th>
-                    <th className="px-4 py-2 text-right text-[10px] font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-4 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">
                       Amount
                     </th>
                     <th className="px-4 py-2 text-left text-[10px] font-medium text-gray-500 uppercase tracking-wider">
                       Status
                     </th>
-                    <th className="px-4 py-2 text-right text-[10px] font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-4 py-2 text-center text-[10px] font-medium text-gray-500 uppercase tracking-wider">
                       Action
                     </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-50">
-                  {filteredTransactions.map((txn) => {
-                    const typeStyle = typeConfig[txn.type] || typeConfig.sale;
-                    const statusStyle = statusConfig[txn.status] || statusConfig.pending;
-                    const order = orders[txn.orderId];
+                  {filteredPayments.map((payment) => {
+                    const statusStyle = statusConfig[payment.status] || statusConfig.pending;
 
                     return (
-                      <tr key={txn.id} className="hover:bg-gray-50/50 transition-colors">
+                      <tr key={payment.id} className="hover:bg-gray-50/50 transition-colors">
                         <td className="px-4 py-2">
-                          <span
-                            className="inline-flex px-1.5 py-0.5 text-[10px] font-mono text-gray-500 bg-gray-100 rounded"
-                            title={txn.id}
-                          >
-                            ...{txn.id.slice(-6)}
-                          </span>
-                        </td>
-                        <td className="px-4 py-2">
-                          <div className="text-[10px] text-gray-600">
-                            {new Date(txn.createdAt).toLocaleDateString('en-US', {
+                          <div className="text-[9px] text-gray-600">
+                            {new Date(payment.createdAt).toLocaleDateString('en-US', {
                               month: 'short',
                               day: 'numeric',
                               year: 'numeric',
                             })}
                           </div>
-                          <div className="text-[9px] text-gray-400">
-                            {new Date(txn.createdAt).toLocaleTimeString('en-US', {
+                          <div className="text-[8px] text-gray-400">
+                            {new Date(payment.createdAt).toLocaleTimeString('en-US', {
                               hour: '2-digit',
                               minute: '2-digit',
                             })}
                           </div>
                         </td>
                         <td className="px-4 py-2">
-                          {order ? (
-                            <Link to={`/manage/orders/${txn.orderId}`}>
-                              <span className="inline-flex px-1.5 py-0.5 text-[10px] font-medium text-gray-600 bg-gray-100 rounded hover:bg-gray-200 transition-colors">
-                                #{order.orderNumber}
+                          {payment.orderId ? (
+                            <Link to={`/manage/orders/${payment.orderId}`}>
+                              <span className="inline-flex px-1.5 py-0.5 text-[10px] font-medium text-gray-600 bg-gray-100 rounded hover:bg-gray-200 transition-colors cursor-pointer">
+                                #{payment.orderNumber || 'View'}
                               </span>
                             </Link>
-                          ) : txn.orderId ? (
-                            <Link to={`/manage/orders/${txn.orderId}`}>
-                              <span className="inline-flex px-1.5 py-0.5 text-[10px] text-gray-500 bg-gray-50 rounded hover:bg-gray-100 transition-colors">
-                                View
-                              </span>
-                            </Link>
-                          ) : (
-                            <span className="text-[10px] text-gray-400">—</span>
-                          )}
-                        </td>
-                        <td className="px-4 py-2">
-                          {order ? (
-                            <span className="text-[10px] text-gray-600 truncate max-w-[100px] block">
-                              {order.shippingAddress?.city || 'Customer'}
-                            </span>
-                          ) : (
-                            <span className="text-[10px] text-gray-400">—</span>
-                          )}
-                        </td>
-                        <td className="px-4 py-2">
-                          {txn.externalId ? (
-                            <span
-                              className="inline-flex px-1.5 py-0.5 text-[9px] font-mono text-gray-500 bg-gray-100 rounded"
-                              title={txn.externalId}
-                            >
-                              {shortenId(txn.externalId, 10)}
-                            </span>
                           ) : (
                             <span className="text-[10px] text-gray-400">—</span>
                           )}
                         </td>
                         <td className="px-4 py-2">
                           <span
-                            className={`inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium rounded ${typeStyle.bgColor} ${typeStyle.textColor}`}
+                            className="inline-flex px-1.5 py-0.5 text-[9px] font-mono text-gray-500 bg-gray-100 rounded"
+                            title={payment.gatewayPaymentId || payment.id}
                           >
-                            <span className={`w-1 h-1 rounded-full ${typeStyle.color}`} />
-                            {typeStyle.label}
+                            {formatGatewayPaymentId(payment.gatewayPaymentId || payment.id)}
                           </span>
                         </td>
                         <td className="px-4 py-2">
-                          {txn.paymentMethod ? (
+                          {payment.customerName ? (
+                            <span className="text-[11px] text-gray-500 truncate max-w-[120px] block">
+                              {payment.customerName}
+                            </span>
+                          ) : (
+                            <span className="text-[11px] text-gray-400">—</span>
+                          )}
+                        </td>
+                        <td className="px-4 py-2">
+                          <span className="inline-flex px-1.5 py-0.5 text-[9px] text-gray-500 bg-gray-100 rounded">
+                            {getCardTypeDisplay(payment)}
+                          </span>
+                        </td>
+                        <td className="px-4 py-2">
+                          {payment.method ? (
                             <span className="inline-flex px-1.5 py-0.5 text-[9px] text-gray-500 bg-gray-100 rounded capitalize">
-                              {txn.paymentMethod.replace(/_/g, ' ')}
+                              {payment.method.replace(/_/g, ' ')}
                             </span>
                           ) : (
                             <span className="text-[10px] text-gray-400">—</span>
                           )}
                         </td>
-                        <td className="px-4 py-2 text-right">
-                          <Price
-                            amount={txn.amount}
-                            currency={txn.currency}
-                            className={`text-[10px] ${txn.type === 'refund' ? 'text-red-600' : 'text-gray-700'}`}
-                          />
+                        <td className="px-4 py-2 text-left">
+                          <span
+                            className={`inline-flex px-1.5 py-0.5 text-[9px] font-medium bg-gray-100 rounded ${
+                              ['refunded', 'partially_refunded'].includes(payment.status)
+                                ? 'text-red-600'
+                                : 'text-gray-700'
+                            }`}
+                          >
+                            <Price
+                              amount={payment.amount}
+                              currency={payment.currency}
+                              className=""
+                            />
+                          </span>
                         </td>
                         <td className="px-4 py-2">
                           <span
@@ -647,30 +644,26 @@ export function TransactionsPage() {
                             {statusStyle.label}
                           </span>
                         </td>
-                        <td className="px-4 py-2">
-                          <div className="flex items-center justify-end">
-                            {txn.orderId && (
-                              <Link
-                                to={`/manage/orders/${txn.orderId}`}
-                                className="p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors"
-                                title="View Order"
-                              >
-                                <svg
-                                  className="w-3.5 h-3.5"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  viewBox="0 0 24 24"
-                                  strokeWidth={1.5}
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"
-                                  />
-                                </svg>
-                              </Link>
-                            )}
-                          </div>
+                        <td className="px-4 py-2 text-center">
+                          <Link
+                            to={`/manage/transactions/${payment.id}`}
+                            className="inline-flex items-center justify-center p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-md transition-colors"
+                            title="View transaction details"
+                          >
+                            <svg
+                              className="w-3.5 h-3.5"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                              strokeWidth={2}
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M8.25 4.5l7.5 7.5-7.5 7.5"
+                              />
+                            </svg>
+                          </Link>
                         </td>
                       </tr>
                     );

@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from 'express';
-import type { UserRole } from 'constants/enums';
+import type { UserRole } from '../constants/enums';
 
 export function requireRole(...allowed: UserRole[]) {
   return (req: Request, res: Response, next: NextFunction): void => {

@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { OrderStatus, PaymentStatus, PaymentMethod } from 'constants/enums';
+import { OrderStatus, PaymentStatus, PaymentMethod } from '../../constants/enums';
 
 const orderAddressSchema = new mongoose.Schema({
   name: { type: String, required: true },

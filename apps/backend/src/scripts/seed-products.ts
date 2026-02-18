@@ -18,7 +18,7 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import mongoose from 'mongoose';
-import { ProductStatus } from 'constants/enums';
+import { ProductStatus } from '../constants/enums';
 
 // Load .env from project root (3 levels up from this script)
 const __dirname = path.dirname(fileURLToPath(import.meta.url));

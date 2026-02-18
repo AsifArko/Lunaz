@@ -3,8 +3,8 @@ import { authMiddleware } from '../../middleware/auth.js';
 import { requireRole } from '../../middleware/requireRole.js';
 import { validateBody, validateQuery } from '../../middleware/validate.js';
 import { getConfig } from '../../config/index.js';
-import { UserRole } from 'constants/enums';
-import { LogLevel } from 'constants/analytics';
+import { UserRole } from '../../constants/enums';
+import { LogLevel } from '../../constants/analytics';
 import { analyticsService } from './analytics.service.js';
 import {
   collectEventsSchema,

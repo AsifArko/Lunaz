@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import { UserModel } from '../auth/auth.model.js';
 import { OrderModel } from '../orders/orders.model.js';
-import { UserRole } from 'constants/enums';
+import { UserRole } from '../../constants/enums';
 
 interface PaginationParams {
   page: number;
