@@ -1,17 +1,94 @@
 import { Router } from 'express';
+import multer from 'multer';
 import { authMiddleware } from '../../middleware/auth.js';
 import { requireRole } from '../../middleware/requireRole.js';
 import { validateBody, validateParams, validateQuery } from '../../middleware/validate.js';
 import { getConfig } from '../../config/index.js';
 import { UserRole } from '../../constants/enums';
+import { uploadToS3 } from '../../lib/s3.js';
 import * as complianceService from './compliance.service.js';
 import * as validators from './compliance.validation.js';
 
 const router = Router();
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 25 * 1024 * 1024 }, // 25MB for documents
+  fileFilter: (_req, file, cb) => {
+    const allowed = [
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'application/vnd.ms-excel',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'image/jpeg',
+      'image/jpg',
+      'image/png',
+      'image/gif',
+      'image/webp',
+    ];
+    if (allowed.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error(`File type ${file.mimetype} not allowed. Use PDF, Word, Excel, or images.`));
+    }
+  },
+});
+
+const COMPLIANCE_S3_PREFIXES: Record<string, string> = {
+  'income-tax': 'compliance/income-tax',
+  authenticity: 'compliance/authenticity',
+  certificates: 'compliance/certificates',
+  'legal-documents': 'compliance/legal-documents',
+};
 
 // Apply auth middleware to all routes
 router.use(authMiddleware(getConfig));
 router.use(requireRole(UserRole.ADMIN));
+
+// POST /compliance/upload - Upload document to S3 (different folder per type)
+router.post(
+  '/upload',
+  upload.single('file'),
+  (req, res, next) => {
+    const type = req.query.type as string;
+    if (!type || !COMPLIANCE_S3_PREFIXES[type]) {
+      res.status(400).json({
+        error:
+          'Invalid or missing type. Use: income-tax, authenticity, certificates, legal-documents',
+      });
+      return;
+    }
+    next();
+  },
+  async (req, res, next) => {
+    try {
+      const cfg = getConfig();
+      const file = req.file;
+      const type = req.query.type as string;
+      const entityId = (req.query.entityId as string) || 'uploads';
+
+      if (!file) {
+        res.status(400).json({ error: 'No file uploaded' });
+        return;
+      }
+
+      const prefix = COMPLIANCE_S3_PREFIXES[type];
+      const result = await uploadToS3(cfg, file.buffer, file.mimetype, prefix, entityId);
+
+      if (!result) {
+        res.status(503).json({
+          error:
+            'File upload is not configured. Set S3_BUCKET, S3_REGION, AWS_ACCESS_KEY_ID, and AWS_SECRET_ACCESS_KEY in environment.',
+        });
+        return;
+      }
+
+      res.status(201).json({ url: result.url, key: result.key });
+    } catch (e) {
+      next(e);
+    }
+  }
+);
 
 // ============================================
 // TAX RECORDS

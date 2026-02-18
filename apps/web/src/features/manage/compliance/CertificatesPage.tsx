@@ -1,6 +1,9 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { API_URL } from '@/api/adminClient';
 import { useAdminAuth } from '@/context/AdminAuthContext';
+import { useComplianceUpload } from './hooks/useComplianceUpload';
+import { DocumentUploadZone } from './components/DocumentUploadZone';
+import { Select } from './components/Select';
 
 interface Certificate {
   _id: string;
@@ -20,111 +23,256 @@ interface Certificate {
   expiryStatus?: string;
 }
 
-interface DropdownOption {
-  value: string;
-  label: string;
-}
+const CERT_TYPE_OPTIONS = [
+  { value: 'trade_license', label: 'Trade License' },
+  { value: 'fire_safety', label: 'Fire Safety' },
+  { value: 'health_safety', label: 'Health & Safety' },
+  { value: 'environmental', label: 'Environmental' },
+  { value: 'import_license', label: 'Import License' },
+  { value: 'export_license', label: 'Export License' },
+  { value: 'quality_certification', label: 'Quality Certification' },
+  { value: 'insurance', label: 'Insurance' },
+  { value: 'professional_license', label: 'Professional License' },
+  { value: 'tax_clearance', label: 'Tax Clearance' },
+  { value: 'other', label: 'Other' },
+];
 
-function Dropdown({
-  value,
-  onChange,
-  options,
-  placeholder,
+function AddCertificateModal({
+  onClose,
+  onSuccess,
+  token,
 }: {
-  value: string;
-  onChange: (value: string) => void;
-  options: DropdownOption[];
-  placeholder: string;
+  onClose: () => void;
+  onSuccess: () => void;
+  token: string;
 }) {
-  const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const { uploadFile, uploading, error } = useComplianceUpload('certificates');
+  const [submitting, setSubmitting] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
+  const [certificateFile, setCertificateFile] = useState('');
+  const [form, setForm] = useState({
+    certificateType: 'trade_license',
+    certificateNumber: '',
+    name: '',
+    description: '',
+    issuingAuthority: '',
+    issueDate: new Date().toISOString().slice(0, 10),
+    expiryDate: '',
+    renewalRequired: true,
+    renewalFee: undefined as number | undefined,
+  });
 
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
+  const handleFileUpload = async (file: File) => {
+    const url = await uploadFile(file);
+    if (url) setCertificateFile(url);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setFormError(null);
+    if (!certificateFile) {
+      setFormError('Please upload the certificate file');
+      return;
     }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  const selectedOption = options.find((opt) => opt.value === value);
+    setSubmitting(true);
+    try {
+      const body = {
+        ...form,
+        certificateFile,
+        issueDate: new Date(form.issueDate).toISOString(),
+        expiryDate: form.expiryDate ? new Date(form.expiryDate).toISOString() : undefined,
+        renewalFee: form.renewalFee,
+      };
+      const res = await fetch(`${API_URL}/compliance/certificates`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data?.error || 'Failed to create');
+      }
+      onSuccess();
+    } catch (e) {
+      setFormError(e instanceof Error ? e.message : 'Failed to create');
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
-    <div className="relative" ref={dropdownRef}>
-      <button
-        type="button"
-        onClick={() => setIsOpen(!isOpen)}
-        className={`flex items-center justify-between gap-2 px-3 py-2 min-w-[160px] bg-white border rounded-md text-sm transition-colors ${
-          isOpen
-            ? 'border-slate-400 ring-1 ring-slate-400'
-            : 'border-slate-200 hover:border-slate-300'
-        }`}
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+      <div
+        className="bg-white rounded-lg shadow-xl max-w-lg w-full max-h-[90vh] overflow-auto"
+        onClick={(e) => e.stopPropagation()}
       >
-        <span className={selectedOption ? 'text-slate-900' : 'text-slate-500'}>
-          {selectedOption ? selectedOption.label : placeholder}
-        </span>
-        <svg
-          className={`w-4 h-4 text-slate-400 transition-transform ${isOpen ? 'rotate-180' : ''}`}
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={1.5}
-            d="M19.5 8.25l-7.5 7.5-7.5-7.5"
-          />
-        </svg>
-      </button>
-      {isOpen && (
-        <div className="absolute z-20 mt-1 w-full bg-white border border-slate-200 rounded-md shadow-lg py-1 max-h-60 overflow-auto">
+        <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+          <h2 className="text-base font-semibold text-slate-900">Add Certificate</h2>
           <button
-            type="button"
-            onClick={() => {
-              onChange('');
-              setIsOpen(false);
-            }}
-            className={`w-full px-3 py-2 text-left text-sm hover:bg-slate-50 ${
-              !value ? 'text-slate-900 bg-slate-50' : 'text-slate-500'
-            }`}
+            onClick={onClose}
+            className="p-1.5 text-slate-400 hover:text-slate-600 rounded-md hover:bg-slate-100"
           >
-            {placeholder}
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
           </button>
-          {options.map((option) => (
-            <button
-              key={option.value}
-              type="button"
-              onClick={() => {
-                onChange(option.value);
-                setIsOpen(false);
-              }}
-              className={`w-full px-3 py-2 text-left text-sm hover:bg-slate-50 flex items-center justify-between ${
-                value === option.value ? 'text-slate-900 bg-slate-50' : 'text-slate-600'
-              }`}
-            >
-              {option.label}
-              {value === option.value && (
-                <svg
-                  className="w-4 h-4 text-slate-600"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-              )}
-            </button>
-          ))}
         </div>
-      )}
+        <form onSubmit={handleSubmit} className="p-5 space-y-4">
+          <div>
+            <label className="block text-xs font-medium text-slate-600 mb-1">
+              Certificate Type
+            </label>
+            <Select
+              value={form.certificateType}
+              onChange={(v) => setForm({ ...form, certificateType: v })}
+              options={CERT_TYPE_OPTIONS}
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-slate-600 mb-1">
+                Certificate Number *
+              </label>
+              <input
+                type="text"
+                value={form.certificateNumber}
+                onChange={(e) => setForm({ ...form, certificateNumber: e.target.value })}
+                required
+                className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-slate-600 mb-1">Name *</label>
+              <input
+                type="text"
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                required
+                className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm"
+              />
+            </div>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-slate-600 mb-1">
+              Issuing Authority *
+            </label>
+            <input
+              type="text"
+              value={form.issuingAuthority}
+              onChange={(e) => setForm({ ...form, issuingAuthority: e.target.value })}
+              required
+              className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm"
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-slate-600 mb-1">Issue Date *</label>
+              <input
+                type="date"
+                value={form.issueDate}
+                onChange={(e) => setForm({ ...form, issueDate: e.target.value })}
+                required
+                className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-slate-600 mb-1">Expiry Date</label>
+              <input
+                type="date"
+                value={form.expiryDate}
+                onChange={(e) => setForm({ ...form, expiryDate: e.target.value })}
+                className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm"
+              />
+            </div>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-slate-600 mb-1">
+              Certificate File *
+            </label>
+            <DocumentUploadZone
+              onFileSelect={handleFileUpload}
+              uploading={uploading}
+              error={error}
+              label="Upload certificate document"
+            />
+            {certificateFile && (
+              <a
+                href={certificateFile}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-slate-600 mt-1 block truncate"
+              >
+                Uploaded ✓
+              </a>
+            )}
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-slate-600 mb-1">Description</label>
+            <textarea
+              value={form.description}
+              onChange={(e) => setForm({ ...form, description: e.target.value })}
+              rows={2}
+              className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm"
+            />
+          </div>
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="renewal"
+              checked={form.renewalRequired}
+              onChange={(e) => setForm({ ...form, renewalRequired: e.target.checked })}
+              className="w-4 h-4 rounded border-slate-300 text-slate-900"
+            />
+            <label htmlFor="renewal" className="text-sm text-slate-600">
+              Renewal required
+            </label>
+          </div>
+          {form.renewalRequired && (
+            <div>
+              <label className="block text-xs font-medium text-slate-600 mb-1">
+                Renewal Fee (BDT)
+              </label>
+              <input
+                type="number"
+                min={0}
+                value={form.renewalFee ?? ''}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    renewalFee: e.target.value ? Number(e.target.value) : undefined,
+                  })
+                }
+                className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm"
+              />
+            </div>
+          )}
+          {formError && <p className="text-sm text-red-600">{formError}</p>}
+          <div className="flex justify-end gap-2 pt-2">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-3.5 py-2 text-sm text-slate-600 hover:text-slate-800 font-medium rounded-md hover:bg-slate-100"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={submitting}
+              className="px-3.5 py-2 text-sm bg-slate-900 text-white font-medium rounded-md hover:bg-slate-800 disabled:opacity-50"
+            >
+              {submitting ? 'Saving...' : 'Save'}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }
@@ -140,20 +288,7 @@ export function CertificatesPage() {
   });
   const [showForm, setShowForm] = useState(false);
 
-  const typeOptions: DropdownOption[] = [
-    { value: 'trade_license', label: 'Trade License' },
-    { value: 'fire_safety', label: 'Fire Safety' },
-    { value: 'health_safety', label: 'Health & Safety' },
-    { value: 'environmental', label: 'Environmental' },
-    { value: 'import_license', label: 'Import License' },
-    { value: 'export_license', label: 'Export License' },
-    { value: 'quality_certification', label: 'Quality Certification' },
-    { value: 'insurance', label: 'Insurance' },
-    { value: 'professional_license', label: 'Professional License' },
-    { value: 'tax_clearance', label: 'Tax Clearance' },
-  ];
-
-  const statusOptions: DropdownOption[] = [
+  const statusOptions = [
     { value: 'active', label: 'Active' },
     { value: 'expired', label: 'Expired' },
     { value: 'suspended', label: 'Suspended' },
@@ -298,17 +433,21 @@ export function CertificatesPage() {
           )}
         </div>
         <div className="p-4 flex flex-wrap gap-3 items-center">
-          <Dropdown
+          <Select
             value={filter.type}
-            onChange={(value) => setFilter({ ...filter, type: value })}
-            options={typeOptions}
+            onChange={(v) => setFilter({ ...filter, type: v })}
+            options={CERT_TYPE_OPTIONS}
             placeholder="All Types"
+            allowClear
+            className="min-w-[160px]"
           />
-          <Dropdown
+          <Select
             value={filter.status}
-            onChange={(value) => setFilter({ ...filter, status: value })}
+            onChange={(v) => setFilter({ ...filter, status: v })}
             options={statusOptions}
             placeholder="All Status"
+            allowClear
+            className="min-w-[160px]"
           />
           <label className="flex items-center gap-2 text-sm cursor-pointer ml-2">
             <input
@@ -456,50 +595,15 @@ export function CertificatesPage() {
       )}
 
       {/* Add Form Modal */}
-      {showForm && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-          <div
-            className="bg-white rounded-lg shadow-xl max-w-lg w-full max-h-[90vh] overflow-auto"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
-              <h2 className="text-base font-semibold text-slate-900">Add Certificate</h2>
-              <button
-                onClick={() => setShowForm(false)}
-                className="p-1.5 text-slate-400 hover:text-slate-600 rounded-md hover:bg-slate-100 transition-colors"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={1.5}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </button>
-            </div>
-            <div className="p-5">
-              <p className="text-sm text-slate-500 mb-5">
-                Certificate form will be implemented here with fields for certificate type, number,
-                issuing authority, dates, and document upload.
-              </p>
-              <div className="flex justify-end gap-2">
-                <button
-                  onClick={() => setShowForm(false)}
-                  className="px-3.5 py-2 text-sm text-slate-600 hover:text-slate-800 font-medium rounded-md hover:bg-slate-100 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={() => setShowForm(false)}
-                  className="px-3.5 py-2 text-sm bg-slate-900 text-white font-medium rounded-md hover:bg-slate-800 transition-colors"
-                >
-                  Coming Soon
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+      {showForm && token && (
+        <AddCertificateModal
+          onClose={() => setShowForm(false)}
+          onSuccess={() => {
+            setShowForm(false);
+            fetchCertificates();
+          }}
+          token={token}
+        />
       )}
     </div>
   );

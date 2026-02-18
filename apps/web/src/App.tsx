@@ -25,6 +25,7 @@ import { TrafficLogsPage } from './features/manage/analytics/TrafficLogsPage';
 import {
   ComplianceDashboard,
   IncomeTaxPage,
+  IncomeTaxDetailPage,
   BusinessAuthenticityPage,
   CertificatesPage,
   LegalDocumentsPage,
@@ -94,6 +95,7 @@ function App() {
           <Route path="settings" element={<SettingsPage />} />
           <Route path="compliance/dashboard" element={<ComplianceDashboard />} />
           <Route path="compliance/income-tax" element={<IncomeTaxPage />} />
+          <Route path="compliance/income-tax/:id" element={<IncomeTaxDetailPage />} />
           <Route path="compliance/authenticity" element={<BusinessAuthenticityPage />} />
           <Route path="compliance/certificates" element={<CertificatesPage />} />
           <Route path="compliance/documents" element={<LegalDocumentsPage />} />

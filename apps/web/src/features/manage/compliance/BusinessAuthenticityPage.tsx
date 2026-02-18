@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
 import { API_URL } from '@/api/adminClient';
 import { useAdminAuth } from '@/context/AdminAuthContext';
+import { useComplianceUpload } from './hooks/useComplianceUpload';
+import { DocumentUploadZone } from './components/DocumentUploadZone';
+import { Select } from './components/Select';
 
 interface Director {
   _id: string;
@@ -46,13 +49,18 @@ interface BusinessAuthenticity {
   directors: Director[];
   authorizedCapital?: number;
   paidUpCapital?: number;
+  registrationCertificate?: string;
+  memorandumOfAssociation?: string;
+  articlesOfAssociation?: string;
 }
 
 export function BusinessAuthenticityPage() {
   const { token } = useAdminAuth();
   const [data, setData] = useState<BusinessAuthenticity | null>(null);
   const [loading, setLoading] = useState(true);
-  const [, setEditMode] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+  const [showAddIdentifier, setShowAddIdentifier] = useState(false);
+  const [showAddDirector, setShowAddDirector] = useState(false);
 
   useEffect(() => {
     fetchAuthenticity();
@@ -170,7 +178,7 @@ export function BusinessAuthenticityPage() {
             registration details to get started.
           </p>
           <button
-            onClick={() => setEditMode(true)}
+            onClick={() => setShowForm(true)}
             className="inline-flex items-center gap-2 px-3.5 py-2 bg-slate-900 text-white text-sm font-medium rounded-md hover:bg-slate-800 transition-colors"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -184,6 +192,18 @@ export function BusinessAuthenticityPage() {
             Add Business Information
           </button>
         </div>
+
+        {showForm && token && (
+          <BusinessAuthenticityFormModal
+            existing={null}
+            onClose={() => setShowForm(false)}
+            onSuccess={() => {
+              setShowForm(false);
+              fetchAuthenticity();
+            }}
+            token={token}
+          />
+        )}
       </div>
     );
   }
@@ -199,7 +219,7 @@ export function BusinessAuthenticityPage() {
           </p>
         </div>
         <button
-          onClick={() => setEditMode(true)}
+          onClick={() => setShowForm(true)}
           className="inline-flex items-center gap-2 px-3.5 py-2 border border-slate-200 text-sm font-medium text-slate-700 rounded-md hover:bg-slate-50 transition-colors"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -325,7 +345,10 @@ export function BusinessAuthenticityPage() {
             </div>
             <h2 className="text-sm font-medium text-slate-900">Tax Identifiers</h2>
           </div>
-          <button className="text-xs text-slate-500 hover:text-slate-700 font-medium">
+          <button
+            onClick={() => setShowAddIdentifier(true)}
+            className="text-xs text-slate-500 hover:text-slate-700 font-medium"
+          >
             + Add Identifier
           </button>
         </div>
@@ -384,7 +407,10 @@ export function BusinessAuthenticityPage() {
             </div>
             <h2 className="text-sm font-medium text-slate-900">Directors & Owners</h2>
           </div>
-          <button className="text-xs text-slate-500 hover:text-slate-700 font-medium">
+          <button
+            onClick={() => setShowAddDirector(true)}
+            className="text-xs text-slate-500 hover:text-slate-700 font-medium"
+          >
             + Add Director
           </button>
         </div>
@@ -427,6 +453,818 @@ export function BusinessAuthenticityPage() {
             </div>
           )}
         </div>
+      </div>
+
+      {/* Create/Edit Form Modal */}
+      {showForm && token && (
+        <BusinessAuthenticityFormModal
+          existing={data}
+          onClose={() => setShowForm(false)}
+          onSuccess={() => {
+            setShowForm(false);
+            fetchAuthenticity();
+          }}
+          token={token}
+        />
+      )}
+
+      {/* Add Tax Identifier Modal */}
+      {showAddIdentifier && token && data && (
+        <AddTaxIdentifierModal
+          onClose={() => setShowAddIdentifier(false)}
+          onSuccess={() => {
+            setShowAddIdentifier(false);
+            fetchAuthenticity();
+          }}
+          token={token}
+          entityId={data._id}
+        />
+      )}
+
+      {/* Add Director Modal */}
+      {showAddDirector && token && data && (
+        <AddDirectorModal
+          onClose={() => setShowAddDirector(false)}
+          onSuccess={() => {
+            setShowAddDirector(false);
+            fetchAuthenticity();
+          }}
+          token={token}
+          entityId={data._id}
+        />
+      )}
+    </div>
+  );
+}
+
+function BusinessAuthenticityFormModal({
+  existing,
+  onClose,
+  onSuccess,
+  token,
+}: {
+  existing: BusinessAuthenticity | null;
+  onClose: () => void;
+  onSuccess: () => void;
+  token: string;
+}) {
+  const entityId = existing?._id || 'new';
+  const { uploadFile, uploading, error } = useComplianceUpload('authenticity', entityId);
+  const [submitting, setSubmitting] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
+  const [form, setForm] = useState({
+    registrationType: existing?.registrationType || 'llc',
+    legalName: existing?.legalName || '',
+    tradingName: existing?.tradingName || '',
+    registrationNumber: existing?.registrationNumber || '',
+    registrationDate: existing?.registrationDate
+      ? new Date(existing.registrationDate).toISOString().slice(0, 10)
+      : new Date().toISOString().slice(0, 10),
+    registrationAuthority: existing?.registrationAuthority || '',
+    city: existing?.registeredAddress?.city || '',
+    country: existing?.registeredAddress?.country || 'Bangladesh',
+    street: existing?.registeredAddress?.street || '',
+    state: existing?.registeredAddress?.state || '',
+    postalCode: existing?.registeredAddress?.postalCode || '',
+    notes: '',
+  });
+  const [registrationCertificate, setRegistrationCertificate] = useState(
+    existing?.registrationCertificate || ''
+  );
+  const [memorandumOfAssociation, setMemorandumOfAssociation] = useState(
+    existing?.memorandumOfAssociation || ''
+  );
+  const [articlesOfAssociation, setArticlesOfAssociation] = useState(
+    existing?.articlesOfAssociation || ''
+  );
+
+  const handleFileUpload = async (file: File, setter: (url: string) => void) => {
+    const url = await uploadFile(file);
+    if (url) setter(url);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setFormError(null);
+    setSubmitting(true);
+    try {
+      const registeredAddress = {
+        street: form.street || undefined,
+        city: form.city,
+        state: form.state || undefined,
+        postalCode: form.postalCode || undefined,
+        country: form.country,
+      };
+      const body = {
+        registrationType: form.registrationType,
+        legalName: form.legalName,
+        tradingName: form.tradingName || undefined,
+        registrationNumber: form.registrationNumber,
+        registrationDate: new Date(form.registrationDate).toISOString(),
+        registrationAuthority: form.registrationAuthority,
+        registeredAddress,
+        registrationCertificate: registrationCertificate || undefined,
+        memorandumOfAssociation: memorandumOfAssociation || undefined,
+        articlesOfAssociation: articlesOfAssociation || undefined,
+        notes: form.notes || undefined,
+      };
+      const method = existing ? 'PATCH' : 'POST';
+      const res = await fetch(`${API_URL}/compliance/authenticity`, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data?.error || 'Failed to save');
+      }
+      onSuccess();
+    } catch (e) {
+      setFormError(e instanceof Error ? e.message : 'Failed to save');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+      <div
+        className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+          <h2 className="text-base font-semibold text-slate-900">
+            {existing ? 'Edit Business Information' : 'Add Business Information'}
+          </h2>
+          <button
+            onClick={onClose}
+            className="p-1.5 text-slate-400 hover:text-slate-600 rounded-md hover:bg-slate-100"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+        </div>
+        <form onSubmit={handleSubmit} className="p-5 space-y-4">
+          <div>
+            <label className="block text-xs font-medium text-slate-600 mb-1">
+              Registration Type
+            </label>
+            <Select
+              value={form.registrationType}
+              onChange={(v) => setForm({ ...form, registrationType: v })}
+              options={[
+                { value: 'sole_proprietorship', label: 'Sole Proprietorship' },
+                { value: 'partnership', label: 'Partnership' },
+                { value: 'llc', label: 'LLC' },
+                { value: 'corporation', label: 'Corporation' },
+                { value: 'cooperative', label: 'Cooperative' },
+                { value: 'ngo', label: 'NGO' },
+              ]}
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-slate-600 mb-1">Legal Name *</label>
+              <input
+                type="text"
+                value={form.legalName}
+                onChange={(e) => setForm({ ...form, legalName: e.target.value })}
+                required
+                className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-slate-600 mb-1">Trading Name</label>
+              <input
+                type="text"
+                value={form.tradingName}
+                onChange={(e) => setForm({ ...form, tradingName: e.target.value })}
+                className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm"
+              />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-slate-600 mb-1">
+                Registration Number *
+              </label>
+              <input
+                type="text"
+                value={form.registrationNumber}
+                onChange={(e) => setForm({ ...form, registrationNumber: e.target.value })}
+                required
+                disabled={!!existing}
+                className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm disabled:bg-slate-50"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-slate-600 mb-1">
+                Registration Date *
+              </label>
+              <input
+                type="date"
+                value={form.registrationDate}
+                onChange={(e) => setForm({ ...form, registrationDate: e.target.value })}
+                required
+                className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm"
+              />
+            </div>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-slate-600 mb-1">
+              Registration Authority *
+            </label>
+            <input
+              type="text"
+              value={form.registrationAuthority}
+              onChange={(e) => setForm({ ...form, registrationAuthority: e.target.value })}
+              required
+              className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm"
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-slate-600 mb-1">City *</label>
+              <input
+                type="text"
+                value={form.city}
+                onChange={(e) => setForm({ ...form, city: e.target.value })}
+                required
+                className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-slate-600 mb-1">Country *</label>
+              <input
+                type="text"
+                value={form.country}
+                onChange={(e) => setForm({ ...form, country: e.target.value })}
+                required
+                className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm"
+              />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-slate-600 mb-1">Street</label>
+              <input
+                type="text"
+                value={form.street}
+                onChange={(e) => setForm({ ...form, street: e.target.value })}
+                className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-slate-600 mb-1">State</label>
+              <input
+                type="text"
+                value={form.state}
+                onChange={(e) => setForm({ ...form, state: e.target.value })}
+                className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm"
+              />
+            </div>
+          </div>
+
+          <div className="border-t border-slate-100 pt-4 space-y-3">
+            <p className="text-sm font-medium text-slate-700">Documents</p>
+            <div>
+              <label className="block text-xs text-slate-500 mb-1">Registration Certificate</label>
+              <DocumentUploadZone
+                onFileSelect={(f) => handleFileUpload(f, setRegistrationCertificate)}
+                uploading={uploading}
+                error={error}
+                label="Upload registration certificate"
+              />
+              {registrationCertificate && (
+                <a
+                  href={registrationCertificate}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-slate-600 mt-1 block truncate"
+                >
+                  Uploaded ✓
+                </a>
+              )}
+            </div>
+            <div>
+              <label className="block text-xs text-slate-500 mb-1">Memorandum of Association</label>
+              <DocumentUploadZone
+                onFileSelect={(f) => handleFileUpload(f, setMemorandumOfAssociation)}
+                uploading={uploading}
+                error={error}
+                label="Upload MoA"
+              />
+              {memorandumOfAssociation && (
+                <a
+                  href={memorandumOfAssociation}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-slate-600 mt-1 block truncate"
+                >
+                  Uploaded ✓
+                </a>
+              )}
+            </div>
+            <div>
+              <label className="block text-xs text-slate-500 mb-1">Articles of Association</label>
+              <DocumentUploadZone
+                onFileSelect={(f) => handleFileUpload(f, setArticlesOfAssociation)}
+                uploading={uploading}
+                error={error}
+                label="Upload AoA"
+              />
+              {articlesOfAssociation && (
+                <a
+                  href={articlesOfAssociation}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-slate-600 mt-1 block truncate"
+                >
+                  Uploaded ✓
+                </a>
+              )}
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-xs font-medium text-slate-600 mb-1">Notes</label>
+            <textarea
+              value={form.notes}
+              onChange={(e) => setForm({ ...form, notes: e.target.value })}
+              rows={2}
+              className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm"
+            />
+          </div>
+          {formError && <p className="text-sm text-red-600">{formError}</p>}
+          <div className="flex justify-end gap-2 pt-2">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-3.5 py-2 text-sm text-slate-600 hover:text-slate-800 font-medium rounded-md hover:bg-slate-100"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={submitting}
+              className="px-3.5 py-2 text-sm bg-slate-900 text-white font-medium rounded-md hover:bg-slate-800 disabled:opacity-50"
+            >
+              {submitting ? 'Saving...' : 'Save'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+function AddTaxIdentifierModal({
+  onClose,
+  onSuccess,
+  token,
+  entityId,
+}: {
+  onClose: () => void;
+  onSuccess: () => void;
+  token: string;
+  entityId: string;
+}) {
+  const { uploadFile, uploading, error } = useComplianceUpload('authenticity', entityId);
+  const [submitting, setSubmitting] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
+  const [form, setForm] = useState({
+    type: 'tin' as const,
+    number: '',
+    issueDate: '',
+    expiryDate: '',
+    issuingAuthority: '',
+  });
+  const [certificate, setCertificate] = useState('');
+
+  const handleFileUpload = async (file: File) => {
+    const url = await uploadFile(file);
+    if (url) setCertificate(url);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setFormError(null);
+    setSubmitting(true);
+    try {
+      const body = {
+        type: form.type,
+        number: form.number.trim(),
+        issueDate: form.issueDate ? new Date(form.issueDate).toISOString() : undefined,
+        expiryDate: form.expiryDate ? new Date(form.expiryDate).toISOString() : undefined,
+        issuingAuthority: form.issuingAuthority.trim() || undefined,
+        certificate: certificate || undefined,
+      };
+      const res = await fetch(`${API_URL}/compliance/authenticity/tax-identifiers`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data?.error || 'Failed to add identifier');
+      }
+      onSuccess();
+    } catch (e) {
+      setFormError(e instanceof Error ? e.message : 'Failed to add identifier');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+      <div
+        className="bg-white rounded-lg shadow-xl max-w-lg w-full max-h-[90vh] overflow-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+          <h2 className="text-base font-semibold text-slate-900">Add Tax Identifier</h2>
+          <button
+            onClick={onClose}
+            className="p-1.5 text-slate-400 hover:text-slate-600 rounded-md hover:bg-slate-100"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+        </div>
+        <form onSubmit={handleSubmit} className="p-5 space-y-4">
+          <div>
+            <label className="block text-xs font-medium text-slate-600 mb-1">Type *</label>
+            <Select
+              value={form.type}
+              onChange={(v) => setForm({ ...form, type: v as typeof form.type })}
+              options={[
+                { value: 'tin', label: 'TIN (Tax Identification Number)' },
+                { value: 'bin', label: 'BIN (Business Identification Number)' },
+                { value: 'vat', label: 'VAT Registration' },
+                { value: 'iec', label: 'Import/Export Code' },
+                { value: 'gst', label: 'GST/HST Number' },
+                { value: 'other', label: 'Other' },
+              ]}
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-slate-600 mb-1">Number *</label>
+            <input
+              type="text"
+              value={form.number}
+              onChange={(e) => setForm({ ...form, number: e.target.value })}
+              required
+              placeholder="e.g. 123-456-7890"
+              className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm"
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-slate-600 mb-1">Issue Date</label>
+              <input
+                type="date"
+                value={form.issueDate}
+                onChange={(e) => setForm({ ...form, issueDate: e.target.value })}
+                className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-slate-600 mb-1">Expiry Date</label>
+              <input
+                type="date"
+                value={form.expiryDate}
+                onChange={(e) => setForm({ ...form, expiryDate: e.target.value })}
+                className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm"
+              />
+            </div>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-slate-600 mb-1">
+              Issuing Authority
+            </label>
+            <input
+              type="text"
+              value={form.issuingAuthority}
+              onChange={(e) => setForm({ ...form, issuingAuthority: e.target.value })}
+              placeholder="e.g. NBR, City Corporation"
+              className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-slate-600 mb-1">
+              Certificate (optional)
+            </label>
+            <DocumentUploadZone
+              onFileSelect={handleFileUpload}
+              uploading={uploading}
+              error={error}
+              label="Upload certificate document"
+            />
+            {certificate && (
+              <a
+                href={certificate}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs text-slate-600 mt-1 block truncate"
+              >
+                Uploaded ✓
+              </a>
+            )}
+          </div>
+          {formError && <p className="text-sm text-red-600">{formError}</p>}
+          <div className="flex justify-end gap-2 pt-2">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-3.5 py-2 text-sm text-slate-600 hover:text-slate-800 font-medium rounded-md hover:bg-slate-100"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={submitting}
+              className="px-3.5 py-2 text-sm bg-slate-900 text-white font-medium rounded-md hover:bg-slate-800 disabled:opacity-50"
+            >
+              {submitting ? 'Adding...' : 'Add Identifier'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+function AddDirectorModal({
+  onClose,
+  onSuccess,
+  token,
+  entityId,
+}: {
+  onClose: () => void;
+  onSuccess: () => void;
+  token: string;
+  entityId: string;
+}) {
+  const { uploadFile, uploading, error } = useComplianceUpload('authenticity', entityId);
+  const [submitting, setSubmitting] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
+  const [form, setForm] = useState({
+    name: '',
+    role: 'director' as const,
+    ownershipPercentage: '' as number | '',
+    identityType: 'nid' as const,
+    identityNumber: '',
+    email: '',
+    phone: '',
+    appointmentDate: '',
+  });
+  const [documents, setDocuments] = useState<{ name: string; url: string }[]>([]);
+
+  const handleFileUpload = async (file: File) => {
+    const url = await uploadFile(file);
+    if (url) setDocuments((d) => [...d, { name: file.name, url }]);
+  };
+
+  const removeDocument = (idx: number) => {
+    setDocuments((d) => d.filter((_, i) => i !== idx));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setFormError(null);
+    setSubmitting(true);
+    try {
+      const body = {
+        name: form.name.trim(),
+        role: form.role,
+        ownershipPercentage:
+          form.ownershipPercentage === '' ? undefined : Number(form.ownershipPercentage),
+        identityType: form.identityType,
+        identityNumber: form.identityNumber.trim(),
+        email: form.email.trim() || undefined,
+        phone: form.phone.trim() || undefined,
+        appointmentDate: form.appointmentDate
+          ? new Date(form.appointmentDate).toISOString()
+          : undefined,
+        documents: documents.length > 0 ? documents : undefined,
+      };
+      const res = await fetch(`${API_URL}/compliance/authenticity/directors`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data?.error || 'Failed to add director');
+      }
+      onSuccess();
+    } catch (e) {
+      setFormError(e instanceof Error ? e.message : 'Failed to add director');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+      <div
+        className="bg-white rounded-lg shadow-xl max-w-lg w-full max-h-[90vh] overflow-auto"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+          <h2 className="text-base font-semibold text-slate-900">Add Director / Owner</h2>
+          <button
+            onClick={onClose}
+            className="p-1.5 text-slate-400 hover:text-slate-600 rounded-md hover:bg-slate-100"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+        </div>
+        <form onSubmit={handleSubmit} className="p-5 space-y-4">
+          <div>
+            <label className="block text-xs font-medium text-slate-600 mb-1">Name *</label>
+            <input
+              type="text"
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+              required
+              placeholder="Full name"
+              className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm"
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-slate-600 mb-1">Role *</label>
+              <Select
+                value={form.role}
+                onChange={(v) => setForm({ ...form, role: v as typeof form.role })}
+                options={[
+                  { value: 'owner', label: 'Owner' },
+                  { value: 'director', label: 'Director' },
+                  { value: 'partner', label: 'Partner' },
+                  { value: 'shareholder', label: 'Shareholder' },
+                  { value: 'authorized_signatory', label: 'Authorized Signatory' },
+                ]}
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-slate-600 mb-1">Ownership %</label>
+              <input
+                type="number"
+                min={0}
+                max={100}
+                step={0.01}
+                value={form.ownershipPercentage === '' ? '' : form.ownershipPercentage}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    ownershipPercentage: e.target.value === '' ? '' : Number(e.target.value),
+                  })
+                }
+                placeholder="0-100"
+                className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm"
+              />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-slate-600 mb-1">ID Type *</label>
+              <Select
+                value={form.identityType}
+                onChange={(v) => setForm({ ...form, identityType: v as typeof form.identityType })}
+                options={[
+                  { value: 'nid', label: 'NID' },
+                  { value: 'passport', label: 'Passport' },
+                  { value: 'driving_license', label: 'Driving License' },
+                ]}
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-slate-600 mb-1">ID Number *</label>
+              <input
+                type="text"
+                value={form.identityNumber}
+                onChange={(e) => setForm({ ...form, identityNumber: e.target.value })}
+                required
+                placeholder="Identity number"
+                className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm"
+              />
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-slate-600 mb-1">Email</label>
+              <input
+                type="email"
+                value={form.email}
+                onChange={(e) => setForm({ ...form, email: e.target.value })}
+                placeholder="email@example.com"
+                className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-slate-600 mb-1">Phone</label>
+              <input
+                type="tel"
+                value={form.phone}
+                onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                placeholder="+880..."
+                className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm"
+              />
+            </div>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-slate-600 mb-1">
+              Appointment Date
+            </label>
+            <input
+              type="date"
+              value={form.appointmentDate}
+              onChange={(e) => setForm({ ...form, appointmentDate: e.target.value })}
+              className="w-full px-3 py-2 border border-slate-200 rounded-md text-sm"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-slate-600 mb-1">
+              Documents (optional)
+            </label>
+            <DocumentUploadZone
+              onFileSelect={handleFileUpload}
+              uploading={uploading}
+              error={error}
+              label="Add supporting document"
+            />
+            {documents.length > 0 && (
+              <ul className="mt-2 space-y-1">
+                {documents.map((d, i) => (
+                  <li key={i} className="flex items-center justify-between text-sm">
+                    <a
+                      href={d.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-slate-600 truncate max-w-[200px]"
+                    >
+                      {d.name}
+                    </a>
+                    <button
+                      type="button"
+                      onClick={() => removeDocument(i)}
+                      className="text-slate-400 hover:text-red-600"
+                    >
+                      Remove
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+          {formError && <p className="text-sm text-red-600">{formError}</p>}
+          <div className="flex justify-end gap-2 pt-2">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-3.5 py-2 text-sm text-slate-600 hover:text-slate-800 font-medium rounded-md hover:bg-slate-100"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={submitting}
+              className="px-3.5 py-2 text-sm bg-slate-900 text-white font-medium rounded-md hover:bg-slate-800 disabled:opacity-50"
+            >
+              {submitting ? 'Adding...' : 'Add Director'}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );
