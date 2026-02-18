@@ -1,4 +1,4 @@
-import type { BankAccount } from '@lunaz/types';
+import type { BankAccount } from 'types';
 import { Card, Price } from '@/ui';
 
 interface BankTransferDetailsProps {

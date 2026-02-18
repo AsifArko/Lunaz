@@ -8,7 +8,7 @@ import type {
   PaymentMethod,
   BankAccount,
   InitiatePaymentResponse,
-} from '@lunaz/types';
+} from 'types';
 import { Container, Card, Button, Input, Price } from '@/ui';
 import { api } from '../../api/client';
 import { useAuth } from '../../context/AuthContext';

@@ -1,4 +1,4 @@
-import type { UserSummary } from '@lunaz/types';
+import type { UserSummary } from 'types';
 
 declare global {
   namespace Express {

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
-import type { Product, PaginatedResponse } from '@lunaz/types';
+import type { Product, PaginatedResponse } from 'types';
 import { Container, Card, Price } from '@/ui';
 import { api } from '../../api/client';
 import { ProductGridSkeleton } from '../../components/Skeleton';

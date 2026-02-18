@@ -1,4 +1,4 @@
-import type { UserSummary } from '../../user';
+import type { UserSummary } from 'interfaces/user';
 
 /** POST /auth/login, /auth/register, /auth/refresh, /auth/oauth/* response */
 export interface LoginResponse {

@@ -1,4 +1,4 @@
-import type { TextInputProps } from '../../types';
+import type { TextInputProps } from 'manage-settings/types';
 
 export function TextInput({
   value,

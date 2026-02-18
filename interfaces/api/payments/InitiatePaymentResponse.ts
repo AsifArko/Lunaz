@@ -1,4 +1,4 @@
-import type { BankAccount } from '../../payment';
+import type { BankAccount } from 'interfaces/payment';
 
 /** Response from initiating a payment. */
 export interface InitiatePaymentResponse {

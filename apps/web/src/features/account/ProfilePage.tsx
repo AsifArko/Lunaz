@@ -1,5 +1,5 @@
 import { useState, useEffect, type FormEvent } from 'react';
-import type { User } from '@lunaz/types';
+import type { User } from 'types';
 import { api } from '../../api/client';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';

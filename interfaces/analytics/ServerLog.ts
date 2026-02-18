@@ -1,5 +1,5 @@
-import type { Id } from '../../types/id';
-import type { LogLevel } from '../../constants/analytics';
+import type { Id } from 'types/id';
+import type { LogLevel } from 'constants/analytics';
 import type { RequestDetails } from './RequestDetails';
 import type { ResponseDetails } from './ResponseDetails';
 import type { ClientDetails } from './ClientDetails';

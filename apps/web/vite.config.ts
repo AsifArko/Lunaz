@@ -14,8 +14,10 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
-      '@/ui': path.resolve(__dirname, 'src/ui'),
-      '@lunaz/types': path.resolve(__dirname, '../../types'),
+      types: path.resolve(__dirname, '../../types'),
+      constants: path.resolve(__dirname, '../../constants'),
+      interfaces: path.resolve(__dirname, '../../interfaces'),
+      'manage-settings': path.resolve(__dirname, 'src/features/manage/settings'),
     },
   },
   optimizeDeps: {

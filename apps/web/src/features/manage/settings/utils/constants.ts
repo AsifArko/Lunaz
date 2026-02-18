@@ -1,5 +1,5 @@
-import type { SelectOption } from '../types';
-import type { SettingsTab } from '../types';
+import type { SelectOption } from 'manage-settings/types';
+import type { SettingsTab } from 'manage-settings/types';
 
 // Currency options
 export const CURRENCY_OPTIONS: SelectOption[] = [

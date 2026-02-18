@@ -1,5 +1,5 @@
-import type { Id } from '../../types/id';
-import type { OrderStatus, PaymentStatus, PaymentMethod } from '../../constants/enums';
+import type { Id } from 'types/id';
+import type { OrderStatus, PaymentStatus, PaymentMethod } from 'constants/enums';
 import type { OrderAddress } from './OrderAddress';
 import type { OrderItem } from './OrderItem';
 

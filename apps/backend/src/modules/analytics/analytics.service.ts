@@ -1,8 +1,5 @@
+import type { AnalyticsEventType, DeviceType, ReferrerType, LogLevel } from 'constants/analytics';
 import type {
-  AnalyticsEventType,
-  DeviceType,
-  ReferrerType,
-  LogLevel,
   AnalyticsOverview,
   AnalyticsTimeSeries,
   TopPage,
@@ -20,7 +17,7 @@ import type {
   ReferrerData,
   TrafficLog,
   ServerLog,
-} from '@lunaz/types';
+} from 'types';
 import {
   TrafficLogModel,
   PerformanceLogModel,

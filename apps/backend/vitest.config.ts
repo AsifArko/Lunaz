@@ -4,7 +4,8 @@ import { resolve } from 'path';
 export default defineConfig({
   resolve: {
     alias: {
-      '@lunaz/types': resolve(__dirname, '../../types'),
+      types: resolve(__dirname, '../../types'),
+      'types/*': resolve(__dirname, '../../types/*'),
     },
   },
   test: {

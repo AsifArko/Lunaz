@@ -1,9 +1,9 @@
-import { SettingsSection } from '../../shared/SettingsSection';
-import { SettingsField } from '../../shared/SettingsField';
-import { TextInput } from '../../form/TextInput';
-import { TextArea } from '../../form/TextArea';
-import { TagInput } from '../../form/TagInput';
-import type { StoreSettings } from '../../../types';
+import { SettingsSection } from 'manage-settings/components/shared/SettingsSection';
+import { SettingsField } from 'manage-settings/components/shared/SettingsField';
+import { TextInput } from 'manage-settings/components/form/TextInput';
+import { TextArea } from 'manage-settings/components/form/TextArea';
+import { TagInput } from 'manage-settings/components/form/TagInput';
+import type { StoreSettings } from 'manage-settings/types';
 
 interface SeoSectionProps {
   settings: StoreSettings;

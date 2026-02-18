@@ -1,4 +1,4 @@
-import type { Product } from '@lunaz/types';
+import type { Product } from 'types';
 
 export interface PriceProps {
   amount: number;

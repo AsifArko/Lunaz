@@ -1,8 +1,8 @@
 import { useState, type FormEvent } from 'react';
-import { SettingsSection } from '../../shared/SettingsSection';
-import { SettingsToggle } from '../../shared/SettingsToggle';
-import { SettingsSaveButton } from '../../shared/SettingsSaveButton';
-import { PasswordInput } from '../../form/PasswordInput';
+import { SettingsSection } from 'manage-settings/components/shared/SettingsSection';
+import { SettingsToggle } from 'manage-settings/components/shared/SettingsToggle';
+import { SettingsSaveButton } from 'manage-settings/components/shared/SettingsSaveButton';
+import { PasswordInput } from 'manage-settings/components/form/PasswordInput';
 import { useAdminAuth } from '@/context/AdminAuthContext';
 import { adminApi as api } from '@/api/adminClient';
 import { useToast } from '@/context/ToastContext';

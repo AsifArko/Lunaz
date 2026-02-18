@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { TransactionType, TransactionStatus } from '@lunaz/types';
+import { TransactionType, TransactionStatus } from 'constants/enums';
 
 const transactionSchema = new mongoose.Schema(
   {

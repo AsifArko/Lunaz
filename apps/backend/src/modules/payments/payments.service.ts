@@ -1,4 +1,5 @@
-import { PaymentMethod, PaymentStatus, type Payment } from '@lunaz/types';
+import { PaymentMethod, PaymentStatus } from 'constants/enums';
+import type { Payment } from 'types';
 import { PaymentModel, type PaymentDocument } from './payments.model.js';
 import { OrderModel } from '../orders/orders.model.js';
 import { getSettings } from '../settings/settings.model.js';

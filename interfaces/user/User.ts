@@ -1,5 +1,5 @@
-import type { Id } from '../../types/id';
-import type { UserRole } from '../../constants/enums';
+import type { Id } from 'types/id';
+import type { UserRole } from 'constants/enums';
 import type { Address } from './Address';
 
 /** User entity (DB shape; omit passwordHash in API responses). */

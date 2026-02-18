@@ -1,6 +1,6 @@
-import { SettingsSection } from '../../shared/SettingsSection';
-import { Toggle } from '../../form/Toggle';
-import type { StoreSettings } from '../../../types';
+import { SettingsSection } from 'manage-settings/components/shared/SettingsSection';
+import { Toggle } from 'manage-settings/components/form/Toggle';
+import type { StoreSettings } from 'manage-settings/types';
 
 interface FeaturesSectionProps {
   settings: StoreSettings;

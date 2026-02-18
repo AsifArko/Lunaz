@@ -1,5 +1,5 @@
-import type { Id } from '../../types/id';
-import type { TransactionType, TransactionStatus } from '../../constants/enums';
+import type { Id } from 'types/id';
+import type { TransactionType, TransactionStatus } from 'constants/enums';
 
 /** Transaction (payment record). */
 export interface Transaction {

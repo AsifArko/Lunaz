@@ -2,8 +2,8 @@ import type { FormEvent } from 'react';
 import { ShippingRatesSection } from './ShippingRatesSection';
 import { TaxSection } from './TaxSection';
 import { OrderSettingsSection } from './OrderSettingsSection';
-import { SettingsSaveButton } from '../../shared/SettingsSaveButton';
-import type { StoreSettings } from '../../../types';
+import { SettingsSaveButton } from 'manage-settings/components/shared/SettingsSaveButton';
+import type { StoreSettings } from 'manage-settings/types';
 
 interface ShippingTabProps {
   settings: StoreSettings;

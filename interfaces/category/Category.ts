@@ -1,4 +1,4 @@
-import type { Id } from '../../types/id';
+import type { Id } from 'types/id';
 import type { CategoryImage } from './CategoryImage';
 
 /** Category entity. */

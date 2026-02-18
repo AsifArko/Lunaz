@@ -3,7 +3,7 @@ import { authMiddleware } from '../../middleware/auth.js';
 import { requireRole } from '../../middleware/requireRole.js';
 import { validateBody } from '../../middleware/validate.js';
 import { getConfig } from '../../config/index.js';
-import { UserRole } from '@lunaz/types';
+import { UserRole } from 'constants/enums';
 import {
   createOrderSchema,
   createManualOrderSchema,

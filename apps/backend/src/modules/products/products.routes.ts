@@ -6,7 +6,7 @@ import { authMiddleware } from '../../middleware/auth.js';
 import { requireRole } from '../../middleware/requireRole.js';
 import { validateBody } from '../../middleware/validate.js';
 import { getConfig } from '../../config/index.js';
-import { UserRole, ProductStatus } from '@lunaz/types';
+import { UserRole, ProductStatus } from 'constants/enums';
 import { ProductModel } from './products.model.js';
 import { CategoryModel } from '../categories/categories.model.js';
 import { uploadToS3, extractKeyFromUrl, deleteFromS3 } from '../../lib/s3.js';

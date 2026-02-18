@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import type { Category, PaginatedResponse } from '@lunaz/types';
+import type { Category, PaginatedResponse } from 'types';
 import { Container } from '@/ui';
 import { api } from '../../api/client';
 

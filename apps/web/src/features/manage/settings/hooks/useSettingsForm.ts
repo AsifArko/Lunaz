@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import type { UseFormReturn } from '../types';
+import type { UseFormReturn } from 'manage-settings/types';
 
 export function useSettingsForm<T extends Record<string, unknown>>(
   initialValues: T

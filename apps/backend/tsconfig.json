@@ -8,7 +8,14 @@
     "moduleResolution": "node",
     "baseUrl": ".",
     "paths": {
-      "@lunaz/types": ["../../types"]
+      "types": ["../../types/index.ts"],
+      "types/*": ["../../types/*"],
+      "constants": ["../../constants"],
+      "constants/*": ["../../constants/*"],
+      "lunaz/constants": ["../../constants"],
+      "lunaz/constants/*": ["../../constants/*"],
+      "interfaces": ["../../interfaces"],
+      "interfaces/*": ["../../interfaces/*"]
     }
   },
   "include": ["src/**/*", "../../types/**/*", "../../constants/**/*", "../../interfaces/**/*"],

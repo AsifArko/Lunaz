@@ -1,4 +1,4 @@
-import type { SettingsTab, SettingsTabId } from '../../types';
+import type { SettingsTab, SettingsTabId } from 'manage-settings/types';
 
 interface SettingsTabsProps {
   tabs: SettingsTab[];

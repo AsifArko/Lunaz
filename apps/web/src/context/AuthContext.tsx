@@ -7,7 +7,7 @@ import {
   useRef,
   type ReactNode,
 } from 'react';
-import type { UserSummary, LoginRequest, RegisterRequest, LoginResponse } from '@lunaz/types';
+import type { UserSummary, LoginRequest, RegisterRequest, LoginResponse } from 'types';
 import { api, setAuthProvider } from '../api/client';
 
 interface AuthState {

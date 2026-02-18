@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { UserRole } from '@lunaz/types';
+import { UserRole } from 'constants/enums';
 
 const addressSchema = new mongoose.Schema(
   {

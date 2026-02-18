@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { SettingsSection } from '../../shared/SettingsSection';
-import { SettingsCard } from '../../shared/SettingsCard';
-import { SettingsAlert } from '../../shared/SettingsAlert';
-import { SettingsDivider } from '../../shared/SettingsDivider';
+import { SettingsSection } from 'manage-settings/components/shared/SettingsSection';
+import { SettingsCard } from 'manage-settings/components/shared/SettingsCard';
+import { SettingsAlert } from 'manage-settings/components/shared/SettingsAlert';
+import { SettingsDivider } from 'manage-settings/components/shared/SettingsDivider';
 
 export function AdvancedTab() {
   const [isClearing, setIsClearing] = useState<string | null>(null);

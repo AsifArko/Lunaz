@@ -117,6 +117,7 @@ export async function deleteFromS3(cfg: BackendEnv, key: string): Promise<void> 
  * Returns null if URL is not an S3 URL (e.g. data URL).
  */
 export function extractKeyFromUrl(cfg: BackendEnv, url: string): string | null {
+  if (!url || typeof url !== 'string') return null;
   if (url.startsWith('data:')) return null;
 
   const bucket = cfg.S3_BUCKET!;

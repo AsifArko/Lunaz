@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { SettingsSection } from '../../shared/SettingsSection';
-import { SettingsToggle } from '../../shared/SettingsToggle';
-import { SettingsSaveButton } from '../../shared/SettingsSaveButton';
-import type { NotificationSettings } from '../../../types';
-import { DEFAULT_NOTIFICATION_SETTINGS } from '../../../utils/defaults';
+import { SettingsSection } from 'manage-settings/components/shared/SettingsSection';
+import { SettingsToggle } from 'manage-settings/components/shared/SettingsToggle';
+import { SettingsSaveButton } from 'manage-settings/components/shared/SettingsSaveButton';
+import type { NotificationSettings } from 'manage-settings/types';
+import { DEFAULT_NOTIFICATION_SETTINGS } from 'manage-settings/utils/defaults';
 
 interface NotificationsTabProps {
   onSave?: () => void;

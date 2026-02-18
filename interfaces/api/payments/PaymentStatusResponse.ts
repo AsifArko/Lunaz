@@ -1,4 +1,4 @@
-import type { PaymentStatus, PaymentMethod } from '../../../constants/enums';
+import type { PaymentStatus, PaymentMethod } from 'constants/enums';
 
 /** Response for payment status check. */
 export interface PaymentStatusResponse {

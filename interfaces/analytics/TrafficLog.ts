@@ -1,5 +1,5 @@
-import type { Id } from '../../types/id';
-import type { AnalyticsEventType } from '../../constants/analytics';
+import type { Id } from 'types/id';
+import type { AnalyticsEventType } from 'constants/analytics';
 import type { PageData } from './PageData';
 import type { ReferrerData } from './ReferrerData';
 import type { UTMData } from './UTMData';

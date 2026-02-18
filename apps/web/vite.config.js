@@ -13,18 +13,20 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
-      '@/ui': path.resolve(__dirname, 'src/ui'),
-      '@lunaz/types': path.resolve(__dirname, '../../types'),
+      types: path.resolve(__dirname, '../../types'),
+      constants: path.resolve(__dirname, '../../constants'),
+      interfaces: path.resolve(__dirname, '../../interfaces'),
+      'manage-settings': path.resolve(__dirname, 'src/features/manage/settings'),
     },
   },
   optimizeDeps: {
     include: ['react', 'react-dom', 'react-router-dom'],
   },
   server: {
-    port: 3000,
+    port: Number(process.env.VITE_DEV_PORT) || 3000,
     proxy: {
       '/api': {
-        target: 'http://localhost:4000',
+        target: 'http://localhost:'.concat(process.env.PORT || 4000),
         changeOrigin: true,
       },
     },

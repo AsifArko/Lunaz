@@ -1,4 +1,4 @@
-import type { PaymentMethod } from '../../constants/enums';
+import type { PaymentMethod } from 'constants/enums';
 import type { BkashSettings } from './BkashSettings';
 import type { NagadSettings } from './NagadSettings';
 import type { BankTransferSettings } from './BankTransferSettings';

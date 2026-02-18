@@ -1,4 +1,4 @@
-import type { PaymentMethodInfo } from '../../payment';
+import type { PaymentMethodInfo } from 'interfaces/payment';
 
 /** Response for available payment methods. */
 export interface AvailablePaymentMethodsResponse {

@@ -1,5 +1,5 @@
 /**
- * @lunaz/types — Shared TypeScript interfaces, constants, enums, and API contracts.
+ * Shared TypeScript interfaces, constants, enums, and API contracts.
  * Used by Backend, Web, and Manage.
  *
  * Structure:
@@ -8,8 +8,8 @@
  * - types/ — type aliases
  */
 
-export * from '../constants';
-export * from '../interfaces';
+export * from 'interfaces';
+export * from 'constants/enums';
 export * from './id';
 export * from './api/products';
 export * from './api/orders';

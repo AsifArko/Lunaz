@@ -1,4 +1,4 @@
-import type { Id } from '../../types/id';
+import type { Id } from 'types/id';
 
 export interface ProductAnalytics {
   id: Id;

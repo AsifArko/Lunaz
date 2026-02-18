@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { SettingsHeader } from './SettingsHeader';
 import { SettingsTabs } from './SettingsTabs';
 import { SettingsContent } from './SettingsContent';
-import type { SettingsTab, SettingsTabId } from '../../types';
+import type { SettingsTab, SettingsTabId } from 'manage-settings/types';
 
 interface SettingsLayoutProps {
   children: ReactNode;

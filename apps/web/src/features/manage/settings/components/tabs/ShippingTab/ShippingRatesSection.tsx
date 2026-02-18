@@ -1,9 +1,9 @@
-import { SettingsSection } from '../../shared/SettingsSection';
-import { SettingsField } from '../../shared/SettingsField';
-import { NumberInput } from '../../form/NumberInput';
-import { SelectInput } from '../../form/SelectInput';
-import { SHIPPING_CALCULATION_OPTIONS } from '../../../utils/constants';
-import type { StoreSettings } from '../../../types';
+import { SettingsSection } from 'manage-settings/components/shared/SettingsSection';
+import { SettingsField } from 'manage-settings/components/shared/SettingsField';
+import { NumberInput } from 'manage-settings/components/form/NumberInput';
+import { SelectInput } from 'manage-settings/components/form/SelectInput';
+import { SHIPPING_CALCULATION_OPTIONS } from 'manage-settings/utils/constants';
+import type { StoreSettings } from 'manage-settings/types';
 
 interface ShippingRatesSectionProps {
   settings: StoreSettings;

@@ -1,4 +1,4 @@
-import type { UserSummary } from '../../user';
+import type { UserSummary } from 'interfaces/user';
 
 /** POST /auth/refresh response (same shape; may omit user if not re-fetched) */
 export interface RefreshResponse {

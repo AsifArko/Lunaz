@@ -1,4 +1,4 @@
-import type { Id } from '../../types/id';
+import type { Id } from 'types/id';
 import type { PageData } from './PageData';
 import type { PerformanceMetrics } from './PerformanceMetrics';
 import type { ConnectionData } from './ConnectionData';

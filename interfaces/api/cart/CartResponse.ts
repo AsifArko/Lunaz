@@ -1,4 +1,4 @@
-import type { Id } from '../../../types/id';
+import type { Id } from 'types/id';
 import type { CartItemWithProduct } from './CartItemWithProduct';
 
 /** GET /cart response */

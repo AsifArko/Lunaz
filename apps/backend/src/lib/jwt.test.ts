@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { signToken, verifyToken, generateRefreshToken, hashRefreshToken } from './jwt.js';
-import type { UserSummary } from '@lunaz/types';
+import type { UserSummary } from 'types';
 
 const testUser: UserSummary = {
   id: 'user-123',

@@ -7,7 +7,7 @@ import {
   useRef,
   type ReactNode,
 } from 'react';
-import type { Product, ProductVariant, CartResponse } from '@lunaz/types';
+import type { Product, ProductVariant, CartResponse } from 'types';
 import { api } from '../api/client';
 import { useAuth } from './AuthContext';
 

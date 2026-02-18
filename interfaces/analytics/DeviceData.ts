@@ -1,4 +1,4 @@
-import type { DeviceType } from '../../constants/analytics';
+import type { DeviceType } from 'constants/analytics';
 
 export interface DeviceData {
   type: DeviceType;
