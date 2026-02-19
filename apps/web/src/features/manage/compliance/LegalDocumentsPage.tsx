@@ -236,7 +236,7 @@ export function LegalDocumentsPage() {
   });
   const [showForm, setShowForm] = useState(false);
 
-  const categoryOptions: DropdownOption[] = [
+  const categoryOptions: { value: string; label: string }[] = [
     { value: 'incorporation', label: 'Incorporation' },
     { value: 'contracts', label: 'Contracts' },
     { value: 'employment', label: 'Employment' },
@@ -249,7 +249,7 @@ export function LegalDocumentsPage() {
     { value: 'miscellaneous', label: 'Miscellaneous' },
   ];
 
-  const statusOptions: DropdownOption[] = [
+  const statusOptions: { value: string; label: string }[] = [
     { value: 'draft', label: 'Draft' },
     { value: 'active', label: 'Active' },
     { value: 'expired', label: 'Expired' },
