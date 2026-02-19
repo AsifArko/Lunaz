@@ -24,7 +24,8 @@ EC2_USER="${EC2_USER:-ubuntu}"
 EC2_PATH="${EC2_PATH:-/opt/lunaz}"
 SSH_KEY="${EC2_SSH_KEY:-}"
 
-SSH_OPTS=(-o StrictHostKeyChecking=no -o ConnectTimeout=10)
+# Keep connection alive during long builds (first build can take 10-15 min on EC2)
+SSH_OPTS=(-o StrictHostKeyChecking=no -o ConnectTimeout=10 -o ServerAliveInterval=30 -o ServerAliveCountMax=60)
 [ -n "$SSH_KEY" ] && SSH_OPTS+=(-i "$SSH_KEY")
 
 echo "==> Syncing code to EC2..."
@@ -38,7 +39,7 @@ rsync -avz --delete \
   --exclude '*.log' \
   "$REPO_ROOT/" "${EC2_USER}@${EC2_HOST}:${EC2_PATH}/"
 
-echo "==> Building and starting on EC2..."
-ssh "${SSH_OPTS[@]}" "${EC2_USER}@${EC2_HOST}" "cd ${EC2_PATH} && docker-compose -f docker-compose.ec2.build.yml up -d --build"
+echo "==> Building and starting on EC2 (first build may take 10-15 min)..."
+ssh -t "${SSH_OPTS[@]}" "${EC2_USER}@${EC2_HOST}" "cd ${EC2_PATH} && DOCKER_BUILDKIT=1 docker-compose -f docker-compose.ec2.build.yml build --progress=plain && docker-compose -f docker-compose.ec2.build.yml up -d"
 
 echo "==> Done. App should be live shortly."
