@@ -39,6 +39,6 @@ rsync -avz --delete \
   "$REPO_ROOT/" "${EC2_USER}@${EC2_HOST}:${EC2_PATH}/"
 
 echo "==> Building and starting on EC2..."
-ssh "${SSH_OPTS[@]}" "${EC2_USER}@${EC2_HOST}" "cd ${EC2_PATH} && docker compose -f docker-compose.ec2.build.yml up -d --build"
+ssh "${SSH_OPTS[@]}" "${EC2_USER}@${EC2_HOST}" "cd ${EC2_PATH} && docker-compose -f docker-compose.ec2.build.yml up -d --build"
 
 echo "==> Done. App should be live shortly."
