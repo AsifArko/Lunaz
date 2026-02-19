@@ -28,12 +28,12 @@ export function HeroAnimation({ className = '' }: HeroAnimationProps) {
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
 
-    // Aurora wave colors - Grayscale
+    // Aurora wave colors - Warm stone for light background
     const colors = [
-      { r: 180, g: 180, b: 180 }, // Light gray
-      { r: 140, g: 140, b: 140 }, // Medium gray
-      { r: 100, g: 100, b: 100 }, // Dark gray
-      { r: 200, g: 200, b: 200 }, // Lighter gray
+      { r: 214, g: 211, b: 209 }, // stone-300
+      { r: 191, g: 189, b: 183 }, // stone-400
+      { r: 168, g: 162, b: 158 }, // stone-500
+      { r: 231, g: 229, b: 228 }, // stone-200
     ];
 
     // Draw smooth aurora waves
@@ -63,11 +63,11 @@ export function HeroAnimation({ className = '' }: HeroAnimationProps) {
         const gradient = ctx.createLinearGradient(0, baseY - amplitude, 0, height);
         gradient.addColorStop(
           0,
-          `rgba(${color.r}, ${color.g}, ${color.b}, ${0.08 - layer * 0.015})`
+          `rgba(${color.r}, ${color.g}, ${color.b}, ${0.06 - layer * 0.01})`
         );
         gradient.addColorStop(
           0.5,
-          `rgba(${color.r}, ${color.g}, ${color.b}, ${0.04 - layer * 0.008})`
+          `rgba(${color.r}, ${color.g}, ${color.b}, ${0.03 - layer * 0.005})`
         );
         gradient.addColorStop(1, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`);
 
@@ -125,8 +125,8 @@ export function HeroAnimation({ className = '' }: HeroAnimationProps) {
         orb.y = orb.baseY + Math.cos(time * 0.008 * orb.speed + orb.phase) * 20;
 
         const gradient = ctx.createRadialGradient(orb.x, orb.y, 0, orb.x, orb.y, orb.size);
-        gradient.addColorStop(0, `rgba(${orb.color.r}, ${orb.color.g}, ${orb.color.b}, 0.15)`);
-        gradient.addColorStop(0.4, `rgba(${orb.color.r}, ${orb.color.g}, ${orb.color.b}, 0.05)`);
+        gradient.addColorStop(0, `rgba(${orb.color.r}, ${orb.color.g}, ${orb.color.b}, 0.08)`);
+        gradient.addColorStop(0.4, `rgba(${orb.color.r}, ${orb.color.g}, ${orb.color.b}, 0.03)`);
         gradient.addColorStop(1, `rgba(${orb.color.r}, ${orb.color.g}, ${orb.color.b}, 0)`);
 
         ctx.fillStyle = gradient;
@@ -138,7 +138,7 @@ export function HeroAnimation({ className = '' }: HeroAnimationProps) {
 
     // Subtle grid pattern
     const drawGrid = (width: number, height: number) => {
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.02)';
+      ctx.strokeStyle = 'rgba(120, 113, 108, 0.04)';
       ctx.lineWidth = 1;
 
       const gridSize = 60;

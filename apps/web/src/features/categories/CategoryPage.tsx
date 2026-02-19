@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import type { Category, Product, PaginatedResponse } from 'types';
-import { Container, Card, ProductCard, ProductCardSkeleton, type ProductCardProduct } from '@/ui';
+import { Container, Card, type ProductCardProduct } from '@/ui';
+import { HomeProductCard, HomeProductCardSkeleton } from '../home/components';
 import { api } from '../../api/client';
 import { useCart } from '../../context/CartContext';
 import { useToast } from '../../context/ToastContext';
@@ -114,7 +115,7 @@ export function CategoryPage() {
         {isLoading && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {Array.from({ length: 8 }).map((_, i) => (
-              <ProductCardSkeleton key={i} variant="full" aspectRatio="4:3" />
+              <HomeProductCardSkeleton key={i} />
             ))}
           </div>
         )}
@@ -134,11 +135,9 @@ export function CategoryPage() {
         {!isLoading && products.length > 0 && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {products.map((product) => (
-              <ProductCard
+              <HomeProductCard
                 key={product.id}
                 product={product}
-                variant="full"
-                aspectRatio="4:3"
                 linkComponent={Link}
                 onBuyNow={handleBuyNow}
                 onAddToCart={handleAddToCart}

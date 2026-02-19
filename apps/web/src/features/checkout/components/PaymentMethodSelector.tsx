@@ -71,7 +71,7 @@ export function PaymentMethodSelector({
     async function fetchMethods() {
       try {
         const response = await api<{ methods: PaymentMethodInfo[] }>('/payments/methods');
-        let list = response.methods || [];
+        let list = (response.methods || []).filter((m) => m.id !== 'bank_transfer');
 
         // In development: if backend didn't return SSLCommerz (e.g. backend not restarted after adding .env),
         // still show it so the option is visible. Place Order will work once backend has SSLCOMMERZ_* in env.
