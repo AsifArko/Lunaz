@@ -15,7 +15,7 @@ on:
   workflow_dispatch:
     inputs:
       rollback_tag:
-        description: 'Tag to rollback to (e.g. v2026.02.17-cc0961d, leave empty for latest)'
+        description: "Tag to rollback to (e.g. v2026.02.17-cc0961d, leave empty for latest)"
         required: false
         type: string
 
