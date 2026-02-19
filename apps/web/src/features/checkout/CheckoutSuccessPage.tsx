@@ -4,13 +4,20 @@ import type { Order } from 'types';
 import { Container, Card, Button, Price } from '@/ui';
 import { api } from '../../api/client';
 import { useAuth } from '../../context/AuthContext';
+import { useCart } from '../../context/CartContext';
 
 export function CheckoutSuccessPage() {
   const [searchParams] = useSearchParams();
   const { token } = useAuth();
+  const { clearCart } = useCart();
   const orderId = searchParams.get('orderId');
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
+
+  // Clear cart when user lands here after successful payment
+  useEffect(() => {
+    if (orderId) clearCart();
+  }, [orderId, clearCart]);
 
   useEffect(() => {
     async function fetchOrder() {

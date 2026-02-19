@@ -112,11 +112,14 @@ const statusConfig: Record<string, { label: string; icon: React.ReactNode; class
   },
 };
 
+const ORDERS_PER_PAGE = 4;
+
 export function OrdersPage() {
   const { token } = useAuth();
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     async function fetchOrders() {
@@ -132,6 +135,14 @@ export function OrdersPage() {
     }
     fetchOrders();
   }, [token]);
+
+  // Reset to page 1 if current page is out of bounds (e.g. after orders change)
+  useEffect(() => {
+    const totalPages = Math.ceil(orders.length / ORDERS_PER_PAGE);
+    if (page > totalPages && totalPages > 0) {
+      setPage(1);
+    }
+  }, [orders.length, page]);
 
   if (isLoading) {
     return (
@@ -206,6 +217,9 @@ export function OrdersPage() {
     );
   }
 
+  const totalPages = Math.ceil(orders.length / ORDERS_PER_PAGE);
+  const paginatedOrders = orders.slice((page - 1) * ORDERS_PER_PAGE, page * ORDERS_PER_PAGE);
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -218,7 +232,7 @@ export function OrdersPage() {
 
       {/* Orders List */}
       <div className="space-y-3">
-        {orders.map((order) => {
+        {paginatedOrders.map((order) => {
           const status = statusConfig[order.status] || statusConfig.pending;
           const itemCount = order.items.length;
           const firstItem = order.items[0];
@@ -318,6 +332,59 @@ export function OrdersPage() {
           );
         })}
       </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-2 pt-4">
+          <button
+            onClick={() => setPage((p) => Math.max(1, p - 1))}
+            disabled={page === 1}
+            className="p-2 text-gray-400 hover:text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors rounded-lg hover:bg-gray-100"
+            aria-label="Previous page"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+          </button>
+
+          <div className="flex items-center gap-1">
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+              <button
+                key={p}
+                onClick={() => setPage(p)}
+                className={`min-w-[36px] h-9 px-3 text-sm font-medium rounded-lg transition-colors ${
+                  page === p
+                    ? 'bg-gray-900 text-white'
+                    : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                }`}
+              >
+                {p}
+              </button>
+            ))}
+          </div>
+
+          <button
+            onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+            disabled={page === totalPages}
+            className="p-2 text-gray-400 hover:text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed transition-colors rounded-lg hover:bg-gray-100"
+            aria-label="Next page"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
+          </button>
+        </div>
+      )}
     </div>
   );
 }

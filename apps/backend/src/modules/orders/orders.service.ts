@@ -221,11 +221,16 @@ export async function listOrders(
     search?: string;
     startDate?: string;
     endDate?: string;
+    userId?: string;
     page?: number;
     limit?: number;
   }
 ) {
   const filter: Record<string, unknown> = isAdmin ? {} : { userId };
+  // When admin requests orders for a specific customer (e.g. customer detail page)
+  if (isAdmin && query.userId) {
+    filter.userId = new mongoose.Types.ObjectId(query.userId);
+  }
   if (query.status) filter.status = query.status;
 
   // Date range filter

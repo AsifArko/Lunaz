@@ -1,21 +1,12 @@
 import { useState, useEffect, type FormEvent } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import type {
-  Address,
-  User,
-  OrderAddress,
-  Order,
-  PaymentMethod,
-  BankAccount,
-  InitiatePaymentResponse,
-} from 'types';
+import type { Address, User, OrderAddress, Order, PaymentMethod } from 'types';
 import { Container, Card, Button, Input, Price } from '@/ui';
 import { api } from '../../api/client';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import { useToast } from '../../context/ToastContext';
 import { PaymentMethodSelector } from './components/PaymentMethodSelector';
-import { BankTransferDetails } from './components/BankTransferDetails';
 
 interface AddressFormData {
   name: string;
@@ -37,16 +28,6 @@ const emptyAddress: AddressFormData = {
   country: '',
 };
 
-// Bank transfer response type
-interface BankTransferResponse extends InitiatePaymentResponse {
-  bankDetails?: BankAccount[];
-  orderReference?: string;
-  amount?: number;
-  currency?: string;
-  expiresAt?: string;
-  instructions?: string;
-}
-
 export function CheckoutPage() {
   const navigate = useNavigate();
   const { token } = useAuth();
@@ -63,11 +44,9 @@ export function CheckoutPage() {
 
   // Payment state
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethod | null>(null);
-  const [checkoutStep, setCheckoutStep] = useState<
-    'details' | 'processing' | 'bank_transfer' | 'complete'
-  >('details');
-  const [bankTransferInfo, setBankTransferInfo] = useState<BankTransferResponse | null>(null);
-  const [orderId, setOrderId] = useState<string | null>(null);
+  const [checkoutStep, setCheckoutStep] = useState<'details' | 'processing' | 'complete'>(
+    'details'
+  );
 
   // Fixed shipping for simplicity
   const shippingAmount = subtotal >= 100 ? 0 : 9.99;
@@ -184,10 +163,8 @@ export function CheckoutPage() {
         token,
       });
 
-      setOrderId(order.id);
-
       // Step 2: Initiate payment
-      const paymentResponse = await api<BankTransferResponse>('/payments/initiate', {
+      const paymentResponse = await api<{ redirectUrl?: string }>('/payments/initiate', {
         method: 'POST',
         body: JSON.stringify({
           orderId: order.id,
@@ -199,16 +176,10 @@ export function CheckoutPage() {
       // Handle payment response based on method
       if (paymentResponse.redirectUrl) {
         // Redirect to payment gateway (SSLCommerz: card, bKash, Nagad, bank)
-        clearCart();
+        // Don't clear cart here – it would trigger redirect to /cart before we leave.
+        // Cart is cleared on /checkout/success when user returns after payment.
         addToast('Redirecting to payment page to enter card or bKash details...', 'info');
         window.location.href = paymentResponse.redirectUrl;
-        return;
-      }
-
-      if (selectedPaymentMethod === 'bank_transfer' && paymentResponse.bankDetails) {
-        clearCart();
-        setBankTransferInfo(paymentResponse);
-        setCheckoutStep('bank_transfer');
         return;
       }
 
@@ -256,65 +227,6 @@ export function CheckoutPage() {
 
   if (items.length === 0 && checkoutStep === 'details') {
     return null; // Will redirect
-  }
-
-  // Bank transfer details page
-  if (checkoutStep === 'bank_transfer' && bankTransferInfo) {
-    return (
-      <div className="py-8">
-        <Container maxWidth="md">
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
-              <svg
-                className="w-8 h-8 text-green-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M5 13l4 4L19 7"
-                />
-              </svg>
-            </div>
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
-              Order Placed Successfully!
-            </h1>
-            <p className="text-gray-600 mt-2">
-              Please complete your bank transfer to confirm your order.
-            </p>
-          </div>
-
-          <BankTransferDetails
-            bankDetails={bankTransferInfo.bankDetails || []}
-            orderReference={bankTransferInfo.orderReference || orderId || ''}
-            amount={bankTransferInfo.amount || total}
-            currency={bankTransferInfo.currency || currency}
-            expiresAt={bankTransferInfo.expiresAt}
-            instructions={bankTransferInfo.instructions}
-          />
-
-          <div className="mt-6 text-center">
-            <Link
-              to={`/account/orders/${orderId}`}
-              className="inline-flex items-center gap-2 text-indigo-600 hover:text-indigo-700"
-            >
-              View Order Details
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
-            </Link>
-          </div>
-        </Container>
-      </div>
-    );
   }
 
   // Processing state

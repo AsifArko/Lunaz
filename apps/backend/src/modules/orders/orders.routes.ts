@@ -62,6 +62,7 @@ router.get('/', async (req, res, next) => {
       search: req.query.search as string | undefined,
       startDate: req.query.startDate as string | undefined,
       endDate: req.query.endDate as string | undefined,
+      userId: req.query.userId as string | undefined,
       page: Number(req.query.page) || 1,
       limit: Number(req.query.limit) || 20,
     };
