@@ -71,7 +71,7 @@ export function CategoriesSection({
   const sortedGroups = [...groupedCategories].sort((a, b) => b.children.length - a.children.length);
 
   return (
-    <section className="py-12 md:py-16 lg:py-20 bg-stone-50 px-5 sm:px-0">
+    <section className="py-12 md:py-16  bg-stone-50 px-5 sm:px-0">
       <Container className="sm:!px-6 lg:!px-8 !px-0">
         {/* Section header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8 md:mb-12">
@@ -145,7 +145,8 @@ export function CategoriesSection({
           {activeGroup && (
             <div className="relative">
               <div className="flex items-center justify-between mb-3">
-                <p className="text-sm text-stone-500">Browse {activeGroup.parent.name}</p>
+                <div></div>
+                {/* <p className="text-sm text-stone-500">Browse {activeGroup.parent.name}</p> */}
                 <div className="hidden md:flex items-center gap-2">
                   <button
                     onClick={() => scrollSubcategories('left')}

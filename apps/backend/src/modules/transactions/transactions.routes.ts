@@ -86,8 +86,8 @@ router.get('/payouts', async (req, res, next) => {
       currency: p.currency,
       status: p.status,
       reference: p.reference,
-      createdAt: p.createdAt.toISOString(),
-      completedAt: p.completedAt?.toISOString?.(),
+      createdAt: (p.createdAt as Date).toISOString(),
+      completedAt: (p.completedAt as Date)?.toISOString?.(),
     }));
 
     res.json({

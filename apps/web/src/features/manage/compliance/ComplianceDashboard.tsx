@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { API_URL } from '@/api/adminClient';
+import { CompliancePageSkeleton } from '@/features/manage/components/loaders';
+import { useMinimumLoadingTime } from '@/features/manage/hooks/useMinimumLoadingTime';
 import { useAdminAuth } from '@/context/AdminAuthContext';
 
 interface DashboardData {
@@ -97,12 +99,9 @@ export function ComplianceDashboard() {
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-900"></div>
-      </div>
-    );
+  const showLoading = useMinimumLoadingTime(loading, 450);
+  if (showLoading) {
+    return <CompliancePageSkeleton />;
   }
 
   return (

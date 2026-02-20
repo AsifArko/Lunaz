@@ -4,6 +4,7 @@ import { Price } from '@/ui';
 import { adminApi as api } from '@/api/adminClient';
 import { useAdminAuth } from '@/context/AdminAuthContext';
 import { useToast } from '@/context/ToastContext';
+import { useMinimumLoadingTime } from '@/features/manage/hooks/useMinimumLoadingTime';
 
 interface SalesData {
   date: string;
@@ -705,6 +706,8 @@ export function ReportsPage() {
     }));
   }, [salesData]);
 
+  const showLoading = useMinimumLoadingTime(isLoading, 450);
+
   return (
     <div className="space-y-8 max-w-7xl mx-auto">
       {/* Header */}
@@ -734,25 +737,25 @@ export function ReportsPage() {
           label="Revenue"
           value={<Price amount={totalRevenue} />}
           trend={{ value: growthRate, label: 'vs prev' }}
-          isLoading={isLoading}
+          isLoading={showLoading}
         />
         <MetricCard
           label="Orders"
           value={totalOrders.toLocaleString()}
           trend={{ value: ordersGrowthRate, label: 'vs prev' }}
-          isLoading={isLoading}
+          isLoading={showLoading}
         />
         <MetricCard
           label="Avg. Order Value"
           value={<Price amount={averageOrderValue} />}
           subtext={`${itemsPerOrder.toFixed(1)} items/order`}
-          isLoading={isLoading}
+          isLoading={showLoading}
         />
         <MetricCard
           label="Customers"
           value={uniqueCustomers.toLocaleString()}
           subtext={`${totalItemsSold.toLocaleString()} items sold`}
-          isLoading={isLoading}
+          isLoading={showLoading}
         />
       </div>
 
@@ -777,7 +780,7 @@ export function ReportsPage() {
           </div>
         </div>
 
-        {isLoading ? (
+        {showLoading ? (
           <div className="h-52 flex items-center justify-center">
             <div className="w-6 h-6 border-2 border-gray-200 border-t-gray-600 rounded-full animate-spin" />
           </div>
@@ -797,7 +800,7 @@ export function ReportsPage() {
             Projected Revenue
           </p>
           <p className="text-3xl font-extralight text-gray-900">
-            {isLoading ? '—' : <Price amount={projectedRevenue} />}
+            {showLoading ? '—' : <Price amount={projectedRevenue} />}
           </p>
           <p className="text-xs text-gray-400 mt-2">End of {period} estimate</p>
         </div>
@@ -807,7 +810,7 @@ export function ReportsPage() {
             Peak Activity
           </p>
           <p className="text-3xl font-extralight text-gray-900">
-            {isLoading || !peakHour ? '—' : `${peakHour.hour.toString().padStart(2, '0')}:00`}
+            {showLoading || !peakHour ? '—' : `${peakHour.hour.toString().padStart(2, '0')}:00`}
           </p>
           <p className="text-xs text-gray-400 mt-2">
             {peakHour ? `${peakHour.orders} orders at peak hour` : 'No data'}
@@ -819,7 +822,7 @@ export function ReportsPage() {
             Items Sold
           </p>
           <p className="text-3xl font-extralight text-gray-900">
-            {isLoading ? '—' : totalItemsSold.toLocaleString()}
+            {showLoading ? '—' : totalItemsSold.toLocaleString()}
           </p>
           <p className="text-xs text-gray-400 mt-2">{itemsPerOrder.toFixed(1)} avg per order</p>
         </div>
@@ -830,7 +833,7 @@ export function ReportsPage() {
         {/* Order Status */}
         <div className="bg-white border border-gray-200 rounded-lg p-6">
           <h2 className="text-sm font-medium text-gray-900 mb-6">Order Status Distribution</h2>
-          {isLoading ? (
+          {showLoading ? (
             <div className="space-y-4">
               {[...Array(5)].map((_, i) => (
                 <div key={i} className="h-8 bg-gray-50 rounded animate-pulse" />
@@ -846,7 +849,7 @@ export function ReportsPage() {
         {/* Hourly Distribution */}
         <div className="bg-white border border-gray-200 rounded-lg p-6">
           <h2 className="text-sm font-medium text-gray-900 mb-6">Hourly Order Distribution</h2>
-          {isLoading ? (
+          {showLoading ? (
             <div className="h-24 bg-gray-50 rounded animate-pulse" />
           ) : (
             <>
@@ -870,7 +873,7 @@ export function ReportsPage() {
           <div className="px-4 py-3 border-b border-gray-100">
             <h2 className="text-sm font-medium text-gray-900">Top Products by Revenue</h2>
           </div>
-          {isLoading ? (
+          {showLoading ? (
             <div className="p-4 space-y-3">
               {[...Array(5)].map((_, i) => (
                 <div key={i} className="h-6 bg-gray-50 rounded animate-pulse" />
@@ -927,7 +930,7 @@ export function ReportsPage() {
         {/* Payment Status */}
         <div className="bg-white border border-gray-200 rounded-lg p-6">
           <h2 className="text-sm font-medium text-gray-900 mb-6">Payment Status</h2>
-          {isLoading ? (
+          {showLoading ? (
             <div className="space-y-4">
               {[...Array(4)].map((_, i) => (
                 <div key={i} className="h-10 bg-gray-50 rounded animate-pulse" />
@@ -951,7 +954,7 @@ export function ReportsPage() {
           <h2 className="text-sm font-medium text-gray-900">Revenue by Day of Week</h2>
         </div>
 
-        {isLoading ? (
+        {showLoading ? (
           <div className="flex items-center gap-6">
             {[...Array(7)].map((_, i) => (
               <div key={i} className="flex-1">

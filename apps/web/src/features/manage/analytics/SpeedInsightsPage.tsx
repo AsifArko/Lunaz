@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { adminApi as api } from '@/api/adminClient';
+import { useMinimumLoadingTime } from '@/features/manage/hooks/useMinimumLoadingTime';
+import { TableSkeleton } from '@/features/manage/components/loaders';
 import { useAdminAuth } from '@/context/AdminAuthContext';
 
 /* -------------------------------------------------------------------------- */
@@ -176,6 +178,7 @@ export function SpeedInsightsPage() {
   };
 
   const score = getOverallScore();
+  const showLoading = useMinimumLoadingTime(isLoading, 450);
   const scoreColor =
     score >= 80 ? 'text-emerald-600' : score >= 50 ? 'text-amber-600' : 'text-rose-600';
   const scoreBg = score >= 80 ? 'bg-emerald-50' : score >= 50 ? 'bg-amber-50' : 'bg-rose-50';
@@ -211,7 +214,7 @@ export function SpeedInsightsPage() {
           {/* Overall Score */}
           <div className="flex items-center gap-2">
             <div className={`w-8 h-8 ${scoreBg} rounded-lg flex items-center justify-center`}>
-              {isLoading ? (
+              {showLoading ? (
                 <div className="w-4 h-4 bg-gray-200 rounded animate-pulse" />
               ) : (
                 <span className={`text-sm font-bold ${scoreColor}`}>{score}</span>
@@ -236,7 +239,7 @@ export function SpeedInsightsPage() {
                 value={overview?.lcp.value || 0}
                 unit="ms"
                 rating={overview?.lcp.rating}
-                isLoading={isLoading}
+                isLoading={showLoading}
               />
             </div>
           </div>
@@ -252,7 +255,7 @@ export function SpeedInsightsPage() {
                 value={overview?.fid.value || 0}
                 unit="ms"
                 rating={overview?.fid.rating}
-                isLoading={isLoading}
+                isLoading={showLoading}
               />
             </div>
           </div>
@@ -268,7 +271,7 @@ export function SpeedInsightsPage() {
                 value={overview?.cls.value || 0}
                 unit=""
                 rating={overview?.cls.rating}
-                isLoading={isLoading}
+                isLoading={showLoading}
               />
             </div>
           </div>
@@ -284,7 +287,7 @@ export function SpeedInsightsPage() {
                 value={overview?.ttfb.value || 0}
                 unit="ms"
                 rating={getTtfbRating(overview?.ttfb.value || 0)}
-                isLoading={isLoading}
+                isLoading={showLoading}
               />
             </div>
           </div>
@@ -301,7 +304,7 @@ export function SpeedInsightsPage() {
                     value={overview.inp.value}
                     unit="ms"
                     rating={overview.inp.rating}
-                    isLoading={isLoading}
+                    isLoading={showLoading}
                   />
                 </div>
               </div>
@@ -339,27 +342,8 @@ export function SpeedInsightsPage() {
           </div>
         </div>
 
-        {isLoading ? (
-          <div className="p-8 text-center">
-            <div className="inline-flex items-center gap-2 text-xs text-gray-500">
-              <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                />
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                />
-              </svg>
-              Loading...
-            </div>
-          </div>
+        {showLoading ? (
+          <TableSkeleton columns={5} rows={6} className="border-0 rounded-none" />
         ) : pages.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="w-full">

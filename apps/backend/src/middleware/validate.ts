@@ -49,11 +49,14 @@ export function validateBody(schema: z.ZodTypeAny) {
       // Direct body schema
       const parsed = schema.safeParse(req.body);
       if (!parsed.success) {
+        const flattened = parsed.error.flatten();
+        const firstFieldError = Object.values(flattened.fieldErrors || {}).flat()[0];
+        const message = typeof firstFieldError === 'string' ? firstFieldError : 'Validation failed';
         res.status(400).json({
           error: {
             code: 'VALIDATION_ERROR',
-            message: 'Validation failed',
-            details: parsed.error.flatten(),
+            message,
+            details: flattened,
           },
         });
         return;

@@ -4,6 +4,7 @@ build
 .env
 .env.local
 .env.*.local
+scripts/deploy-ec2.config
 *.log
 .DS_Store
 coverage

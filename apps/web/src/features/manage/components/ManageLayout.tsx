@@ -1,178 +1,24 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useAdminAuth } from '@/context/AdminAuthContext';
 
-// Futuristic handcraft-themed canvas animation component
-function HandcraftLogo({ size = 32 }: { size?: number }) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    const dpr = window.devicePixelRatio || 1;
-    canvas.width = size * dpr;
-    canvas.height = size * dpr;
-    ctx.scale(dpr, dpr);
-
-    let animationId: number;
-    let time = 0;
-
-    // Orbital particles for futuristic effect
-    const orbitals: Array<{
-      angle: number;
-      radius: number;
-      speed: number;
-      size: number;
-      phase: number;
-    }> = [];
-
-    for (let i = 0; i < 6; i++) {
-      orbitals.push({
-        angle: (i * Math.PI * 2) / 6,
-        radius: 8 + (i % 2) * 3,
-        speed: 0.8 + Math.random() * 0.4,
-        size: 1.2 + Math.random() * 0.8,
-        phase: Math.random() * Math.PI * 2,
-      });
-    }
-
-    // Thread lines radiating from center
-    const threads: Array<{
-      angle: number;
-      length: number;
-      speed: number;
-      opacity: number;
-    }> = [];
-
-    for (let i = 0; i < 8; i++) {
-      threads.push({
-        angle: (i * Math.PI) / 4,
-        length: 5 + Math.random() * 3,
-        speed: 0.5 + Math.random() * 0.5,
-        opacity: 0.3 + Math.random() * 0.4,
-      });
-    }
-
-    const animate = () => {
-      time += 0.016;
-      ctx.clearRect(0, 0, size, size);
-
-      const centerX = size / 2;
-      const centerY = size / 2;
-
-      // Outer pulsing ring
-      const outerPulse = Math.sin(time * 1.5) * 0.5;
-      ctx.beginPath();
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
-      ctx.lineWidth = 1;
-      ctx.arc(centerX, centerY, 12 + outerPulse, 0, Math.PI * 2);
-      ctx.stroke();
-
-      // Middle rotating dashed ring
-      ctx.save();
-      ctx.translate(centerX, centerY);
-      ctx.rotate(time * 0.3);
-      ctx.beginPath();
-      ctx.strokeStyle = 'rgba(200, 220, 255, 0.2)';
-      ctx.lineWidth = 0.8;
-      ctx.setLineDash([3, 4]);
-      ctx.arc(0, 0, 9, 0, Math.PI * 2);
-      ctx.stroke();
-      ctx.setLineDash([]);
-      ctx.restore();
-
-      // Animated thread lines (craft element)
-      threads.forEach((thread, i) => {
-        const wobble = Math.sin(time * thread.speed + i) * 0.15;
-        const currentAngle = thread.angle + wobble;
-        const pulseLength = thread.length + Math.sin(time * 2 + i * 0.5) * 1.5;
-
-        const startX = centerX + Math.cos(currentAngle) * 3;
-        const startY = centerY + Math.sin(currentAngle) * 3;
-        const endX = centerX + Math.cos(currentAngle) * pulseLength;
-        const endY = centerY + Math.sin(currentAngle) * pulseLength;
-
-        // Create gradient for thread
-        const gradient = ctx.createLinearGradient(startX, startY, endX, endY);
-        gradient.addColorStop(0, `rgba(255, 255, 255, ${thread.opacity})`);
-        gradient.addColorStop(1, `rgba(180, 200, 255, ${thread.opacity * 0.3})`);
-
-        ctx.beginPath();
-        ctx.strokeStyle = gradient;
-        ctx.lineWidth = 1.2;
-        ctx.lineCap = 'round';
-        ctx.moveTo(startX, startY);
-        ctx.lineTo(endX, endY);
-        ctx.stroke();
-
-        // Endpoint dot
-        const dotPulse = Math.sin(time * 3 + i) * 0.3;
-        ctx.beginPath();
-        ctx.fillStyle = `rgba(220, 230, 255, ${0.5 + dotPulse})`;
-        ctx.arc(endX, endY, 1 + dotPulse * 0.5, 0, Math.PI * 2);
-        ctx.fill();
-      });
-
-      // Orbiting particles
-      orbitals.forEach((orbital, i) => {
-        const currentAngle = orbital.angle + time * orbital.speed;
-        const breathe = Math.sin(time * 2 + orbital.phase) * 1;
-        const x = centerX + Math.cos(currentAngle) * (orbital.radius + breathe);
-        const y = centerY + Math.sin(currentAngle) * (orbital.radius + breathe);
-
-        // Particle glow
-        const glowGradient = ctx.createRadialGradient(x, y, 0, x, y, orbital.size * 2);
-        glowGradient.addColorStop(0, 'rgba(200, 220, 255, 0.6)');
-        glowGradient.addColorStop(0.5, 'rgba(180, 200, 255, 0.2)');
-        glowGradient.addColorStop(1, 'rgba(150, 180, 255, 0)');
-
-        ctx.beginPath();
-        ctx.fillStyle = glowGradient;
-        ctx.arc(x, y, orbital.size * 2, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Core particle
-        ctx.beginPath();
-        ctx.fillStyle = `rgba(255, 255, 255, ${0.7 + Math.sin(time * 2 + i) * 0.2})`;
-        ctx.arc(x, y, orbital.size, 0, Math.PI * 2);
-        ctx.fill();
-      });
-
-      // Center core with pulse
-      const corePulse = Math.sin(time * 2) * 0.4;
-
-      // Core glow
-      const coreGlow = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, 4);
-      coreGlow.addColorStop(0, 'rgba(255, 255, 255, 0.9)');
-      coreGlow.addColorStop(0.6, 'rgba(200, 220, 255, 0.3)');
-      coreGlow.addColorStop(1, 'rgba(150, 180, 255, 0)');
-
-      ctx.beginPath();
-      ctx.fillStyle = coreGlow;
-      ctx.arc(centerX, centerY, 4 + corePulse, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Solid center
-      ctx.beginPath();
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
-      ctx.arc(centerX, centerY, 2 + corePulse * 0.5, 0, Math.PI * 2);
-      ctx.fill();
-
-      animationId = requestAnimationFrame(animate);
-    };
-
-    animate();
-
-    return () => {
-      cancelAnimationFrame(animationId);
-    };
-  }, [size]);
-
-  return <canvas ref={canvasRef} style={{ width: size, height: size }} className="block" />;
+// Clean, minimal logo — refined for admin panel
+function AdminLogo({ size = 32 }: { size?: number }) {
+  return (
+    <div
+      className="group relative flex items-center justify-center rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg"
+      style={{ width: size, height: size }}
+    >
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-800 via-slate-700 to-slate-900" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.12)_0%,transparent_70%)] group-hover:opacity-80 transition-opacity" />
+      <span
+        className="relative text-white font-semibold tracking-tight"
+        style={{ fontSize: size * 0.52 }}
+      >
+        L
+      </span>
+    </div>
+  );
 }
 
 interface NavItem {
@@ -573,12 +419,12 @@ export function ManageLayout() {
     }`;
 
   return (
-    <div className="min-h-screen flex bg-slate-50">
+    <div className="fixed inset-0 flex bg-slate-50 overflow-hidden">
       {/* Sidebar */}
       <aside
         className={`${
           sidebarCollapsed ? 'w-[72px]' : 'w-[260px]'
-        } bg-white border-r border-slate-200/60 shrink-0 transition-all duration-300 ease-out flex flex-col shadow-sm`}
+        } h-full bg-white border-r border-slate-200/60 shrink-0 transition-all duration-300 ease-out flex flex-col shadow-sm overflow-hidden`}
       >
         {/* Logo Header */}
         <div className="h-16 flex items-center justify-between px-4 border-b border-slate-100">
@@ -587,7 +433,7 @@ export function ManageLayout() {
               <>
                 <div className="relative group">
                   <div className="w-10 h-10 bg-gradient-to-br from-[#0a0f1a] via-[#0d1424] to-[#080c14] rounded-xl flex items-center justify-center shadow-lg ring-1 ring-blue-900/20 transition-all duration-300 group-hover:shadow-xl group-hover:scale-105 group-hover:ring-blue-800/30">
-                    <HandcraftLogo size={28} />
+                    <AdminLogo size={28} />
                   </div>
                   <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-gradient-to-br from-emerald-400 to-emerald-500 rounded-full ring-2 ring-white shadow-sm" />
                 </div>
@@ -608,7 +454,7 @@ export function ManageLayout() {
             {sidebarCollapsed && (
               <div className="relative mx-auto group">
                 <div className="w-10 h-10 bg-gradient-to-br from-[#0a0f1a] via-[#0d1424] to-[#080c14] rounded-xl flex items-center justify-center shadow-lg ring-1 ring-blue-900/20 transition-all duration-300 group-hover:shadow-xl group-hover:scale-105 group-hover:ring-blue-800/30">
-                  <HandcraftLogo size={28} />
+                  <AdminLogo size={28} />
                 </div>
                 <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-gradient-to-br from-emerald-400 to-emerald-500 rounded-full ring-2 ring-white shadow-sm" />
               </div>
@@ -655,7 +501,7 @@ export function ManageLayout() {
         )}
 
         {/* Navigation */}
-        <nav className="flex-1 px-3 py-4 overflow-y-auto">
+        <nav className="scrollbar-thin flex-1 min-h-0 px-3 py-4 overflow-y-auto">
           {navSections.map((section, sectionIndex) => (
             <div key={section.title} className={sectionIndex > 0 ? 'mt-6' : ''}>
               {!sidebarCollapsed && (
@@ -812,14 +658,14 @@ export function ManageLayout() {
         </div>
       </aside>
 
-      {/* Main content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <main className="flex-1 overflow-auto">
-          <div className="max-w-6xl mx-auto px-6 py-6">
+      {/* Main content - fills remaining space, scrolls independently */}
+      <main className="scrollbar-thin flex-1 min-h-0 overflow-y-auto bg-slate-50">
+        <div className="min-h-full flex flex-col items-center justify-center">
+          <div className="w-full max-w-6xl px-6 py-6 bg-slate-50">
             <Outlet />
           </div>
-        </main>
-      </div>
+        </div>
+      </main>
     </div>
   );
 }

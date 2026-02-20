@@ -3,6 +3,8 @@ import { API_URL } from '@/api/adminClient';
 import { useAdminAuth } from '@/context/AdminAuthContext';
 import { useComplianceUpload } from './hooks/useComplianceUpload';
 import { DocumentUploadZone } from './components/DocumentUploadZone';
+import { ManageSkeleton } from '@/features/manage/components/loaders';
+import { useMinimumLoadingTime } from '@/features/manage/hooks/useMinimumLoadingTime';
 import { Select } from './components/Select';
 
 interface LegalDocument {
@@ -326,10 +328,25 @@ export function LegalDocumentsPage() {
 
   const hasActiveFilters = filter.category || filter.status || filter.search;
 
-  if (loading) {
+  const showLoading = useMinimumLoadingTime(loading, 450);
+  if (showLoading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-900"></div>
+      <div className="space-y-5">
+        <div className="flex items-center justify-between">
+          <div>
+            <ManageSkeleton variant="text" height={20} width={180} />
+            <ManageSkeleton variant="text" height={14} width={280} className="mt-1" />
+          </div>
+          <ManageSkeleton variant="rectangular" height={40} width={140} />
+        </div>
+        <div className="bg-white rounded-lg border border-slate-200 p-4">
+          <ManageSkeleton variant="text" height={14} width="100%" className="mb-3" />
+          <div className="space-y-2">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <ManageSkeleton key={i} variant="rectangular" height={60} width="100%" />
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
