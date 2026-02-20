@@ -5,6 +5,8 @@ import { adminApi as api } from '@/api/adminClient';
 import { useAdminAuth } from '@/context/AdminAuthContext';
 import { useToast } from '@/context/ToastContext';
 import { CreateManualOrderModal } from './CreateManualOrderModal';
+import { TableSkeleton } from '@/features/manage/components/loaders';
+import { useMinimumLoadingTime } from '@/features/manage/hooks/useMinimumLoadingTime';
 
 const statusColors: Record<string, { bg: string; text: string; dot: string }> = {
   pending: { bg: 'bg-amber-50', text: 'text-amber-700', dot: 'bg-amber-500' },
@@ -269,7 +271,10 @@ export function OrdersPage() {
   }, [searchInput, search, searchParams, setSearchParams]);
 
   const fetchOrders = useCallback(async () => {
-    if (!token) return;
+    if (!token) {
+      setIsLoading(false);
+      return;
+    }
     setIsLoading(true);
     try {
       const params = new URLSearchParams();
@@ -330,6 +335,16 @@ export function OrdersPage() {
   const processingCount = orders.filter((o) =>
     ['confirmed', 'processing'].includes(o.status)
   ).length;
+  const showLoading = useMinimumLoadingTime(isLoading, 450);
+
+  // Force minimum 450ms loading from mount so skeleton is always visible when navigating
+  const [minTimeElapsed, setMinTimeElapsed] = useState(false);
+  useEffect(() => {
+    const t = setTimeout(() => setMinTimeElapsed(true), 450);
+    return () => clearTimeout(t);
+  }, []);
+
+  const displayLoading = showLoading || !minTimeElapsed;
 
   return (
     <div className="space-y-6">
@@ -458,27 +473,8 @@ export function OrdersPage() {
 
       {/* Orders Table */}
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-        {isLoading ? (
-          <div className="p-12 text-center">
-            <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 mb-3">
-              <svg className="w-5 h-5 text-gray-500 animate-spin" fill="none" viewBox="0 0 24 24">
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                />
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                />
-              </svg>
-            </div>
-            <p className="text-sm text-gray-500">Loading orders...</p>
-          </div>
+        {displayLoading ? (
+          <TableSkeleton columns={6} rows={8} />
         ) : orders.length === 0 ? (
           <div className="p-12 text-center">
             <div className="w-12 h-12 mx-auto mb-3 bg-gray-100 rounded-full flex items-center justify-center">

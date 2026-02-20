@@ -107,7 +107,7 @@ function UserMenu() {
     <div className="relative hidden sm:block">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-2 py-1.5 sm:px-3 sm:py-2 text-stone-600 hover:text-stone-900 hover:bg-stone-100 rounded-xl transition-all duration-300 min-h-[40px] sm:min-h-[44px] focus:outline-none focus:ring-0"
+        className="flex items-center gap-2 px-2 py-1.5 sm:px-3 sm:py-2 text-stone-600 hover:text-stone-900 hover:bg-stone-100 rounded-xl transition-all duration-300 min-h-[40px] sm:min-h-[44px] outline-none ring-0 focus:outline-none focus:ring-0 active:outline-none active:ring-0"
       >
         <div className="w-7 h-7 sm:w-8 sm:h-8 bg-stone-200 rounded-full flex items-center justify-center flex-shrink-0">
           <span className="text-xs font-medium text-stone-600">

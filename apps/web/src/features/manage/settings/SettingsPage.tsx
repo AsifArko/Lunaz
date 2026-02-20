@@ -22,6 +22,7 @@ import { AdvancedTab } from './components/tabs/AdvancedTab';
 import type { SettingsTabId, StoreSettings } from './types';
 import { SETTINGS_TABS } from './utils/constants';
 import { DEFAULT_STORE_SETTINGS } from './utils/defaults';
+import { useMinimumLoadingTime } from '@/features/manage/hooks/useMinimumLoadingTime';
 
 export function SettingsPage() {
   const { token } = useAdminAuth();
@@ -58,18 +59,21 @@ export function SettingsPage() {
     if (!token) return;
     setIsSaving(true);
     try {
-      await api('/settings', {
+      const data = await api<Partial<StoreSettings>>('/settings', {
         method: 'PATCH',
         body: JSON.stringify(settings),
         token,
       });
+      setSettings((prev) => ({ ...prev, ...data }));
       addToast('Settings saved successfully', 'success');
     } catch {
-      addToast('Settings saved successfully', 'success');
+      addToast('Failed to save settings', 'error');
     } finally {
       setIsSaving(false);
     }
   };
+
+  const showLoading = useMinimumLoadingTime(isLoading, 450);
 
   // Toast handler for tabs
   const handleTabSave = () => {
@@ -130,7 +134,7 @@ export function SettingsPage() {
       tabs={SETTINGS_TABS}
       activeTab={activeTab}
       onTabChange={setActiveTab}
-      isLoading={isLoading}
+      isLoading={showLoading}
     >
       {renderTabContent()}
     </SettingsLayout>

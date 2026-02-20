@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { adminApi as api } from '@/api/adminClient';
+import { useMinimumLoadingTime } from '@/features/manage/hooks/useMinimumLoadingTime';
+import { TableSkeleton } from '@/features/manage/components/loaders';
 import { useAdminAuth } from '@/context/AdminAuthContext';
 
 /* -------------------------------------------------------------------------- */
@@ -959,6 +961,8 @@ export function TrafficLogsPage() {
     fetchLogs(page, false);
   };
 
+  const showLoading = useMinimumLoadingTime(isInitialLoad, 450);
+
   // Cleanup timeout on unmount
   useEffect(() => {
     return () => {
@@ -1019,7 +1023,7 @@ export function TrafficLogsPage() {
               </svg>
             </div>
             <div className="flex items-baseline gap-1.5">
-              {isInitialLoad ? (
+              {showLoading ? (
                 <div className="h-4 w-10 bg-gray-100 rounded animate-pulse" />
               ) : (
                 <span className="text-sm font-semibold text-gray-900">
@@ -1055,7 +1059,7 @@ export function TrafficLogsPage() {
               </svg>
             </div>
             <div className="flex items-baseline gap-1.5">
-              {isInitialLoad ? (
+              {showLoading ? (
                 <div className="h-4 w-6 bg-gray-100 rounded animate-pulse" />
               ) : (
                 <span className="text-sm font-semibold text-blue-600">
@@ -1086,7 +1090,7 @@ export function TrafficLogsPage() {
               </svg>
             </div>
             <div className="flex items-baseline gap-1.5">
-              {isInitialLoad ? (
+              {showLoading ? (
                 <div className="h-4 w-6 bg-gray-100 rounded animate-pulse" />
               ) : (
                 <span className="text-sm font-semibold text-emerald-600">
@@ -1117,7 +1121,7 @@ export function TrafficLogsPage() {
               </svg>
             </div>
             <div className="flex items-baseline gap-1.5">
-              {isInitialLoad ? (
+              {showLoading ? (
                 <div className="h-4 w-6 bg-gray-100 rounded animate-pulse" />
               ) : (
                 <span className="text-sm font-semibold text-gray-900">
@@ -1327,12 +1331,8 @@ export function TrafficLogsPage() {
 
       {/* Logs Table */}
       <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
-        {isInitialLoad ? (
-          <div className="p-4 space-y-3">
-            {[...Array(10)].map((_, i) => (
-              <div key={i} className="h-12 bg-gray-50 rounded animate-pulse" />
-            ))}
-          </div>
+        {showLoading ? (
+          <TableSkeleton columns={7} rows={10} className="border-0 rounded-none" />
         ) : logs.length > 0 ? (
           <>
             <div className="overflow-x-auto">

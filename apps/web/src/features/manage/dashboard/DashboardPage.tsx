@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import type { Order, Product, PaginatedResponse } from 'types';
 import { Price } from '@/ui';
 import { adminApi as api } from '@/api/adminClient';
+import { useMinimumLoadingTime } from '@/features/manage/hooks/useMinimumLoadingTime';
 import { useAdminAuth } from '@/context/AdminAuthContext';
 
 interface DashboardStats {
@@ -172,6 +173,8 @@ export function DashboardPage() {
     fetchDashboardData();
   }, [token]);
 
+  const showLoading = useMinimumLoadingTime(isLoading, 450);
+
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -228,7 +231,7 @@ export function DashboardPage() {
           value={<Price amount={stats?.revenue.month ?? 0} />}
           subValue={<Price amount={stats?.revenue.week ?? 0} />}
           subLabel="this week"
-          isLoading={isLoading}
+          isLoading={showLoading}
         />
 
         <StatCard
@@ -252,7 +255,7 @@ export function DashboardPage() {
           value={stats?.orders.month ?? 0}
           subValue={stats?.orders.today ?? 0}
           subLabel="today"
-          isLoading={isLoading}
+          isLoading={showLoading}
         />
 
         <StatCard
@@ -274,7 +277,7 @@ export function DashboardPage() {
           iconBg="bg-violet-50"
           label="Total Products"
           value={stats?.products ?? 0}
-          isLoading={isLoading}
+          isLoading={showLoading}
         />
 
         <StatCard
@@ -296,7 +299,7 @@ export function DashboardPage() {
           iconBg="bg-amber-50"
           label="Today's Revenue"
           value={<Price amount={stats?.revenue.today ?? 0} />}
-          isLoading={isLoading}
+          isLoading={showLoading}
         />
       </div>
 
@@ -306,7 +309,7 @@ export function DashboardPage() {
         <div className="bg-white rounded-xl border border-gray-100 p-5">
           <SectionHeader title="Recent Orders" linkTo="/orders" />
 
-          {isLoading ? (
+          {showLoading ? (
             <div className="space-y-3">
               {[...Array(5)].map((_, i) => (
                 <div key={i} className="flex items-center justify-between py-3">
@@ -382,7 +385,7 @@ export function DashboardPage() {
         <div className="bg-white rounded-xl border border-gray-100 p-5">
           <SectionHeader title="Products" linkTo="/products" />
 
-          {isLoading ? (
+          {showLoading ? (
             <div className="space-y-3">
               {[...Array(5)].map((_, i) => (
                 <div key={i} className="flex items-center gap-3 py-3">

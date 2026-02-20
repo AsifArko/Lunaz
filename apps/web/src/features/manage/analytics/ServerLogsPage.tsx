@@ -1,5 +1,7 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { adminApi as api } from '@/api/adminClient';
+import { useMinimumLoadingTime } from '@/features/manage/hooks/useMinimumLoadingTime';
+import { TableSkeleton } from '@/features/manage/components/loaders';
 import { useAdminAuth } from '@/context/AdminAuthContext';
 
 /* -------------------------------------------------------------------------- */
@@ -810,6 +812,8 @@ export function ServerLogsPage() {
     fetchLogs(page, false);
   };
 
+  const showLoading = useMinimumLoadingTime(isInitialLoad, 450);
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -824,7 +828,7 @@ export function ServerLogsPage() {
           </div>
           <p className="mt-1 text-sm text-gray-500">
             Real-time API request and response logging
-            {!isInitialLoad && stats && (
+            {!showLoading && stats && (
               <span className="ml-2 text-gray-400">
                 — {pagination.total.toLocaleString()} total requests in selected time range
               </span>
@@ -897,7 +901,7 @@ export function ServerLogsPage() {
               </svg>
             </div>
             <div className="flex items-baseline gap-1.5">
-              {isInitialLoad ? (
+              {showLoading ? (
                 <div className="h-4 w-12 bg-gray-100 rounded animate-pulse" />
               ) : (
                 <span className="text-sm font-semibold text-gray-900">
@@ -930,7 +934,7 @@ export function ServerLogsPage() {
               </svg>
             </div>
             <div className="flex items-baseline gap-1.5">
-              {isInitialLoad ? (
+              {showLoading ? (
                 <div className="h-4 w-6 bg-gray-100 rounded animate-pulse" />
               ) : (
                 <span
@@ -965,7 +969,7 @@ export function ServerLogsPage() {
               </svg>
             </div>
             <div className="flex items-baseline gap-1.5">
-              {isInitialLoad ? (
+              {showLoading ? (
                 <div className="h-4 w-6 bg-gray-100 rounded animate-pulse" />
               ) : (
                 <span
@@ -998,7 +1002,7 @@ export function ServerLogsPage() {
               </svg>
             </div>
             <div className="flex items-baseline gap-1.5">
-              {isInitialLoad ? (
+              {showLoading ? (
                 <div className="h-4 w-10 bg-gray-100 rounded animate-pulse" />
               ) : (
                 <>
@@ -1143,12 +1147,8 @@ export function ServerLogsPage() {
 
       {/* Logs Table */}
       <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
-        {isInitialLoad ? (
-          <div className="p-4 space-y-3">
-            {[...Array(10)].map((_, i) => (
-              <div key={i} className="h-12 bg-gray-50 rounded animate-pulse" />
-            ))}
-          </div>
+        {showLoading ? (
+          <TableSkeleton columns={6} rows={10} className="border-0 rounded-none" />
         ) : logs.length > 0 ? (
           <>
             <div className="overflow-x-auto">

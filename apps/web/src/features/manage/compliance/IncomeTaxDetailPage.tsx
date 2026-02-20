@@ -4,6 +4,8 @@ import { API_URL } from '@/api/adminClient';
 import { useAdminAuth } from '@/context/AdminAuthContext';
 import { useComplianceUpload } from './hooks/useComplianceUpload';
 import { DocumentUploadZone } from './components/DocumentUploadZone';
+import { DetailPageSkeleton } from '@/features/manage/components/loaders';
+import { useMinimumLoadingTime } from '@/features/manage/hooks/useMinimumLoadingTime';
 import { Select } from './components/Select';
 
 interface TaxRecordDetail {
@@ -422,12 +424,9 @@ export function IncomeTaxDetailPage() {
     }
   }
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-900" />
-      </div>
-    );
+  const showLoading = useMinimumLoadingTime(loading, 450);
+  if (showLoading) {
+    return <DetailPageSkeleton />;
   }
 
   if (error || !record) {

@@ -11,6 +11,8 @@ import type { Product, Category, PaginatedResponse, ProductStatus } from 'types'
 import { adminApi as api, API_URL } from '@/api/adminClient';
 import { useAdminAuth } from '@/context/AdminAuthContext';
 import { useToast } from '@/context/ToastContext';
+import { DetailPageSkeleton } from '@/features/manage/components/loaders';
+import { useMinimumLoadingTime } from '@/features/manage/hooks/useMinimumLoadingTime';
 
 interface VariantForm {
   id: string;
@@ -801,32 +803,10 @@ export function ProductFormPage() {
   };
 
   const totalImages = existingImages.length + newImages.length + imageUrlsToAdd.length;
+  const showLoading = useMinimumLoadingTime(isLoading, 450);
 
-  if (isLoading) {
-    return (
-      <div className="min-h-[60vh] flex items-center justify-center">
-        <div className="text-center">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-indigo-50 mb-4">
-            <svg className="w-6 h-6 text-indigo-500 animate-spin" fill="none" viewBox="0 0 24 24">
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-              />
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              />
-            </svg>
-          </div>
-          <p className="text-sm text-gray-500">Loading product details...</p>
-        </div>
-      </div>
-    );
+  if (showLoading) {
+    return <DetailPageSkeleton />;
   }
 
   return (

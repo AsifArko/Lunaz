@@ -96,6 +96,29 @@ body {
   }
 }
 
+/* Manage skeleton — visible shimmer sweep (like Facebook/LinkedIn) */
+@keyframes manage-skeleton-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.manage-skeleton {
+  background: linear-gradient(
+    90deg,
+    #e2e8f0 0%,
+    #e2e8f0 35%,
+    #f8fafc 50%,
+    #e2e8f0 65%,
+    #e2e8f0 100%
+  );
+  background-size: 200% 100%;
+  animation: manage-skeleton-shimmer 1.8s ease-in-out infinite;
+}
+
 /* Hero background subtle animation */
 @keyframes hero-shimmer {
   0%, 100% { opacity: 1; }
@@ -194,6 +217,26 @@ body {
 }
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
+}
+
+/* Ultra-thin scrollbar — hair-like */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 163, 184, 0.4) transparent;
+}
+.scrollbar-thin::-webkit-scrollbar {
+  width: 1px;
+  height: 1px;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.5);
+  border-radius: 1px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.6);
 }
 
 /* Smooth scrolling */

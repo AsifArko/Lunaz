@@ -1,8 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { API_URL } from '@/api/adminClient';
 import { useAdminAuth } from '@/context/AdminAuthContext';
 import { useComplianceUpload } from './hooks/useComplianceUpload';
 import { DocumentUploadZone } from './components/DocumentUploadZone';
+import { ContentCardSkeleton, ManageSkeleton } from '@/features/manage/components/loaders';
+import { useMinimumLoadingTime } from '@/features/manage/hooks/useMinimumLoadingTime';
 import { Select } from './components/Select';
 
 interface Director {
@@ -62,13 +64,8 @@ export function BusinessAuthenticityPage() {
   const [showAddIdentifier, setShowAddIdentifier] = useState(false);
   const [showAddDirector, setShowAddDirector] = useState(false);
 
-  useEffect(() => {
-    fetchAuthenticity();
-    // fetchAuthenticity depends on token which is stable from useAdminAuth
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  async function fetchAuthenticity() {
+  const fetchAuthenticity = useCallback(async () => {
+    if (!token) return;
     try {
       const res = await fetch(`${API_URL}/compliance/authenticity`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -85,7 +82,16 @@ export function BusinessAuthenticityPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [token]);
+
+  useEffect(() => {
+    if (!token) {
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    fetchAuthenticity();
+  }, [token, fetchAuthenticity]);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -138,10 +144,18 @@ export function BusinessAuthenticityPage() {
     return labels[type] || type;
   };
 
-  if (loading) {
+  const showLoading = useMinimumLoadingTime(loading, 450);
+  if (showLoading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-900"></div>
+      <div className="space-y-5">
+        <div className="flex items-center justify-between">
+          <div>
+            <ManageSkeleton variant="text" height={24} width={200} />
+            <ManageSkeleton variant="text" height={14} width={280} className="mt-1" />
+          </div>
+          <ManageSkeleton variant="rectangular" height={40} width={80} />
+        </div>
+        <ContentCardSkeleton rows={6} />
       </div>
     );
   }
@@ -578,8 +592,10 @@ function BusinessAuthenticityFormModal({
         body: JSON.stringify(body),
       });
       if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data?.error || 'Failed to save');
+        const data = await res.json().catch(() => ({}));
+        const msg =
+          typeof data?.error === 'string' ? data.error : (data?.error?.message ?? 'Failed to save');
+        throw new Error(msg);
       }
       onSuccess();
     } catch (e) {
@@ -877,8 +893,12 @@ function AddTaxIdentifierModal({
         body: JSON.stringify(body),
       });
       if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data?.error || 'Failed to add identifier');
+        const data = await res.json().catch(() => ({}));
+        const msg =
+          typeof data?.error === 'string'
+            ? data.error
+            : (data?.error?.message ?? 'Failed to add identifier');
+        throw new Error(msg);
       }
       onSuccess();
     } catch (e) {
@@ -1076,8 +1096,12 @@ function AddDirectorModal({
         body: JSON.stringify(body),
       });
       if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data?.error || 'Failed to add director');
+        const data = await res.json().catch(() => ({}));
+        const msg =
+          typeof data?.error === 'string'
+            ? data.error
+            : (data?.error?.message ?? 'Failed to add director');
+        throw new Error(msg);
       }
       onSuccess();
     } catch (e) {

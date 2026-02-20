@@ -4,6 +4,12 @@ import { API_URL } from '@/api/adminClient';
 import { useAdminAuth } from '@/context/AdminAuthContext';
 import { useComplianceUpload } from './hooks/useComplianceUpload';
 import { DocumentUploadZone } from './components/DocumentUploadZone';
+import {
+  ManageSkeleton,
+  StatCardSkeleton,
+  TableSkeleton,
+} from '@/features/manage/components/loaders';
+import { useMinimumLoadingTime } from '@/features/manage/hooks/useMinimumLoadingTime';
 import { Select } from './components/Select';
 
 interface TaxRecord {
@@ -405,10 +411,23 @@ export function IncomeTaxPage() {
 
   const hasActiveFilters = filter.fiscalYear || filter.taxType || filter.paymentStatus;
 
-  if (loading) {
+  const showLoading = useMinimumLoadingTime(loading, 450);
+  if (showLoading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-900"></div>
+      <div className="space-y-5">
+        <div className="flex items-center justify-between">
+          <div>
+            <ManageSkeleton variant="text" height={20} width={220} />
+            <ManageSkeleton variant="text" height={14} width={260} className="mt-1" />
+          </div>
+          <ManageSkeleton variant="rectangular" height={40} width={120} />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[1, 2, 3, 4].map((i) => (
+            <StatCardSkeleton key={i} />
+          ))}
+        </div>
+        <TableSkeleton columns={5} rows={6} />
       </div>
     );
   }
