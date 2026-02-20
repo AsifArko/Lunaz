@@ -19,6 +19,8 @@ COPY interfaces ./interfaces
 COPY constants ./constants
 COPY apps/backend ./apps/backend
 
+# Increase Node heap for tsc on memory-constrained EC2 (avoids OOM/hang)
+ENV NODE_OPTIONS=--max-old-space-size=2048
 RUN npm run build --workspace=backend
 
 FROM node:20-alpine AS production
