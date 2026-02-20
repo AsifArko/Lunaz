@@ -24,6 +24,8 @@ COPY interfaces ./interfaces
 COPY constants ./constants
 COPY apps/web ./apps/web
 
+# Increase Node heap for tsc/vite on memory-constrained EC2 (avoids OOM/hang)
+ENV NODE_OPTIONS=--max-old-space-size=2048
 RUN npm run build --workspace=web
 
 FROM node:20-alpine AS production
