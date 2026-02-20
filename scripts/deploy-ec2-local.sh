@@ -41,7 +41,6 @@ rsync -avz --delete \
 
 echo "==> Building and starting on EC2 (first build may take 10-15 min)..."
 # Use ssh without -t to avoid TTY buffering that can make tsc appear to hang.
-# Use COMPOSE_DOCKER_CLI_BUILD=1 and DOCKER_BUILDKIT=1 for better build output streaming.
-ssh "${SSH_OPTS[@]}" "${EC2_USER}@${EC2_HOST}" "cd ${EC2_PATH} && DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker-compose -f docker-compose.ec2.build.yml build --progress=plain && docker-compose -f docker-compose.ec2.build.yml down && docker-compose -f docker-compose.ec2.build.yml up -d"
+ssh "${SSH_OPTS[@]}" "${EC2_USER}@${EC2_HOST}" "cd ${EC2_PATH} && DOCKER_BUILDKIT=0 docker-compose -f docker-compose.ec2.build.yml build && docker-compose -f docker-compose.ec2.build.yml down && docker-compose -f docker-compose.ec2.build.yml up -d"
 
 echo "==> Done. App should be live shortly."
