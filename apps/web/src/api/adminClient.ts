@@ -1,7 +1,15 @@
 /**
  * Admin API client — uses admin tokens (lunaz_admin_*) for manage section.
  * Separate from customer api client which uses lunaz_token.
+ * On 401 (expired/invalid token), calls the registered handler to log out the user.
  */
+
+let onUnauthorized: (() => void) | null = null;
+
+/** Register a callback to run when the API returns 401 (e.g. session expired). Used to log out the user. */
+export function setAdminUnauthorizedHandler(handler: (() => void) | null): void {
+  onUnauthorized = handler;
+}
 
 export const API_URL = (() => {
   if (typeof window === 'undefined') {
@@ -41,6 +49,9 @@ export async function adminApi<T>(
   const data = await res.json().catch(() => ({}));
 
   if (!res.ok) {
+    if (res.status === 401 && token) {
+      onUnauthorized?.();
+    }
     const msg =
       data &&
       typeof data === 'object' &&

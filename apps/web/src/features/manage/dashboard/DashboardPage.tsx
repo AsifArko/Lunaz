@@ -307,7 +307,7 @@ export function DashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent Orders */}
         <div className="bg-white rounded-xl border border-gray-100 p-5">
-          <SectionHeader title="Recent Orders" linkTo="/orders" />
+          <SectionHeader title="Recent Orders" linkTo="/manage/orders" />
 
           {showLoading ? (
             <div className="space-y-3">
@@ -383,7 +383,7 @@ export function DashboardPage() {
 
         {/* Products */}
         <div className="bg-white rounded-xl border border-gray-100 p-5">
-          <SectionHeader title="Products" linkTo="/products" />
+          <SectionHeader title="Products" linkTo="/manage/products" />
 
           {showLoading ? (
             <div className="space-y-3">

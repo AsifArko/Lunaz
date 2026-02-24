@@ -1,5 +1,6 @@
 import { useState, useEffect, type FormEvent } from 'react';
 import type { Address, User } from 'types';
+import { COUNTRIES } from 'constants/countries';
 import { api } from '../../api/client';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
@@ -394,13 +395,29 @@ export function AddressesPage() {
                   onChange={(e) => setFormData({ ...formData, postalCode: e.target.value })}
                   required
                 />
-                <InputField
-                  label="Country"
-                  placeholder="Enter country"
-                  value={formData.country}
-                  onChange={(e) => setFormData({ ...formData, country: e.target.value })}
-                  required
-                />
+                <div className="space-y-1.5">
+                  <label htmlFor="country" className="block text-sm font-medium text-gray-700">
+                    Country
+                  </label>
+                  <select
+                    id="country"
+                    required
+                    value={formData.country}
+                    onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+                    className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-900 focus:outline-none focus:bg-white focus:border-gray-400 focus:ring-1 focus:ring-gray-400 transition-all duration-200"
+                  >
+                    <option value="">Select country</option>
+                    {COUNTRIES.map((c) => (
+                      <option key={c} value={c}>
+                        {c}
+                      </option>
+                    ))}
+                    {formData.country &&
+                      !(COUNTRIES as readonly string[]).includes(formData.country) && (
+                        <option value={formData.country}>{formData.country}</option>
+                      )}
+                  </select>
+                </div>
               </div>
             </div>
 
