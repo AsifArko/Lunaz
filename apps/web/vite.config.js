@@ -26,8 +26,33 @@ export default defineConfig({
     port: Number(process.env.VITE_DEV_PORT) || 3000,
     proxy: {
       '/api': {
-        target: 'http://localhost:'.concat(process.env.PORT || 4000),
+        target: 'http://127.0.0.1:'.concat(process.env.PORT || 4000),
         changeOrigin: true,
+        timeout: 30000,
+        configure: (proxy) => {
+          proxy.on('error', (err, req, res) => {
+            const reqPath = req.url || req.path || 'unknown';
+            console.error('[Vite Proxy] Backend unreachable for', req.method, reqPath, err.message);
+            const nodeRes = res;
+            if (nodeRes && !nodeRes.headersSent && nodeRes.writeHead) {
+              nodeRes.writeHead(503, { 'Content-Type': 'application/json' });
+              nodeRes.end(
+                JSON.stringify({
+                  error: {
+                    code: 'SERVICE_UNAVAILABLE',
+                    message:
+                      'Backend temporarily unavailable. Is it running on port ' +
+                      (process.env.PORT || 4000) +
+                      '?',
+                  },
+                })
+              );
+            }
+          });
+          proxy.on('proxyReq', (proxyReq) => {
+            proxyReq.setTimeout(30000);
+          });
+        },
       },
     },
   },

@@ -5,6 +5,7 @@ import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { ToastProvider } from './context/ToastContext';
 import { AnalyticsProvider } from './context/AnalyticsContext';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import App from './App';
 import './index.css';
 
@@ -13,16 +14,18 @@ import './index.css';
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <BrowserRouter>
-      <AuthProvider>
-        <AnalyticsProvider>
-          <CartProvider>
-            <ToastProvider>
-              <App />
-            </ToastProvider>
-          </CartProvider>
-        </AnalyticsProvider>
-      </AuthProvider>
-    </BrowserRouter>
+    <ErrorBoundary>
+      <BrowserRouter>
+        <AuthProvider>
+          <AnalyticsProvider>
+            <CartProvider>
+              <ToastProvider>
+                <App />
+              </ToastProvider>
+            </CartProvider>
+          </AnalyticsProvider>
+        </AuthProvider>
+      </BrowserRouter>
+    </ErrorBoundary>
   </React.StrictMode>
 );

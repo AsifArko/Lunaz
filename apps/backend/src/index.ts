@@ -1,6 +1,7 @@
 import { createApp } from './app.js';
 import { getConfig } from './config/index.js';
 import { connectDb } from './lib/db.js';
+import { logger } from './lib/logger.js';
 
 async function main() {
   const config = getConfig();
@@ -8,17 +9,13 @@ async function main() {
 
   const app = createApp();
   app.listen(config.PORT, () => {
-    // eslint-disable-next-line no-console
-    console.log(`Backend listening on http://localhost:${config.PORT}`);
-    // eslint-disable-next-line no-console
-    console.log(`Health: http://localhost:${config.PORT}/health`);
-    // eslint-disable-next-line no-console
-    console.log(`API: http://localhost:${config.PORT}/api/v1`);
+    logger.info(`Backend listening on http://127.0.0.1:${config.PORT}`);
+    logger.info(`Health: http://127.0.0.1:${config.PORT}/health`);
+    logger.info(`API: http://127.0.0.1:${config.PORT}/api/v1`);
   });
 }
 
 main().catch((err) => {
-  // eslint-disable-next-line no-console
-  console.error(err);
+  logger.errorException(err, 'Backend failed to start');
   process.exit(1);
 });

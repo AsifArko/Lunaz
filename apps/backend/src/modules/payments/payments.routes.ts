@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { logger } from '../../lib/logger.js';
 import { authMiddleware } from '../../middleware/auth.js';
 import { requireRole } from '../../middleware/requireRole.js';
 import { validateBody, validateQuery } from '../../middleware/validate.js';
@@ -64,8 +65,7 @@ router.post('/sslcommerz/ipn', async (req, res) => {
     await paymentService.handleCallback(PaymentMethod.CARD, req.body);
     res.status(200).send('IPN Received');
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error('SSLCommerz IPN error:', error);
+    logger.errorException(error, 'SSLCommerz IPN error');
     res.status(500).send('IPN Error');
   }
 });

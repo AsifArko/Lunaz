@@ -1,6 +1,7 @@
 import type { Request, Response, NextFunction } from 'express';
 import { randomUUID } from 'crypto';
 import { LogLevel } from '../constants/analytics';
+import { logger } from '../lib/logger.js';
 import { ServerLogModel } from '../modules/analytics/analytics.model.js';
 import { parseUserAgent } from '../modules/analytics/analytics.service.js';
 
@@ -196,12 +197,10 @@ export function serverLoggerMiddleware() {
 
         // Save to database asynchronously (don't block response)
         ServerLogModel.create(logEntry).catch((err) => {
-          // eslint-disable-next-line no-console
-          console.error('Failed to save server log:', err.message);
+          logger.errorException(err, 'Failed to save server log', { requestId });
         });
       } catch (err) {
-        // eslint-disable-next-line no-console
-        console.error('Server logger error:', err);
+        logger.errorException(err, 'Server logger error', { requestId });
       }
     });
 
