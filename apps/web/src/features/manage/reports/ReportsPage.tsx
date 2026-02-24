@@ -412,48 +412,131 @@ function ProgressBar({
   );
 }
 
-// Compact Weekly Revenue Table
-function WeeklyRevenueTable({
+// Revenue by Day of Week — same AreaChart style as Revenue Trend
+function DayOfWeekAreaChart({
   data,
+  height = 200,
 }: {
-  data: { label: string; current: number; previous: number }[];
+  data: { label: string; current: number }[];
+  height?: number;
 }) {
-  const maxValue = Math.max(...data.map((d) => d.current), 1);
-  const total = data.reduce((sum, d) => sum + d.current, 0);
-  const highestDay = data.reduce((max, d) => (d.current > max.current ? d : max), data[0]);
+  if (data.length === 0) return null;
+
+  const values = data.map((d) => d.current);
+  const maxValue = Math.max(...values, 1);
+  const minValue = 0;
+  const range = maxValue - minValue || 1;
+
+  const width = 1000;
+  const padding = { top: 20, right: 20, bottom: 30, left: 60 };
+  const chartWidth = width - padding.left - padding.right;
+  const chartHeight = height - padding.top - padding.bottom;
+
+  const getX = (index: number) =>
+    padding.left + (index / Math.max(data.length - 1, 1)) * chartWidth;
+  const getY = (value: number) =>
+    padding.top + chartHeight - ((value - minValue) / range) * chartHeight;
+
+  const createSmoothPath = (points: { x: number; y: number }[]) => {
+    if (points.length < 2) return '';
+    let path = `M ${points[0].x} ${points[0].y}`;
+    for (let i = 1; i < points.length; i++) {
+      const prev = points[i - 1];
+      const curr = points[i];
+      const cpx = (prev.x + curr.x) / 2;
+      path += ` C ${cpx} ${prev.y}, ${cpx} ${curr.y}, ${curr.x} ${curr.y}`;
+    }
+    return path;
+  };
+
+  const points = data.map((d, i) => ({ x: getX(i), y: getY(d.current) }));
+  const linePath = createSmoothPath(points);
+  const areaPath =
+    linePath +
+    ` L ${getX(data.length - 1)} ${padding.top + chartHeight} L ${padding.left} ${padding.top + chartHeight} Z`;
+
+  const trendValues = movingAverage(values, 2);
+  const trendPoints = data.map((_, i) => ({ x: getX(i), y: getY(trendValues[i]) }));
+  const trendPath = createSmoothPath(trendPoints);
+
+  const yTicks = [0, 0.25, 0.5, 0.75, 1].map((pct) => ({
+    value: minValue + range * pct,
+    y: getY(minValue + range * pct),
+  }));
 
   return (
-    <div className="flex items-center gap-6">
-      {data.map((day) => {
-        const percentage = (day.current / maxValue) * 100;
-        const isHighest = day.label === highestDay?.label;
+    <svg viewBox={`0 0 ${width} ${height}`} className="w-full" style={{ height }}>
+      {yTicks.map((tick, i) => (
+        <g key={i}>
+          <line
+            x1={padding.left}
+            y1={tick.y}
+            x2={width - padding.right}
+            y2={tick.y}
+            stroke="#f3f4f6"
+            strokeWidth="1"
+          />
+          <text
+            x={padding.left - 10}
+            y={tick.y + 4}
+            textAnchor="end"
+            className="text-[10px] fill-gray-400"
+          >
+            ৳{(tick.value / 1000).toFixed(tick.value >= 1000 ? 1 : 0)}
+            {tick.value >= 1000 ? 'k' : ''}
+          </text>
+        </g>
+      ))}
 
-        return (
-          <div key={day.label} className="flex-1 min-w-0">
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-[11px] text-gray-500">{day.label}</span>
-              <span
-                className={`text-[11px] tabular-nums ${isHighest ? 'text-gray-900 font-medium' : 'text-gray-500'}`}
-              >
-                ৳{(day.current / 100).toLocaleString(undefined, { maximumFractionDigits: 0 })}
-              </span>
-            </div>
-            <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-              <div
-                className={`h-full rounded-full transition-all duration-500 ${isHighest ? 'bg-gray-800' : 'bg-gray-400'}`}
-                style={{ width: `${percentage}%` }}
-              />
-            </div>
-          </div>
-        );
-      })}
-      <div className="pl-4 border-l border-gray-200 shrink-0">
-        <p className="text-[10px] text-gray-400 uppercase tracking-wider">Total</p>
-        <p className="text-sm font-medium text-gray-900 tabular-nums">
-          ৳{(total / 100).toLocaleString(undefined, { maximumFractionDigits: 0 })}
-        </p>
-      </div>
-    </div>
+      <defs>
+        <linearGradient id="dayOfWeekGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#374151" stopOpacity="0.15" />
+          <stop offset="100%" stopColor="#374151" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+
+      <path d={areaPath} fill="url(#dayOfWeekGradient)" />
+      <path
+        d={trendPath}
+        fill="none"
+        stroke="#d1d5db"
+        strokeWidth="1"
+        strokeDasharray="4,4"
+        opacity="0.8"
+      />
+      <path
+        d={linePath}
+        fill="none"
+        stroke="#374151"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+
+      {points.map((point, i) => (
+        <circle
+          key={i}
+          cx={point.x}
+          cy={point.y}
+          r="3"
+          fill="#fff"
+          stroke="#374151"
+          strokeWidth="1.5"
+        />
+      ))}
+
+      {data.map((d, i) => (
+        <text
+          key={i}
+          x={getX(i)}
+          y={height - 8}
+          textAnchor="middle"
+          className="text-[10px] fill-gray-400"
+        >
+          {d.label}
+        </text>
+      ))}
+    </svg>
   );
 }
 
@@ -948,25 +1031,26 @@ export function ReportsPage() {
         </div>
       </div>
 
-      {/* Weekly Comparison */}
-      <div className="bg-white border border-gray-200 rounded-lg p-4">
-        <div className="flex items-center justify-between mb-3">
+      {/* Revenue by Day of Week */}
+      <div className="bg-white border border-gray-200 rounded-lg p-6">
+        <div className="mb-6">
           <h2 className="text-sm font-medium text-gray-900">Revenue by Day of Week</h2>
+          <p className="text-xs text-gray-400 mt-0.5">Revenue distribution across weekdays</p>
         </div>
 
         {showLoading ? (
-          <div className="flex items-center gap-6">
-            {[...Array(7)].map((_, i) => (
-              <div key={i} className="flex-1">
-                <div className="h-3 bg-gray-100 rounded animate-pulse mb-1" />
-                <div className="h-1.5 bg-gray-50 rounded animate-pulse" />
-              </div>
-            ))}
+          <div className="h-52 flex items-center justify-center">
+            <div className="w-6 h-6 border-2 border-gray-200 border-t-gray-600 rounded-full animate-spin" />
           </div>
         ) : weeklyComparison.length === 0 ? (
-          <p className="text-sm text-gray-400 text-center py-4">No data available</p>
+          <div className="h-52 flex items-center justify-center text-sm text-gray-400">
+            No data available for this period
+          </div>
         ) : (
-          <WeeklyRevenueTable data={weeklyComparison} />
+          <DayOfWeekAreaChart
+            data={weeklyComparison.map((d) => ({ label: d.label, current: d.current }))}
+            height={220}
+          />
         )}
       </div>
 

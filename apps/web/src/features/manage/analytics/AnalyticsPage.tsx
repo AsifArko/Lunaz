@@ -145,9 +145,22 @@ function StatCard({
   );
 }
 
+// Smooth curve path using cubic bezier (same as Reports page)
+function createSmoothPath(points: { x: number; y: number }[]): string {
+  if (points.length < 2) return '';
+  let path = `M ${points[0].x} ${points[0].y}`;
+  for (let i = 1; i < points.length; i++) {
+    const prev = points[i - 1];
+    const curr = points[i];
+    const cpx = (prev.x + curr.x) / 2;
+    path += ` C ${cpx} ${prev.y}, ${cpx} ${curr.y}, ${curr.x} ${curr.y}`;
+  }
+  return path;
+}
+
 function VisitorsChart({
   data,
-  height = 200,
+  height = 220,
   showPageViews: _showPageViews = false,
 }: {
   data: TimeSeries[];
@@ -161,28 +174,32 @@ function VisitorsChart({
 
   const values = data.map((d) => d[metric]);
   const maxValue = Math.max(...values, 1);
+  const minValue = 0;
+  const range = maxValue - minValue || 1;
 
-  // Calculate nice Y-axis labels
-  const yAxisLabels = [
-    maxValue,
-    Math.round(maxValue * 0.75),
-    Math.round(maxValue * 0.5),
-    Math.round(maxValue * 0.25),
-    0,
-  ];
+  const width = 1000;
+  const padding = { top: 20, right: 20, bottom: 30, left: 60 };
+  const chartWidth = width - padding.left - padding.right;
+  const chartHeight = height - padding.top - padding.bottom;
 
-  const getY = (value: number) => {
-    return 100 - ((value - 0) / maxValue) * 85 - 5;
-  };
+  const getX = (index: number) =>
+    padding.left + (index / Math.max(data.length - 1, 1)) * chartWidth;
+  const getY = (value: number) =>
+    padding.top + chartHeight - ((value - minValue) / range) * chartHeight;
 
-  const points = data.map((d, i) => {
-    const x = data.length === 1 ? 50 : (i / (data.length - 1)) * 100;
-    const y = getY(d[metric]);
-    return { x, y, data: d };
-  });
+  const points = data.map((d, i) => ({ x: getX(i), y: getY(d[metric]), data: d }));
+  const linePath = createSmoothPath(points);
+  const areaPath =
+    linePath +
+    ` L ${getX(data.length - 1)} ${padding.top + chartHeight} L ${padding.left} ${padding.top + chartHeight} Z`;
 
-  const pathD = points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
-  const areaD = `${pathD} L ${points[points.length - 1].x} 95 L ${points[0].x} 95 Z`;
+  const yTicks = [0, 0.25, 0.5, 0.75, 1].map((pct) => ({
+    value: minValue + range * pct,
+    y: getY(minValue + range * pct),
+  }));
+
+  const xLabelInterval = Math.max(1, Math.floor(data.length / 6));
+  const xLabels = data.filter((_, i) => i % xLabelInterval === 0 || i === data.length - 1);
 
   const colors = {
     visitors: { stroke: '#3b82f6', fill: '#3b82f6', bg: 'bg-blue-500' },
@@ -211,100 +228,119 @@ function VisitorsChart({
         ))}
       </div>
 
-      <div className="relative" style={{ height }}>
-        {/* Y-axis labels */}
-        <div className="absolute left-0 top-0 bottom-0 w-10 flex flex-col justify-between text-[10px] text-gray-400 py-2">
-          {yAxisLabels.map((label, i) => (
-            <span key={i}>{label.toLocaleString()}</span>
+      <div className="relative">
+        <svg
+          viewBox={`0 0 ${width} ${height}`}
+          className="w-full"
+          style={{ height }}
+          onMouseLeave={() => setHoveredIndex(null)}
+        >
+          {/* Grid lines */}
+          {yTicks.map((tick, i) => (
+            <g key={i}>
+              <line
+                x1={padding.left}
+                y1={tick.y}
+                x2={width - padding.right}
+                y2={tick.y}
+                stroke="#f3f4f6"
+                strokeWidth="1"
+              />
+              <text
+                x={padding.left - 10}
+                y={tick.y + 4}
+                textAnchor="end"
+                className="text-[10px] fill-gray-400"
+              >
+                {tick.value.toLocaleString()}
+              </text>
+            </g>
           ))}
-        </div>
 
-        {/* Chart area */}
-        <div className="ml-12 h-full">
-          <svg
-            viewBox="0 0 100 100"
-            preserveAspectRatio="none"
-            className="w-full h-full"
-            onMouseLeave={() => setHoveredIndex(null)}
-          >
-            {/* Grid lines */}
-            {[0, 25, 50, 75, 100].map((y, i) => (
-              <line
-                key={i}
-                x1="0"
-                y1={5 + y * 0.9}
-                x2="100"
-                y2={5 + y * 0.9}
-                stroke="#f1f5f9"
-                strokeWidth="0.3"
-              />
-            ))}
+          <defs>
+            <linearGradient id={`chartGradient-${metric}`} x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor={currentColor.fill} stopOpacity="0.2" />
+              <stop offset="100%" stopColor={currentColor.fill} stopOpacity="0" />
+            </linearGradient>
+          </defs>
 
-            {/* Area fill */}
-            <path d={areaD} fill={`url(#chartGradient-${metric})`} opacity="0.15" />
+          {/* Area fill */}
+          <path d={areaPath} fill={`url(#chartGradient-${metric})`} />
 
-            {/* Line */}
-            <path
-              d={pathD}
-              fill="none"
-              stroke={currentColor.stroke}
-              strokeWidth="0.6"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
+          {/* Line - smooth curve with visible stroke */}
+          <path
+            d={linePath}
+            fill="none"
+            stroke={currentColor.stroke}
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
 
-            {/* Data points */}
-            {points.map((p, i) => (
-              <g key={i}>
-                <circle
-                  cx={p.x}
-                  cy={p.y}
-                  r={hoveredIndex === i ? 1.5 : 0.8}
-                  fill={currentColor.stroke}
-                  className="transition-all duration-150"
-                />
-                {/* Hover area */}
-                <rect
-                  x={p.x - 100 / data.length / 2}
-                  y="0"
-                  width={100 / data.length}
-                  height="100"
-                  fill="transparent"
-                  onMouseEnter={() => setHoveredIndex(i)}
-                  className="cursor-crosshair"
-                />
-              </g>
-            ))}
-
-            {/* Hover line */}
-            {hoveredIndex !== null && (
-              <line
-                x1={points[hoveredIndex].x}
-                y1="5"
-                x2={points[hoveredIndex].x}
-                y2="95"
+          {/* Data points - visible dots */}
+          {points.map((p, i) => (
+            <g key={i}>
+              <circle
+                cx={p.x}
+                cy={p.y}
+                r={hoveredIndex === i ? 5 : 3}
+                fill="#fff"
                 stroke={currentColor.stroke}
-                strokeWidth="0.2"
-                strokeDasharray="1,1"
+                strokeWidth="1.5"
+                className="transition-all duration-150"
               />
-            )}
+              <rect
+                x={p.x - chartWidth / data.length / 2}
+                y={padding.top}
+                width={chartWidth / data.length}
+                height={chartHeight}
+                fill="transparent"
+                onMouseEnter={() => setHoveredIndex(i)}
+                className="cursor-crosshair"
+              />
+            </g>
+          ))}
 
-            {/* Gradient definitions */}
-            <defs>
-              <linearGradient id={`chartGradient-${metric}`} x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stopColor={currentColor.fill} />
-                <stop offset="100%" stopColor={currentColor.fill} stopOpacity="0" />
-              </linearGradient>
-            </defs>
-          </svg>
-        </div>
+          {/* Hover line */}
+          {hoveredIndex !== null && (
+            <line
+              x1={points[hoveredIndex].x}
+              y1={padding.top}
+              x2={points[hoveredIndex].x}
+              y2={padding.top + chartHeight}
+              stroke={currentColor.stroke}
+              strokeWidth="1"
+              strokeDasharray="4,4"
+              opacity="0.6"
+            />
+          )}
+
+          {/* X-axis labels */}
+          {xLabels.map((d, i) => {
+            const index = data.findIndex((ad) => ad.date === d.date);
+            return (
+              <text
+                key={i}
+                x={getX(index)}
+                y={height - 8}
+                textAnchor="middle"
+                className="text-[10px] fill-gray-400"
+              >
+                {new Date(d.date).toLocaleDateString(undefined, {
+                  month: 'short',
+                  day: 'numeric',
+                })}
+              </text>
+            );
+          })}
+        </svg>
 
         {/* Tooltip */}
         {hoveredIndex !== null && (
           <div
             className="absolute bg-gray-900 text-white px-3 py-2 rounded-lg text-xs shadow-lg pointer-events-none z-10"
             style={{
-              left: `calc(${(hoveredIndex / (data.length - 1)) * 100}% + 48px)`,
+              left: `calc(${(points[hoveredIndex].x / width) * 100}%)`,
               top: '10px',
               transform: 'translateX(-50%)',
             }}
@@ -317,37 +353,14 @@ function VisitorsChart({
               })}
             </p>
             <p className="font-semibold">
-              {data[hoveredIndex][metric].toLocaleString()} {metric}
+              {data[hoveredIndex][metric].toLocaleString()}{' '}
+              {metric === 'visitors'
+                ? 'Visitors'
+                : metric === 'pageViews'
+                  ? 'Page Views'
+                  : 'Sessions'}
             </p>
           </div>
-        )}
-      </div>
-
-      {/* X-axis labels */}
-      <div className="ml-12 flex justify-between mt-2 text-[10px] text-gray-400">
-        {data.length > 0 && (
-          <>
-            <span>
-              {new Date(data[0].date).toLocaleDateString(undefined, {
-                month: 'short',
-                day: 'numeric',
-              })}
-            </span>
-            {data.length > 2 && (
-              <span>
-                {new Date(data[Math.floor(data.length / 2)].date).toLocaleDateString(undefined, {
-                  month: 'short',
-                  day: 'numeric',
-                })}
-              </span>
-            )}
-            <span>
-              {new Date(data[data.length - 1].date).toLocaleDateString(undefined, {
-                month: 'short',
-                day: 'numeric',
-              })}
-            </span>
-          </>
         )}
       </div>
     </div>
@@ -718,7 +731,7 @@ export function AnalyticsPage() {
         {isLoading ? (
           <div className="h-[240px] bg-gray-50 rounded animate-pulse" />
         ) : timeseries.length > 0 ? (
-          <VisitorsChart data={timeseries} height={200} />
+          <VisitorsChart data={timeseries} height={220} />
         ) : (
           <div className="h-[200px] flex items-center justify-center text-sm text-gray-400">
             No data available

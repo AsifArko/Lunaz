@@ -622,7 +622,10 @@ export async function oauthGoogle(
     success: true,
     ...meta,
   });
+  const userPhone = (user as { phone?: string }).phone;
+  const needsPhone = !userPhone || userPhone === '' || userPhone === OAUTH_PENDING_PHONE;
   return {
+    ...(needsPhone && { requiresPhone: true }),
     user: summary,
     token,
     refreshToken,
@@ -733,7 +736,10 @@ export async function oauthFacebook(
     success: true,
     ...meta,
   });
+  const userPhone = (user as { phone?: string }).phone;
+  const needsPhone = !userPhone || userPhone === '' || userPhone === OAUTH_PENDING_PHONE;
   return {
+    ...(needsPhone && { requiresPhone: true }),
     user: summary,
     token,
     refreshToken,

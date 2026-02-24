@@ -1,5 +1,7 @@
 import { useState, useEffect, type FormEvent } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import type { User } from 'types';
+import { Alert } from '@/ui';
 import { api } from '../../api/client';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
@@ -118,8 +120,10 @@ function Section({ title, description, icon, children, action }: SectionProps) {
 }
 
 export function ProfilePage() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const { user, token, logout } = useAuth();
   const { addToast } = useToast();
+  const showSetPhoneBanner = searchParams.get('setPhone') === '1';
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -257,8 +261,20 @@ export function ProfilePage() {
     );
   }
 
+  const dismissSetPhoneBanner = () => {
+    const next = new URLSearchParams(searchParams);
+    next.delete('setPhone');
+    setSearchParams(next, { replace: true });
+  };
+
   return (
     <div className="space-y-6">
+      {showSetPhoneBanner && (
+        <Alert variant="info" title="Add your phone number" onClose={dismissSetPhoneBanner}>
+          Please add your phone number below to complete your profile. It helps us reach you about
+          your orders.
+        </Alert>
+      )}
       {/* Personal Information */}
       <Section
         title="Personal Information"

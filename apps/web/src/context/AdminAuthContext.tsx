@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
 import type { UserSummary, LoginRequest, LoginResponse } from 'types';
-import { adminApi } from '../api/adminClient';
+import { adminApi, setAdminUnauthorizedHandler } from '../api/adminClient';
 
 interface AdminAuthState {
   user: UserSummary | null;
@@ -77,6 +77,12 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem(USER_KEY);
     setState({ user: null, token: null, isLoading: false });
   }, []);
+
+  // When API returns 401 (expired/invalid token), log out the user
+  useEffect(() => {
+    setAdminUnauthorizedHandler(logout);
+    return () => setAdminUnauthorizedHandler(null);
+  }, [logout]);
 
   const value: AdminAuthContextValue = {
     ...state,
