@@ -51,20 +51,20 @@ All thumbnails below are clickable. Clicking any image opens the full-size scree
 ### Storefront
 
 <p>
-  <a href="screenshots/1%20-%20home.png"><img src="screenshots/1%20-%20home.png" alt="Home" width="240" /></a>
-  <a href="screenshots/2%20-%20categories.png"><img src="screenshots/2%20-%20categories.png" alt="Categories" width="240" /></a>
-  <a href="screenshots/3%20-%20products.png"><img src="screenshots/3%20-%20products.png" alt="Products" width="240" /></a>
-  <a href="screenshots/4%20-%20account.png"><img src="screenshots/4%20-%20account.png" alt="Account" width="240" /></a>
-  <a href="screenshots/5%20-%20addresses.png"><img src="screenshots/5%20-%20addresses.png" alt="Addresses" width="240" /></a>
-  <a href="screenshots/6%20-%20order%20history.png"><img src="screenshots/6%20-%20order%20history.png" alt="Order History" width="240" /></a>
-  <a href="screenshots/7%20-%20cart.png"><img src="screenshots/7%20-%20cart.png" alt="Cart" width="240" /></a>
-  <a href="screenshots/8%20-%20checkout%20confirmation.png"><img src="screenshots/8%20-%20checkout%20confirmation.png" alt="Checkout Confirmation" width="240" /></a>
+  <a href="screenshots/01%20-%20home.png"><img src="screenshots/01%20-%20home.png" alt="Home" width="240" /></a>
+  <a href="screenshots/02%20-%20categories.png"><img src="screenshots/02%20-%20categories.png" alt="Categories" width="240" /></a>
+  <a href="screenshots/03%20-%20products.png"><img src="screenshots/03%20-%20products.png" alt="Products" width="240" /></a>
+  <a href="screenshots/04%20-%20Account.png"><img src="screenshots/04%20-%20Account.png" alt="Account" width="240" /></a>
+  <a href="screenshots/05%20-%20addresses.png"><img src="screenshots/05%20-%20addresses.png" alt="Addresses" width="240" /></a>
+  <a href="screenshots/06%20-%20order%20history.png"><img src="screenshots/06%20-%20order%20history.png" alt="Order History" width="240" /></a>
+  <a href="screenshots/07%20-%20cart.png"><img src="screenshots/07%20-%20cart.png" alt="Cart" width="240" /></a>
+  <a href="screenshots/08%20-%20checkout%20confirmation.png"><img src="screenshots/08%20-%20checkout%20confirmation.png" alt="Checkout Confirmation" width="240" /></a>
 </p>
 
 ### Checkout and Payments
 
 <p>
-  <a href="screenshots/9%20-%20sslcommerce%20redirect.png"><img src="screenshots/9%20-%20sslcommerce%20redirect.png" alt="SSLCommerz Redirect" width="240" /></a>
+  <a href="screenshots/09%20-%20sslcommerce%20redirect.png"><img src="screenshots/09%20-%20sslcommerce%20redirect.png" alt="SSLCommerz Redirect" width="240" /></a>
   <a href="screenshots/10%20-%20payment%20enabled%20on%20card%20details.png"><img src="screenshots/10%20-%20payment%20enabled%20on%20card%20details.png" alt="Payment Enabled on Card Details" width="240" /></a>
   <a href="screenshots/11%20-%20otp%20redirect%20after%20pay.png"><img src="screenshots/11%20-%20otp%20redirect%20after%20pay.png" alt="OTP Redirect" width="240" /></a>
   <a href="screenshots/12%20-%20payment%20confirmation.png"><img src="screenshots/12%20-%20payment%20confirmation.png" alt="Payment Confirmation" width="240" /></a>
