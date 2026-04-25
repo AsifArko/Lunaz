@@ -1,0 +1,49 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/apps/backend/src/index.js",
+  "scripts": {
+    "build": "tsc && tsc-alias -p tsconfig.json",
+    "dev": "tsx watch src/index.ts",
+    "start": "node dist/apps/backend/src/index.js",
+    "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:unit": "vitest run",
+    "test:integration": "echo \"No integration tests configured yet\" && exit 0",
+    "seed:admin": "tsx src/scripts/seed-admin.ts",
+    "seed:products": "tsx src/scripts/seed-products.ts",
+    "seed:data": "tsx src/scripts/seed-data.ts",
+    "seed:all": "npm run seed:admin && npm run seed:products && npm run seed:data"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.700.0",
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-rate-limit": "^8.2.1",
+    "google-auth-library": "^10.5.0",
+    "helmet": "^7.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.0.3",
+    "multer": "^2.0.2",
+    "vite": "7.3.1",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/jsonwebtoken": "^9.0.5",
+    "@types/multer": "^2.0.0",
+    "@types/node": "^20.10.0",
+    "tsc-alias": "^1.8.16",
+    "tsx": "^4.6.2",
+    "typescript": "^5.3.3",
+    "vitest": "^4.0.18"
+  }
+}

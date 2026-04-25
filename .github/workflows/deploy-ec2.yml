@@ -1,0 +1,201 @@
+# ============================================================================
+# Lunaz — Deploy to AWS EC2
+# ============================================================================
+# Triggers: Push to master (after CI), or manual workflow_dispatch
+# Requires: EC2_HOST, EC2_USER, EC2_SSH_KEY, GHCR_TOKEN (if private images)
+# ============================================================================
+
+name: Deploy to EC2
+
+on:
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+    branches: [master]
+  workflow_dispatch:
+    inputs:
+      rollback_tag:
+        description: "Tag to rollback to (e.g. v2026.02.17-cc0961d, leave empty for latest)"
+        required: false
+        type: string
+
+concurrency:
+  group: deploy-ec2
+  cancel-in-progress: false
+
+jobs:
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Deploy (runs after CI succeeds, or on manual dispatch)
+  # ─────────────────────────────────────────────────────────────────────────────
+  deploy:
+    name: Deploy to EC2
+    runs-on: ubuntu-latest
+    if: |
+      (github.event_name == 'workflow_dispatch') ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success')
+    environment: production
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine deployment tag
+        id: tag
+        run: |
+          if [ -n "${{ github.event.inputs.rollback_tag }}" ]; then
+            echo "tag=${{ github.event.inputs.rollback_tag }}" >> $GITHUB_OUTPUT
+            echo "Rolling back to: ${{ github.event.inputs.rollback_tag }}"
+          elif [ "${{ github.event_name }}" == "workflow_run" ]; then
+            git fetch --tags
+            DEPLOY_TAG=$(git describe --tags --exact-match ${{ github.event.workflow_run.head_sha }} 2>/dev/null || echo "")
+            if [ -z "$DEPLOY_TAG" ]; then
+              echo "::error::No release tag found for commit ${{ github.event.workflow_run.head_sha }}"
+              exit 1
+            fi
+            echo "tag=$DEPLOY_TAG" >> $GITHUB_OUTPUT
+            echo "Deploying from CI: $DEPLOY_TAG"
+          else
+            git fetch --tags
+            DEPLOY_TAG=$(git describe --tags --exact-match ${{ github.sha }} 2>/dev/null || echo "")
+            if [ -z "$DEPLOY_TAG" ]; then
+              echo "::error::No release tag found for commit ${{ github.sha }}. Deploy only works for tagged commits."
+              exit 1
+            fi
+            echo "tag=$DEPLOY_TAG" >> $GITHUB_OUTPUT
+            echo "Deploying: $DEPLOY_TAG"
+          fi
+
+      - name: Setup EC2 directory
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            sudo mkdir -p /opt/lunaz
+            sudo chown ${{ secrets.EC2_USER }}:${{ secrets.EC2_USER }} /opt/lunaz
+
+      - name: Copy docker-compose to EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "docker-compose.ec2.yml"
+          target: "/opt/lunaz"
+
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            set -e
+            cd /opt/lunaz
+
+            # Login to GHCR if token provided (for private images)
+            if [ -n "${{ secrets.GHCR_TOKEN }}" ]; then
+              echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            fi
+
+            # Set deployment variables (same tag as GitHub release and Docker images)
+            export TAG=${{ steps.tag.outputs.tag }}
+            export REGISTRY_IMAGE=ghcr.io/${{ github.repository }}
+
+            # Pull and deploy
+            docker compose -f docker-compose.ec2.yml pull
+            docker compose -f docker-compose.ec2.yml up -d --remove-orphans
+
+            # Cleanup old images
+            docker system prune -f
+
+            echo "Deployed ${{ steps.tag.outputs.tag }}"
+
+      - name: Health check
+        id: health
+        run: |
+          echo "Waiting for services to be healthy..."
+          for i in $(seq 1 30); do
+            if curl -sfk "${{ secrets.PROD_API_URL }}/health" > /dev/null; then
+              echo "Backend health check passed"
+              exit 0
+            fi
+            echo "Attempt $i/30 - Waiting..."
+            sleep 10
+          done
+          echo "Health check failed after 5 minutes"
+          exit 1
+
+      - name: Smoke tests
+        run: |
+          # -k: allow self-signed certs (HTTPS with Nginx)
+          # Backend health
+          curl -sfk "${{ secrets.PROD_API_URL }}/health" || exit 1
+
+          # Web (if PROD_URL set)
+          if [ -n "${{ secrets.PROD_URL }}" ]; then
+            curl -sfk "${{ secrets.PROD_URL }}" -o /dev/null || exit 1
+          fi
+
+          # Manage at /manage on web
+          if [ -n "${{ secrets.PROD_URL }}" ]; then
+            curl -sfk "${{ secrets.PROD_URL }}/manage" -o /dev/null || exit 1
+          fi
+
+          echo "Smoke tests passed"
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # Rollback on failure
+  # ─────────────────────────────────────────────────────────────────────────────
+  rollback:
+    name: Rollback on Failure
+    runs-on: ubuntu-latest
+    needs: deploy
+    if: always() && needs.deploy.result == 'failure' && github.event.inputs.rollback_tag == ''
+    environment: production
+    steps:
+      - name: Get previous successful run tag
+        id: prev
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const currentRunId = context.payload.workflow_run?.id || 0;
+            const runs = await github.rest.actions.listWorkflowRunsForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'ci.yml',
+              branch: 'master',
+              status: 'success',
+              per_page: 10
+            });
+            const prevRun = runs.data.workflow_runs.find(r => r.id !== currentRunId);
+            if (!prevRun) {
+              core.setFailed('No previous successful deployment found');
+            }
+            const { data: tags } = await github.rest.repos.listTags({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              per_page: 100
+            });
+            const tagForCommit = tags.find(t => t.commit?.sha === prevRun.head_sha);
+            if (!tagForCommit) {
+              core.setFailed(`No release tag found for previous commit ${prevRun.head_sha}`);
+            }
+            core.setOutput('tag', tagForCommit.name);
+
+      - name: Rollback deployment
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            set -e
+            cd /opt/lunaz
+            export TAG=${{ steps.prev.outputs.tag }}
+            export REGISTRY_IMAGE=ghcr.io/${{ github.repository }}
+            docker compose -f docker-compose.ec2.yml pull
+            docker compose -f docker-compose.ec2.yml up -d --remove-orphans
+            echo "Rolled back to ${{ steps.prev.outputs.tag }}"

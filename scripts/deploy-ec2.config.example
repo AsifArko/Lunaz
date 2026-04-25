@@ -1,0 +1,6 @@
+# EC2 deploy config — copy to deploy-ec2.config and fill in your values
+# deploy-ec2.config is gitignored
+
+EC2_HOST=host_ip
+EC2_USER=ubuntu
+EC2_SSH_KEY=~/.ssh/key.pem

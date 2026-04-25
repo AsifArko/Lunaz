@@ -1,0 +1,64 @@
+{
+  "name": "lunaz",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Lunaz lifestyle and home décor e-commerce",
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "dev": "concurrently -n backend,web -c blue,magenta \"npm run dev:backend\" \"npm run dev:web\"",
+    "dev:web": "npm run dev --workspace=apps/web",
+    "dev:backend": "npm run dev --workspace=apps/backend",
+    "lint": "npm run lint --workspaces --if-present",
+    "lint:fix": "npm run lint:fix --workspaces --if-present",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "test:unit": "npm run test:unit --workspaces --if-present",
+    "test:integration": "npm run test:integration --workspace=apps/backend --if-present",
+    "test:e2e": "npm run test:e2e --if-present",
+    "clean": "rm -rf apps/*/dist apps/*/build node_modules",
+    "seed:admin": "npm run seed:admin --workspace=apps/backend",
+    "seed:products": "npm run seed:products --workspace=apps/backend",
+    "seed:data": "npm run seed:data --workspace=apps/backend",
+    "seed:all": "npm run seed:admin --workspace=apps/backend && npm run seed:products --workspace=apps/backend && npm run seed:data --workspace=apps/backend",
+    "ci": "npm run lint && npm run typecheck && npm run test && npm run build",
+    "prepare": "husky || true"
+  },
+  "workspaces": [
+    "apps/*"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "@secretlint/secretlint-rule-aws": "^8.0.0",
+    "@secretlint/secretlint-rule-basicauth": "^8.0.0",
+    "@secretlint/secretlint-rule-gcp": "^8.0.0",
+    "@secretlint/secretlint-rule-github": "^8.0.0",
+    "@secretlint/secretlint-rule-npm": "^8.0.0",
+    "@secretlint/secretlint-rule-preset-recommend": "^8.0.0",
+    "@secretlint/secretlint-rule-privatekey": "^8.0.0",
+    "@secretlint/secretlint-rule-sendgrid": "^8.0.0",
+    "@secretlint/secretlint-rule-slack": "^8.0.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "concurrently": "^9.1.0",
+    "eslint": "^8.57.0",
+    "eslint-plugin-react": "^7.34.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "husky": "^9.0.0",
+    "lint-staged": "^16.2.7",
+    "prettier": "^3.2.0",
+    "secretlint": "^8.0.0"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md}": [
+      "prettier --write"
+    ]
+  }
+}
