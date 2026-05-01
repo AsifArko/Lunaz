@@ -1,0 +1,1 @@
+export { PaymentTab } from './PaymentTab';

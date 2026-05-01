@@ -1,0 +1,27 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "../..",
+    "noEmit": false,
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "baseUrl": ".",
+    "paths": {
+      "types": ["../../types/index.ts"],
+      "types/*": ["../../types/*"],
+      "constants": ["../../constants"],
+      "constants/*": ["../../constants/*"],
+      "lunaz/constants": ["../../constants"],
+      "lunaz/constants/*": ["../../constants/*"],
+      "interfaces": ["../../interfaces"],
+      "interfaces/*": ["../../interfaces/*"]
+    }
+  },
+  "include": ["src/**/*", "../../types/**/*", "../../constants/**/*", "../../interfaces/**/*"],
+  "exclude": ["node_modules", "dist"],
+  "tsc-alias": {
+    "resolveFullPaths": true,
+    "resolveFullExtension": ".js"
+  }
+}
