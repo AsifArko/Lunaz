@@ -2,7 +2,7 @@
   "name": "lunaz",
   "version": "1.0.0",
   "private": true,
-  "description": "Lunaz lifestyle and home décor e-commerce",
+  "description": "Lifestyle and home décor e-commerce",
   "scripts": {
     "build": "npm run build --workspaces --if-present",
     "dev": "concurrently -n backend,web -c blue,magenta \"npm run dev:backend\" \"npm run dev:web\"",
